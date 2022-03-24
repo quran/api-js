@@ -1,0 +1,109 @@
+export enum Language {
+  ARABIC = 'ar',
+  ENGLISH = 'en',
+  URDU = 'ur',
+  BENGALI = 'bn',
+  TURKISH = 'tr',
+  SPANISH = 'es',
+  GERMAN = 'de',
+  BOSNIAN = 'bs',
+  RUSSIAN = 'ru',
+  ALBANIAN_AL = 'al',
+  FRENCH = 'fr',
+  DUTCH = 'nl',
+  TAMIL = 'ta',
+  TAJIK = 'tg',
+  INDONESIAN = 'id',
+  UZBEK = 'uz',
+  VIETNAMESE = 'vi',
+  CHINESE = 'zh',
+  ITALIAN = 'it',
+  JAPANESE = 'ja',
+  MALAYALAM = 'ml',
+  AMHARIC = 'am',
+  KAZAKH = 'kk',
+  PORTUGUESE = 'pt',
+  TAGALOG = 'tl',
+  THAI = 'th',
+  KOREAN = 'ko',
+  HINDI = 'hi',
+  KURDISH = 'ku',
+  HAUSA = 'ha',
+  AZERI = 'az',
+  SWAHILI = 'sw',
+  PERSIAN = 'fa',
+  SERBIAN = 'sr',
+  MARANAO = 'mrn',
+  AMAZIGH = 'zgh',
+  ASSAMESE = 'as',
+  BULGARIAN = 'bg',
+  CHECHEN = 'ce',
+  CZECH = 'cs',
+
+  DIVEHI = 'dv',
+  DHIVEHI = 'dv',
+  MALDIVIAN = 'dv',
+
+  FINNISH = 'fi',
+  GUJAARATI = 'gu',
+  HEBREW = 'he',
+  GEORGIAN = 'ka',
+  CENTRAL_KHMER = 'km',
+  GANDA = 'lg',
+  MARATHI = 'mr',
+  YORUBA = 'yo',
+  MALAY = 'ms',
+  NEPALI = 'ne',
+  SWEDISH = 'sv',
+  TELUGU = 'te',
+  TATAR = 'tt',
+
+  UIGHUR = 'ug',
+  UYGHUR = 'ug',
+
+  UKRAINIAN = 'uk',
+  NORWEGIAN = 'no',
+  OROMO = 'om',
+  POLISH = 'pl',
+  PASHTO = 'ps',
+  ROMANIAN = 'ro',
+  SINDHI = 'sd',
+  NORTHERN_SAMI = 'se',
+
+  SINHALA = 'si',
+  SINHALESE = 'si',
+
+  SOMALI = 'so',
+  ALBANIAN_SQ = 'sq',
+}
+
+export enum QuranFont {
+  MadaniV1 = 'code_v1',
+  MadaniV2 = 'code_v2',
+  Uthmani = 'text_uthmani',
+}
+
+export type VerseField =
+  | 'chapterId'
+  | 'verseIndex'
+  | 'textUthmani'
+  | 'textUthmaniSimple'
+  | 'textImlaei'
+  | 'textImlaeiSimple'
+  | 'textIndopak'
+  | 'textUthmaniTajweed'
+  | 'imageUrl'
+  | 'imageWidth'
+  | 'codeV1'
+  | 'codeV2'
+  | 'v1Page'
+  | 'v2Page';
+
+export * from './VerseKey';
+export * from './ChapterId';
+export * from './HizbNumber';
+export * from './JuzNumber';
+export * from './PageNumber';
+export * from './RubNumber';
+
+export * from './api';

@@ -1,0 +1,57 @@
+{
+  "name": "quran-api",
+  "description": "A library for fetching quran data from the quran.com API.",
+  "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/quran-api.esm.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "start": "dts watch",
+    "build": "dts build",
+    "test": "dts test",
+    "lint": "dts lint",
+    "prepare": "husky install && dts build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.9",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/humps": "^2.0.1",
+    "dts-cli": "^1.4.0",
+    "husky": "^7.0.4",
+    "size-limit": "^7.0.8",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.2"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "size-limit": [
+    {
+      "path": "dist/quran-api.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/quran-api.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "humps": "^2.0.1"
+  }
+}
