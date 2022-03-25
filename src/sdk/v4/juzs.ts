@@ -1,11 +1,15 @@
 import { Juz } from '@/types';
 import { fetcher } from './_fetcher';
 
-const Juzs = {
-  async findAll() {
-    const { juzs } = await fetcher<{ juzs: Juz[] }>('/juzs');
-    return juzs;
-  },
+/**
+ * Get All Juzs
+ * @description /juzs
+ * @example
+ * quran.v4.juzs.findAll()
+ */
+const findAll = async () => {
+  const { juzs } = await fetcher<{ juzs: Juz[] }>('/juzs');
+  return juzs;
 };
 
-export default Juzs;
+export default { findAll };

@@ -17,13 +17,22 @@ const getSearchOptions = (q: string, options: SearchOptions = {}) => {
   return all;
 };
 
-const Search = {
-  async search(q: string, options?: SearchOptions) {
-    const params = getSearchOptions(q, options);
-    const { search } = await fetcher<SearchResponse>('/search', params);
+/**
+ * Search
+ * @description /search
+ * @param q search query
+ * @param options search options
+ * @example
+ * quran.v4.search.search('الله')
+ * quran.v4.search.search('الله', { language: Language.ENGLISH })
+ * quran.v4.search.search('الله', { language: Language.ENGLISH, size: 10 })
+ * quran.v4.search.search('الله', { language: Language.ENGLISH, page: 2 })
+ */
+const search = async (q: string, options?: SearchOptions) => {
+  const params = getSearchOptions(q, options);
+  const { search } = await fetcher<SearchResponse>('/search', params);
 
-    return search;
-  },
+  return search;
 };
 
-export default Search;
+export default { search };

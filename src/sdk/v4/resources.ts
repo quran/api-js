@@ -3,12 +3,12 @@ import {
   ChapterReciterResource,
   Language,
   LanguageResource,
-  RecitationInfoResource,
+  // RecitationInfoResource,
   RecitationResource,
   RecitationStylesResource,
-  TafsirInfoResource,
+  // TafsirInfoResource,
   TafsirResource,
-  TranslationInfoResource,
+  // TranslationInfoResource,
   TranslationResource,
   VerseMediaResource,
 } from '@/types';
@@ -36,14 +36,15 @@ const Resources = {
 
     return recitations;
   },
-  async findRecitationInfo(id: string, options?: GetResourcesOptions) {
-    const params = getResourcesOptions(options);
-    const { info } = await fetcher<{
-      info: RecitationInfoResource;
-    }>(`/resources/recitations/${id}/info`, params);
+  // TODO: uncomment when API is ready
+  // async findRecitationInfo(id: string, options?: GetResourcesOptions) {
+  //   const params = getResourcesOptions(options);
+  //   const { info } = await fetcher<{
+  //     info: RecitationInfoResource;
+  //   }>(`/resources/recitations/${id}/info`, params);
 
-    return info;
-  },
+  //   return info;
+  // },
   async findAllTranslations(options?: GetResourcesOptions) {
     const params = getResourcesOptions(options);
     const { translations } = await fetcher<{
@@ -52,14 +53,15 @@ const Resources = {
 
     return translations;
   },
-  async findTranslationInfo(id: string, options?: GetResourcesOptions) {
-    const params = getResourcesOptions(options);
-    const { info } = await fetcher<{
-      info: TranslationInfoResource;
-    }>(`/resources/translations/${id}/info`, params);
+  // TODO: uncomment when API is ready
+  // async findTranslationInfo(id: string, options?: GetResourcesOptions) {
+  //   const params = getResourcesOptions(options);
+  //   const { info } = await fetcher<{
+  //     info: TranslationInfoResource;
+  //   }>(`/resources/translations/${id}/info`, params);
 
-    return info;
-  },
+  //   return info;
+  // },
   async findAllTafsirs(options?: GetResourcesOptions) {
     const params = getResourcesOptions(options);
     const { tafsirs } = await fetcher<{
@@ -68,14 +70,15 @@ const Resources = {
 
     return tafsirs;
   },
-  async findTafsirInfo(id: string, options?: GetResourcesOptions) {
-    const params = getResourcesOptions(options);
-    const { info } = await fetcher<{
-      info: TafsirInfoResource;
-    }>(`/resources/tafsirs/${id}/info`, params);
+  // TODO: uncomment when API is ready
+  // async findTafsirInfo(id: string, options?: GetResourcesOptions) {
+  //   const params = getResourcesOptions(options);
+  //   const { info } = await fetcher<{
+  //     info: TafsirInfoResource;
+  //   }>(`/resources/tafsirs/${id}/info`, params);
 
-    return info;
-  },
+  //   return info;
+  // },
   async findAllRecitationStyles() {
     const { recitationStyles } = await fetcher<{
       recitationStyles: RecitationStylesResource;

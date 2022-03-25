@@ -1,34 +1,34 @@
 import { quran } from '@/index';
 
+const chapters = quran.v4.chapters;
+
 describe('Chapters API', () => {
   describe('findAll()', () => {
-    it('should return data', () => {
-      const data = quran.v4.chapters.findAll();
-      expect(data).resolves.toBeInstanceOf(Array);
+    it('should return data', async () => {
+      const data = await chapters.findAll();
+      expect(data).toBeInstanceOf(Array);
     });
   });
 
   describe('findById()', () => {
-    it('should return data', () => {
-      const data = quran.v4.chapters.findById('1');
-      expect(data).resolves.toBeDefined();
+    it('should return data', async () => {
+      const data = await chapters.findById('1');
+      expect(data).toBeDefined();
     });
 
     it('should throw with invalid id', () => {
-      const data = quran.v4.chapters.findById('0' as any);
-      expect(data).rejects.toThrowError();
+      expect(chapters.findById('0' as any)).rejects.toThrowError();
     });
   });
 
   describe('findAll()', () => {
     test('it should return data', async () => {
-      const data = quran.v4.chapters.findInfoById('1');
-      expect(data).resolves.toBeDefined();
+      const data = await chapters.findInfoById('1');
+      expect(data).toBeDefined();
     });
 
-    test('should throw with invalid id', async () => {
-      const data = quran.v4.chapters.findInfoById('0' as any);
-      expect(data).rejects.toThrowError();
+    test('should throw with invalid id', () => {
+      expect(chapters.findInfoById('0' as any)).rejects.toThrowError();
     });
   });
 });

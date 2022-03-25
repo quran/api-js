@@ -3,11 +3,10 @@ import { camelizeKeys, decamelizeKeys } from 'humps';
 import stringify from '@/utils/qs-stringify';
 import { removeBeginningSlash } from '@/utils/misc';
 
-const API_HOST = 'https://api.quran.com';
-const API_ROOT_PATH = '/api/v4/';
+export const API_BASE_URL = 'https://api.quran.com/api/v4/';
 
 export const makeUrl = (url: string, params?: Record<string, unknown>) => {
-  const baseUrl = `${API_HOST}${API_ROOT_PATH}${removeBeginningSlash(url)}`;
+  const baseUrl = `${API_BASE_URL}${removeBeginningSlash(url)}`;
   if (!params) return baseUrl;
 
   const decamelizedKeys = decamelizeKeys(params);
