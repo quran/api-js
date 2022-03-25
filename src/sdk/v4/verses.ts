@@ -203,7 +203,7 @@ const findRandom = async (options?: GetVerseOptions) => {
   return verse;
 };
 
-export default {
+const verses = {
   findByKey,
   findByChapter,
   findByPage,
@@ -212,3 +212,5 @@ export default {
   // findByRub,
   findRandom,
 };
+
+export default verses;

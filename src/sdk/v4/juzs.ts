@@ -12,4 +12,6 @@ const findAll = async () => {
   return juzs;
 };
 
-export default { findAll };
+const juzs = { findAll };
+
+export default juzs;

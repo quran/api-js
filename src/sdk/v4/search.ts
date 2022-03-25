@@ -35,4 +35,6 @@ const search = async (q: string, options?: SearchOptions) => {
   return search;
 };
 
-export default { search };
+const searchApi = { search };
+
+export default searchApi;
