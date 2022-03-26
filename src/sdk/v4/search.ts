@@ -19,7 +19,7 @@ const getSearchOptions = (q: string, options: SearchOptions = {}) => {
 
 /**
  * Search
- * @description /search
+ * @description https://quran.api-docs.io/v4/search/KfCmk4KQYbtyK9adj
  * @param q search query
  * @param options search options
  * @example

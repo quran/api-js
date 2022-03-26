@@ -59,14 +59,11 @@ const getVerseOptions = (options: GetVerseOptions = {}) => {
 
 /**
  * Get a specific ayah with key. Key is combination of surah number and ayah number.
- * @description /verses/by_key/{key}
- * @param {string} key - surah number and ayah number separated by a colon.
+ * @description https://quran.api-docs.io/v4/verses/by-specific-verse-by-key
+ * @param {VerseKey} key - surah number and ayah number separated by a colon.
  * @param {GetVerseOptions} options
  * @example
- * // first ayah of the first surah
  * quran.v4.verses.findByKey('1:1')
- *
- * // 5th ayah of the 101th surah
  * quran.v4.verses.findByKey('101:5')
  */
 const findByKey = async (key: VerseKey, options?: GetVerseOptions) => {
@@ -80,14 +77,11 @@ const findByKey = async (key: VerseKey, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a specific chapter (surah).
- * @description /verses/by_chapter/{chapter_id}
- * @param {string} id - chapter id (surah number)
+ * @description https://quran.api-docs.io/v4/verses/by_chapter
+ * @param {ChapterId} id - chapter id (surah number)
  * @param {GetVerseOptions} options
  * @example
- * // all ayahs of the first surah
  * quran.v4.verses.findByChapter('1')
- *
- * // all ayahs of the 101th surah
  * quran.v4.verses.findByChapter('101')
  */
 const findByChapter = async (id: ChapterId, options?: GetVerseOptions) => {
@@ -101,14 +95,11 @@ const findByChapter = async (id: ChapterId, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a specific page in the Quran.
- * @description /verses/by_page/{page_number}
- * @param {string} page - Quran page number
+ * @description https://quran.api-docs.io/v4/verses/by-page
+ * @param {PageNumber} page - Quran page number
  * @param {GetVerseOptions} options
  * @example
- * // all ayahs of the first page
  * quran.v4.verses.findByPage('1')
- *
- * // all ayahs of the 101th page
  * quran.v4.verses.findByPage('101')
  */
 const findByPage = async (page: PageNumber, options?: GetVerseOptions) => {
@@ -123,14 +114,11 @@ const findByPage = async (page: PageNumber, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a Juz.
- * @description /verses/by_juz/{juz_number}
- * @param {string} id - juz number
+ * @description https://quran.api-docs.io/v4/verses/by-juz
+ * @param {JuzNumber} id - juz number
  * @param {GetVerseOptions} options
  * @example
- * // all ayahs of the first juz
  * quran.v4.verses.findByJuz('1')
- *
- * // all ayahs of the 29th juz
  * quran.v4.verses.findByJuz('29')
  */
 const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
@@ -146,14 +134,11 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
 // TODO: uncomment when API is fixed
 /**
  * Get all ayahs for a Hizb.
- * @description /verses/by_hizb/{hizb_number}
- * @param {string} hizb - hizb number
+ * @description https://quran.api-docs.io/v4/verses/by-hizb-number
+ * @param {HizbNumber} hizb - hizb number
  * @param {GetVerseOptions} options
  * @example
- * // all ayahs of the first hizb
  * quran.v4.verses.findByHizb('1')
- *
- * // all ayahs of the 29th hizb
  * quran.v4.verses.findByHizb('29')
  */
 // const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
@@ -169,14 +154,11 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
 // TODO: uncomment when API is fixed
 /**
  * Get all ayahs for a Rub.
- * @description /verses/by_rub/{rub_number}
- * @param {string} rub - rub number
+ * @description https://quran.api-docs.io/v4/verses/by-rub-number
+ * @param {RubNumber} rub - rub number
  * @param {GetVerseOptions} options
  * @example
- * // all ayahs of the first rub
  * quran.v4.verses.findByRub('1')
- *
- * // all ayahs of the 29th rub
  * quran.v4.verses.findByRub('29')
  */
 // const findByRub = async (rub: RubNumber, options?: GetVerseOptions) => {
@@ -191,7 +173,7 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
 
 /**
  * Get a random ayah.
- * @description /verses/random
+ * @description https://quran.api-docs.io/v4/verses/random
  * @param {GetVerseOptions} options
  * @example
  * quran.v4.verses.findRandom()

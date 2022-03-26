@@ -3,7 +3,7 @@ import { fetcher } from './_fetcher';
 
 /**
  * Get All Juzs
- * @description /juzs
+ * @description https://quran.api-docs.io/v4/juz/get-all-juzs
  * @example
  * quran.v4.juzs.findAll()
  */
