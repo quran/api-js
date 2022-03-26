@@ -4,6 +4,7 @@ const config = {
     '@/(.*)': '<rootDir>/src/$1',
   },
   moduleFileExtensions: ['js', 'json', 'ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
 };
 
 module.exports = config;
