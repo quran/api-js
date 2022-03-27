@@ -5,6 +5,6 @@ import { handlers } from './handlers';
 export const server = setupServer(
   ...handlers,
   rest.get('*', (_req, res, ctx) => {
-    return res(ctx.status(404), ctx.json({ message: 'Not found' }));
+    return res(ctx.status(404), ctx.json({ status: 404, error: 'Not found' }));
   })
 );
