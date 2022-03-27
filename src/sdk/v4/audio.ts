@@ -26,6 +26,14 @@ const getAudioOptions = (options: GetRecitationsOptions = {}) => {
   return final;
 };
 
+/**
+ * Get all chapter recitations for specific reciter
+ * @description https://quran.api-docs.io/v4/audio-recitations/list-of-all-surah-audio-files-for-specific-reciter
+ * @param {string} reciterId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findAllChapterRecitations('2')
+ */
 const findAllChapterRecitations = async (
   reciterId: string,
   options?: GetRecitationsOptions
@@ -38,6 +46,15 @@ const findAllChapterRecitations = async (
   return audioFiles;
 };
 
+/**
+ * Get chapter recitation for specific reciter and a specific chapter
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-single-surah-audio-for-specific-reciter
+ * @param {ChapterId} chapterId
+ * @param {string} reciterId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findChapterRecitationById('1', '2') // first chapter recitation for reciter 2
+ */
 const findChapterRecitationById = async (
   chapterId: ChapterId,
   reciterId: string,
@@ -54,6 +71,15 @@ const findChapterRecitationById = async (
   return audioFile;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific chapter
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-surah
+ * @param {ChapterId} chapterId
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByChapter('1', '2')
+ */
 const findVerseRecitationsByChapter = async (
   chapterId: ChapterId,
   recitationId: string,
@@ -70,6 +96,15 @@ const findVerseRecitationsByChapter = async (
   return data;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific juz
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-juz
+ * @param {JuzNumber} juz
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByJuz('1', '2')
+ */
 const findVerseRecitationsByJuz = async (
   juz: JuzNumber,
   recitationId: string,
@@ -86,6 +121,15 @@ const findVerseRecitationsByJuz = async (
   return data;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific mushaf page
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-madani-mushaf-page
+ * @param {PageNumber} page
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByPage('1', '2')
+ */
 const findVerseRecitationsByPage = async (
   page: PageNumber,
   recitationId: string,
@@ -102,6 +146,15 @@ const findVerseRecitationsByPage = async (
   return data;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific rub
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-rub
+ * @param {RubNumber} rub
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByRub('1', '2')
+ */
 const findVerseRecitationsByRub = async (
   rub: RubNumber,
   recitationId: string,
@@ -118,6 +171,15 @@ const findVerseRecitationsByRub = async (
   return data;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific hizb
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-hizb
+ * @param {HizbNumber} hizb
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByHizb('1', '2')
+ */
 const findVerseRecitationsByHizb = async (
   hizb: HizbNumber,
   recitationId: string,
@@ -134,6 +196,15 @@ const findVerseRecitationsByHizb = async (
   return data;
 };
 
+/**
+ * Get all verse audio files for a specific reciter and a specific hizb
+ * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-ayah
+ * @param {VerseKey} key
+ * @param {string} recitationId
+ * @param {GetRecitationsOptions} options
+ * @example
+ * quran.v4.audio.findVerseRecitationsByKey('1:1', '2')
+ */
 const findVerseRecitationsByKey = async (
   key: VerseKey,
   recitationId: string,

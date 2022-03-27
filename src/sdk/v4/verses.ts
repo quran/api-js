@@ -21,7 +21,7 @@ type GetVerseOptions = Partial<{
   tafsirs: string[] | number[];
   wordFields: string[];
   translationFields: string[];
-  fields: Record<VerseField, boolean>;
+  fields: Partial<Record<VerseField, boolean>>;
   page: number;
   perPage: number;
 }>;
