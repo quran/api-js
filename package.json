@@ -1,12 +1,12 @@
 {
-  "name": "quran-api",
+  "name": "@quranjs/api",
   "description": "A library for fetching quran data from the quran.com API.",
   "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/quran-api.esm.js",
+  "module": "dist/api.esm.js",
   "files": [
     "dist",
     "src"
@@ -43,11 +43,11 @@
   },
   "size-limit": [
     {
-      "path": "dist/quran-api.cjs.production.min.js",
+      "path": "dist/api.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/quran-api.esm.js",
+      "path": "dist/api.esm.js",
       "limit": "10 KB"
     }
   ],
