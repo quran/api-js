@@ -38,7 +38,7 @@ jobs:
   publish-module:
     name: 🎉 Publish to NPM
     needs: [build]
-    if: github.repository == 'quranjs/api' && (github.ref == 'refs/heads/main')
+    if: github.repository == 'quranjs/api' && (github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
