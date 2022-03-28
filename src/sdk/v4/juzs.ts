@@ -1,4 +1,4 @@
-import { Juz } from '@/types';
+import { Juz } from '../../types';
 import { fetcher } from './_fetcher';
 
 /**

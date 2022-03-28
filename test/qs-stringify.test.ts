@@ -1,4 +1,4 @@
-import stringify from '@/utils/qs-stringify';
+import stringify from '../src/utils/qs-stringify';
 
 describe('Stringify Utils', () => {
   describe('stringify', () => {

@@ -1,4 +1,4 @@
-import { quran } from '@/index';
+import { quran } from '../src/index';
 
 type ApiName = keyof typeof quran['v4'];
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any

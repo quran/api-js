@@ -11,7 +11,7 @@ import {
   // TranslationInfoResource,
   TranslationResource,
   VerseMediaResource,
-} from '@/types';
+} from '../../types';
 import { fetcher } from './_fetcher';
 
 type GetResourcesOptions = Partial<{

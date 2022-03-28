@@ -1,4 +1,4 @@
-import { quran } from '@/index';
+import { quran } from '../src/index';
 
 const utils = quran.utils;
 

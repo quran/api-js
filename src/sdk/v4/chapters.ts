@@ -1,4 +1,4 @@
-import { Chapter, ChapterId, ChapterInfo, Language } from '@/types';
+import { Chapter, ChapterId, ChapterInfo, Language } from '../../types';
 import { fetcher } from './_fetcher';
 import Utils from '../utils';
 

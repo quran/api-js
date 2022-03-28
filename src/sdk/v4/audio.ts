@@ -10,7 +10,7 @@ import {
   RubNumber,
   VerseKey,
   VerseRecitationField,
-} from '@/types';
+} from '../../types';
 import { decamelize } from 'humps';
 import Utils from '../utils';
 import { fetcher } from './_fetcher';

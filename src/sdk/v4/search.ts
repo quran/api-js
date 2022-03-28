@@ -1,4 +1,4 @@
-import { Language, SearchResponse } from '@/types';
+import { Language, SearchResponse } from '../../types';
 import { fetcher } from './_fetcher';
 
 type SearchOptions = Partial<{

@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import { camelizeKeys, decamelizeKeys } from 'humps';
-import stringify from '@/utils/qs-stringify';
-import { removeBeginningSlash } from '@/utils/misc';
+import stringify from '../../utils/qs-stringify';
+import { removeBeginningSlash } from '../../utils/misc';
 
 export const API_BASE_URL = 'https://api.quran.com/api/v4/';
 
