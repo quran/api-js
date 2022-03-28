@@ -4,8 +4,8 @@ A library for fetching quran data from the [quran.com API][qdc-api]. This librar
 [![Build Status][build-badge]][build]
 [![MIT License][license-badge]][license]
 [![NPM Version][npm-badge]][npm]
-[![NPM Monthly downloads][downloads-badge]][npm]
 [![Minziped Size][size-badge]][npm]
+[![NPM Monthly downloads][downloads-badge]][npm]
 
 ## Installation
 
@@ -24,11 +24,11 @@ yarn add @quranjs/api
 <!-- Links -->
 
 [qdc-api]: https://quran.api-docs.io/
-[build-badge]: https://img.shields.io/github/workflow/status/quranjs/api/CI?logo=github&style=flat-square
+[build-badge]: https://github.com/quranjs/api/workflows/CI/badge.svg
 [build]: https://github.com/quranjs/api/actions?query=workflow%3ACI
-[license-badge]: https://img.shields.io/github/license/quranjs/api?style=flat-square
+[license-badge]: https://badgen.net/github/license/quranjs/api
 [license]: https://github.com/quranjs/api/blob/master/LICENSE
 [npm]: https://www.npmjs.com/package/@quranjs/api
-[npm-badge]: https://img.shields.io/npm/v/@quranjs/api.svg?style=flat-square
-[downloads-badge]: https://img.shields.io/npm/dm/@quranjs/api.svg?style=flat-square
-[size-badge]: https://img.shields.io/bundlephobia/minzip/@quranjs/api/latest.svg?style=flat-square
+[npm-badge]: https://badgen.net/npm/v/@quranjs/api
+[downloads-badge]: https://img.shields.io/npm/dm/@quranjs/api.svg
+[size-badge]: https://badgen.net/packagephobia/publish/@quranjs/api
