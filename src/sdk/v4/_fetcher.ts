@@ -1,4 +1,4 @@
-import axios from 'axios';
+import fetch from 'cross-fetch';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import stringify from '@/utils/qs-stringify';
 import { removeBeginningSlash } from '@/utils/misc';
@@ -20,7 +20,9 @@ export const fetcher = async <T extends object>(
   url: string,
   params: Record<string, unknown> = {}
 ) => {
-  const res = await axios.get<T>(makeUrl(url, params));
+  const res = await fetch(makeUrl(url, params));
+  if (res.status >= 400) throw new Error(`${res.status} ${res.statusText}`);
+  const json = await res.json();
 
-  return camelizeKeys(res.data) as T;
+  return camelizeKeys(json) as T;
 };

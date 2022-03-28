@@ -4,10 +4,12 @@ import {
   JuzNumber,
   Language,
   PageNumber,
+  TranslationField,
   // RubNumber,
   Verse,
   VerseField,
   VerseKey,
+  WordField,
 } from '@/types';
 import { decamelize } from 'humps';
 import Utils from '../utils';
@@ -19,8 +21,8 @@ type GetVerseOptions = Partial<{
   words: boolean;
   translations: string[] | number[];
   tafsirs: string[] | number[];
-  wordFields: string[];
-  translationFields: string[];
+  wordFields: Partial<Record<WordField, boolean>>;
+  translationFields: Partial<Record<TranslationField, boolean>>;
   fields: Partial<Record<VerseField, boolean>>;
   page: number;
   perPage: number;
@@ -40,9 +42,6 @@ const getVerseOptions = (options: GetVerseOptions = {}) => {
   if (initial.translations)
     result.translations = initial.translations.join(',');
   if (initial.tafsirs) result.tafsirs = initial.tafsirs.join(',');
-  if (initial.wordFields) result.wordFields = initial.wordFields.join(',');
-  if (initial.translationFields)
-    result.translationFields = initial.translationFields.join(',');
 
   if (initial.fields) {
     const fields: string[] = [];
@@ -50,6 +49,22 @@ const getVerseOptions = (options: GetVerseOptions = {}) => {
       if (value) fields.push(decamelize(key));
     }
     result.fields = fields.join(',');
+  }
+
+  if (initial.wordFields) {
+    const wordFields: string[] = [];
+    for (const [key, value] of Object.entries(initial.wordFields)) {
+      if (value) wordFields.push(decamelize(key));
+    }
+    result.wordFields = wordFields.join(',');
+  }
+
+  if (initial.translationFields) {
+    const translationFields: string[] = [];
+    for (const [key, value] of Object.entries(initial.translationFields)) {
+      if (value) translationFields.push(decamelize(key));
+    }
+    result.translationFields = translationFields.join(',');
   }
 
   if (initial.reciter) result.audio = initial.reciter;

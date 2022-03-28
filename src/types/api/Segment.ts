@@ -1,4 +1,4 @@
 /**
- * Segment structure is [chapter, verse, word]
+ * Segment structure is [wordFrom, wordTo, timeFrom, timeTo] time is in ms
  */
-export type Segment = [number, number, number];
+export type Segment = [number, number, number, number];

@@ -12,7 +12,6 @@ export * from './TranslatedName';
 export * from './Translation';
 export * from './Transliteration';
 export * from './Verse';
-export * from './VerseTiming';
 export * from './Word';
 export * from './Juz';
 export * from './Pagination';

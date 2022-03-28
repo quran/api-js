@@ -99,6 +99,32 @@ export type VerseField =
   | 'v1Page'
   | 'v2Page';
 
+export type WordField =
+  | 'v1Page'
+  | 'v2Page'
+  | 'textUthmani'
+  | 'textImlaei'
+  | 'textIndopak'
+  | 'verseKey'
+  | 'location'
+  | 'codeV1'
+  | 'codeV2';
+
+export type TranslationField =
+  | 'resourceName'
+  | 'verseId'
+  | 'languageId'
+  | 'languageName'
+  | 'verseKey'
+  | 'chapterId'
+  | 'verseNumber'
+  | 'juzNumber'
+  | 'hizbNumber'
+  | 'rubNumber'
+  | 'pageNumber';
+
+export type VerseRecitationField = 'id' | 'chapterId' | 'segments' | 'format';
+
 export * from './VerseKey';
 export * from './ChapterId';
 export * from './HizbNumber';

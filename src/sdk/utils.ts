@@ -1,4 +1,4 @@
-// { chapterNumber: verseCount }
+// this maps chapterNumber to verseCount
 export const versesMaping = {
   '1': 7,
   '2': 286,
@@ -116,44 +116,115 @@ export const versesMaping = {
   '114': 6,
 };
 
+/**
+ * Validates chapter id
+ * @param id chapter id
+ * @example 
+ isValidChapterId('1') // true
+ isValidChapterId('114') // true
+ isValidChapterId('0') // false
+ isValidChapterId('-1') // false
+ isValidChapterId('200') // false
+ */
+const isValidChapterId = (id: string | number) => {
+  const parsedId = typeof id === 'number' ? id : Number(id);
+  if (!parsedId || parsedId <= 0 || parsedId > 114) return false;
+  return true;
+};
+
+/**
+ * Validates juz number
+ * @param juz juz number
+ * @example 
+ isValidJuz('1') // true
+ isValidJuz('30') // true
+ isValidJuz('0') // false
+ isValidJuz('-1') // false
+ isValidJuz('200') // false
+ */
+const isValidJuz = (juz: string | number) => {
+  const parsedJuz = typeof juz === 'number' ? juz : Number(juz);
+  if (!parsedJuz || parsedJuz <= 0 || parsedJuz > 30) return false;
+  return true;
+};
+
+/**
+ * Validates rub number
+ * @param rub rub number
+ * @example 
+ isValidRub('1') // true
+ isValidRub('240') // true
+ isValidRub('0') // false
+ isValidRub('-1') // false
+ isValidRub('300') // false
+ */
+const isValidRub = (rub: string | number) => {
+  const parsedRub = typeof rub === 'number' ? rub : Number(rub);
+  if (!parsedRub || parsedRub <= 0 || parsedRub > 240) return false;
+  return true;
+};
+
+/**
+ * Validates hizb number
+ * @param hizb hizb number
+ * @example 
+ isValidHizb('1') // true
+ isValidHizb('60') // true
+ isValidHizb('0') // false
+ isValidHizb('-1') // false
+ isValidHizb('200') // false
+ */
+const isValidHizb = (hizb: string | number) => {
+  const parsedHizb = typeof hizb === 'number' ? hizb : Number(hizb);
+  if (!parsedHizb || parsedHizb <= 0 || parsedHizb > 60) return false;
+  return true;
+};
+
+/**
+ * Validates mushaf page number
+ * @param page mushaf page number
+ * @example 
+ isValidQuranPage('1') // true
+ isValidQuranPage('604') // true
+ isValidQuranPage('0') // false
+ isValidQuranPage('-1') // false
+ isValidQuranPage('1000') // false
+ */
+const isValidQuranPage = (page: string | number) => {
+  const parsedPage = typeof page === 'number' ? page : Number(page);
+  if (!parsedPage || parsedPage <= 0 || parsedPage > 604) return false;
+  return true;
+};
+
+/**
+ * Validates verse key
+ * @param key colon separated verse key (chapter:verse)
+ * @example 
+ isValidVerseKey('1:1') // true
+ isValidVerseKey('30:1') // true
+ isValidVerseKey('0') // false
+ isValidVerseKey('1:-') // false
+ isValidVerseKey('1_1') // false
+ */
+const isValidVerseKey = (key: string) => {
+  const [chapterId, verseId] = key.trim().split(':');
+  if (!chapterId || !verseId || !isValidChapterId(chapterId)) return false;
+
+  const parsedVerse = Number(verseId);
+  const verseCount = (versesMaping as any)[chapterId];
+  if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
+    return false;
+
+  return true;
+};
+
 const Utils = {
-  isValidChapterId(id: string | number) {
-    const parsedId = typeof id === 'number' ? id : Number(id);
-    if (!parsedId || parsedId <= 0 || parsedId > 114) return false;
-    return true;
-  },
-  isValidJuz(id: string | number) {
-    const parsedId = typeof id === 'number' ? id : Number(id);
-    if (!parsedId || parsedId <= 0 || parsedId > 30) return false;
-    return true;
-  },
-  isValidRub(id: string | number) {
-    const parsedId = typeof id === 'number' ? id : Number(id);
-    if (!parsedId || parsedId <= 0 || parsedId > 240) return false;
-    return true;
-  },
-  isValidHizb(id: string | number) {
-    const parsedId = typeof id === 'number' ? id : Number(id);
-    if (!parsedId || parsedId <= 0 || parsedId > 60) return false;
-    return true;
-  },
-  isValidQuranPage(id: string | number) {
-    const parsedId = typeof id === 'number' ? id : Number(id);
-    if (!parsedId || parsedId <= 0 || parsedId > 604) return false;
-    return true;
-  },
-  isValidVerseKey(key: string) {
-    const [chapterId, verseId] = key.trim().split(':');
-    if (!chapterId || !verseId || !this.isValidChapterId(chapterId))
-      return false;
-
-    const parsedVerse = Number(verseId);
-    const verseCount = (versesMaping as any)[chapterId];
-    if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
-      return false;
-
-    return true;
-  },
+  isValidChapterId,
+  isValidJuz,
+  isValidRub,
+  isValidHizb,
+  isValidQuranPage,
+  isValidVerseKey,
 };
 
 export default Utils;

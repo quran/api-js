@@ -1,3 +1,4 @@
+import { VerseKey } from '../VerseKey';
 import { Translation } from './Translation';
 import { Transliteration } from './Transliteration';
 
@@ -10,22 +11,20 @@ export enum CharType {
 }
 
 export interface Word {
-  verseKey?: string;
+  id?: number;
+  position: number;
+  audioUrl: string;
   charTypeName: CharType;
   codeV1?: string;
   codeV2?: string;
   pageNumber?: number;
-  hizbNumber?: number;
   lineNumber?: number;
-  position: number;
-  location?: string;
-  translation?: Translation;
-  transliteration?: Transliteration;
-  id?: number;
+  text?: string;
   textUthmani?: string;
   textIndopak?: string;
-  highlight?: string | boolean;
-  text?: string;
-  audioUrl: any;
-  [key: string]: any;
+  textImlaei?: string;
+  translation: Translation;
+  transliteration: Transliteration;
+  location?: string; // chapter:verse:word
+  verseKey?: VerseKey;
 }

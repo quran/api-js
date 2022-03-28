@@ -1,9 +1,21 @@
+import { VerseKey } from '../VerseKey';
+
 export interface Translation {
   id?: number;
-  languageName: string;
-  languageId?: number;
   text: string;
-  resourceName?: string | null;
-  resourceId?: number;
-  authorName?: string;
+  resourceId: number;
+  resourceName?: string;
+
+  verseId?: number;
+
+  languageId?: number;
+  languageName?: string;
+
+  verseKey?: VerseKey;
+  chapterId?: number;
+  verseNumber?: number;
+  juzNumber?: number;
+  hizbNumber?: number;
+  rubNumber?: number;
+  pageNumber?: number;
 }

@@ -1,4 +1,2 @@
-import quran from './sdk';
-
+export { default as quran } from './sdk';
 export * from './types';
-export { quran };

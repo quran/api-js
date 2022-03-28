@@ -1,5 +1,7 @@
 const alias = require('@rollup/plugin-alias');
 const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
+const buble = require('rollup-plugin-buble');
+const sizes = require('rollup-plugin-sizes');
 const path = require('path');
 
 const customResolver = resolve({
@@ -7,17 +9,21 @@ const customResolver = resolve({
 });
 const projectRootDir = path.resolve(__dirname);
 
+const plugins = [
+  alias({
+    entries: [{ find: '@', replacement: path.resolve(projectRootDir, 'src') }],
+    customResolver,
+  }),
+  resolve(),
+  buble(),
+  sizes(),
+];
+
 module.exports = {
   rollup(config, options) {
-    config.plugins.push(
-      alias({
-        entries: [
-          { find: '@', replacement: path.resolve(projectRootDir, 'src') },
-        ],
-        customResolver,
-      })
-    );
-    config.plugins.push(resolve());
+    plugins.forEach((plugin) => {
+      config.plugins.push(plugin);
+    });
     return config;
   },
 };
