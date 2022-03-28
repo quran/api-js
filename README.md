@@ -1,4 +1,4 @@
-![Quranjs Api Header](/media/repo-header.png)
+![Quranjs Api Header](https://github.com/quranjs/api/raw/master/media/repo-header.png)
 A library for fetching quran data from the [quran.com API][qdc-api]. This library also works on both Node.js and the browser.
 
 [![Build Status][build-badge]][build]
