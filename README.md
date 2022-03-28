@@ -1,16 +1,11 @@
-<p align="center">
-<img src="https://avatars.githubusercontent.com/u/102173125?s=200&v=4" />
-</p>
-
-# @quranjs/api
+![Quranjs Api Header](/media/repo-header.png)
+A library for fetching quran data from the [quran.com API][qdc-api]. This library also works on both Node.js and the browser.
 
 [![Build Status][build-badge]][build]
 [![MIT License][license-badge]][license]
 [![NPM Version][npm-badge]][npm]
 [![NPM Monthly downloads][downloads-badge]][npm]
 [![Minziped Size][size-badge]][npm]
-
-A library for fetching quran data from the [quran.com API][qdc-api]. This library also works on both Node.js and the browser.
 
 ## Installation
 
