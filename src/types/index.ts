@@ -85,7 +85,6 @@ export enum QuranFont {
 
 export type VerseField =
   | 'chapterId'
-  | 'verseIndex'
   | 'textUthmani'
   | 'textUthmaniSimple'
   | 'textImlaei'

@@ -29,27 +29,4 @@ createApiTest('verses', {
   findRandom: {},
 });
 
-// describe('Verses API', () => {
-// describe('findByHizb()', () => {
-//   it('should return data', async () => {
-//     const data = await verses.findByHizb('1');
-//     expect(data).toBeInstanceOf(Array);
-//   });
-
-//   it('should throw with invalid id', () => {
-//     expect(verses.findByHizb('0' as any)).rejects.toThrowError();
-//   });
-// });
-
-// describe('findByRub()', () => {
-//   test('it should return data', async () => {
-//     const data = await verses.findByRub('1');
-//     expect(data).toBeInstanceOf(Array);
-//   });
-
-//   test('should throw with invalid id', async () => {
-//     expect(verses.findByRub('0' as any)).rejects.toThrowError();
-//   });
-// });
-
-// });
+// TODO: test findByHizb and findByRub when fixed

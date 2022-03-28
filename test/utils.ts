@@ -31,9 +31,7 @@ type Params<T extends ApiName> = {
         cases?:
           | ApiFunctionParams<T, FunctionName>[]
           | Record<string, ApiFunctionParams<T, FunctionName>>;
-        customCases?: (
-          method: typeof quran['v4'][T][FunctionName]
-        ) => Promise<void>;
+        customCases?: (method: typeof quran['v4'][T][FunctionName]) => void;
       };
 };
 
