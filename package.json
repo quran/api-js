@@ -20,7 +20,7 @@
     "test": "dts test",
     "test:dev": "dts test --watch",
     "lint": "dts lint src test mocks",
-    "prepare": "husky install && dts build",
+    "prepare": "husky install",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
