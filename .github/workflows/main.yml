@@ -47,8 +47,11 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org/
 
-      - name: Install deps and build (with cache)
+      - name: Install deps (with cache)
         uses: bahmutov/npm-install@v1
+
+      - name: Build
+        run: yarn build
 
       - run: npx semantic-release@17
         env:
