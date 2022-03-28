@@ -1,7 +1,6 @@
 const alias = require('@rollup/plugin-alias');
 const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
-const buble = require('rollup-plugin-buble');
-const sizes = require('rollup-plugin-sizes');
+const analyze = require('rollup-plugin-analyzer');
 const path = require('path');
 
 const customResolver = resolve({
@@ -15,8 +14,7 @@ const plugins = [
     customResolver,
   }),
   resolve(),
-  buble(),
-  sizes(),
+  analyze(),
 ];
 
 module.exports = {

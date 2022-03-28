@@ -4,7 +4,7 @@
 
 # @quranjs/api
 
-A library for fetching quran data from the quran.com API. It is a wrapper around the [quran.com API](https://quran.api-docs.io/). This library also works in both Node.js and the browser.
+A library for fetching quran data from the [quran.com API](https://quran.api-docs.io/). This library also works on both Node.js and the browser.
 
 ## Installation
 
