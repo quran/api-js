@@ -1,6 +1,8 @@
 ![Quranjs Api Header](https://github.com/quranjs/api/raw/master/media/repo-header.png)
 A library for fetching quran data from the [quran.com API][qdc-api]. This library also works on both Node.js and the browser.
 
+[Checkout Docs][docs]
+
 [![Build Status][build-badge]][build]
 [![MIT License][license-badge]][license]
 [![NPM Version][npm-badge]][npm]
@@ -21,9 +23,14 @@ using yarn:
 yarn add @quranjs/api
 ```
 
+## Getting Started
+
+you can visit the [docs][docs] for more details.
+
 <!-- Links -->
 
 [qdc-api]: https://quran.api-docs.io/
+[docs]: https://quranjs.vercel.app/
 [build-badge]: https://github.com/quranjs/api/workflows/CI/badge.svg
 [build]: https://github.com/quranjs/api/actions?query=workflow%3ACI
 [license-badge]: https://badgen.net/github/license/quranjs/api
