@@ -20,13 +20,13 @@ const getSearchOptions = (q: string, options: SearchOptions = {}) => {
 /**
  * Search
  * @description https://quran.api-docs.io/v4/search/KfCmk4KQYbtyK9adj
- * @param q search query
- * @param options search options
+ * @param {string} q search query
+ * @param {SearchOptions} options
  * @example
- * quran.v4.search.search('الله')
- * quran.v4.search.search('الله', { language: Language.ENGLISH })
- * quran.v4.search.search('الله', { language: Language.ENGLISH, size: 10 })
- * quran.v4.search.search('الله', { language: Language.ENGLISH, page: 2 })
+ * quran.v4.search.search('نور')
+ * quran.v4.search.search('نور', { language: Language.ENGLISH })
+ * quran.v4.search.search('نور', { language: Language.ENGLISH, size: 10 })
+ * quran.v4.search.search('نور', { language: Language.ENGLISH, page: 2 })
  */
 const search = async (q: string, options?: SearchOptions) => {
   const params = getSearchOptions(q, options);
