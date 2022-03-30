@@ -1,0 +1,123 @@
+---
+title: Utilities
+---
+
+## isValidChapterId
+
+Validates chapter id.
+
+**Params:**
+
+| Param | Description |
+| ----- | ----------- |
+| id    | chapter id  |
+
+**Example:**
+
+```js
+isValidChapterId('1') // true
+isValidChapterId('114') // true
+isValidChapterId('0') // false
+isValidChapterId('-1') // false
+isValidChapterId('200') // false
+```
+
+## isValidHizb
+
+Validates hizb number.
+
+**Params:**
+
+| Param | Description |
+| ----- | ----------- |
+| hizb  | hizb number |
+
+**Example:**
+
+```js
+isValidHizb('1') // true
+isValidHizb('60') // true
+isValidHizb('0') // false
+isValidHizb('-1') // false
+isValidHizb('200') // false
+```
+
+## isValidJuz
+
+Validates juz number.
+
+**Params:**
+
+| Param | Description |
+| ----- | ----------- |
+| juz   | juz number  |
+
+**Example:**
+
+```js
+isValidJuz('1') // true
+isValidJuz('30') // true
+isValidJuz('0') // false
+isValidJuz('-1') // false
+isValidJuz('200') // false
+```
+
+## isValidQuranPage
+
+Validates mushaf page number.
+
+**Params:**
+
+| Param | Description        |
+| ----- | ------------------ |
+| page  | mushaf page number |
+
+**Example:**
+
+```js
+isValidQuranPage('1') // true
+isValidQuranPage('604') // true
+isValidQuranPage('0') // false
+isValidQuranPage('-1') // false
+isValidQuranPage('1000') // false
+```
+
+## isValidRub
+
+Validates rub number.
+
+**Params:**
+
+| Param | Description |
+| ----- | ----------- |
+| rub   | rub number  |
+
+**Example:**
+
+```js
+isValidRub('1') // true
+isValidRub('240') // true
+isValidRub('0') // false
+isValidRub('-1') // false
+isValidRub('300') // false
+```
+
+## isValidVerseKey
+
+Validates verse key.
+
+**Params:**
+
+| Param | Description                               |
+| ----- | ----------------------------------------- |
+| key   | colon separated verse key (chapter:verse) |
+
+**Example:**
+
+```js
+isValidVerseKey('1:1') // true
+isValidVerseKey('30:1') // true
+isValidVerseKey('0') // false
+isValidVerseKey('1:-') // false
+isValidVerseKey('1_1') // false
+```

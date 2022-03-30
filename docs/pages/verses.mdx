@@ -1,0 +1,111 @@
+---
+title: Verses
+---
+
+## findByChapter
+
+Get all ayahs for a specific chapter.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by_chapter)
+
+**Params:**
+
+`verses.findByChapter(id: ChapterId, options?: GetVerseOptions)`
+
+| Param   | Type                               |
+| ------- | ---------------------------------- |
+| id      | ChapterId (minimum 1, maximum 114) |
+| options | `GetVerseOptions`                  |
+
+**Example:**
+
+```js
+quran.v4.verses.findByChapter('1')
+quran.v4.verses.findByChapter('114')
+```
+
+## findByJuz
+
+Get all ayahs for a Juz.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-juz)
+
+**Params:**
+
+`verses.findByJuz(juz: JuzNumber, options?: GetVerseOptions)`
+
+| Param   | Type                              |
+| ------- | --------------------------------- |
+| juz     | JuzNumber (minimum 1, maximum 30) |
+| options | `GetVerseOptions`                 |
+
+**Example:**
+
+```js
+quran.v4.verses.findByJuz('1')
+quran.v4.verses.findByJuz('30')
+```
+
+## findByKey
+
+Get a specific ayah with key. Key is combination of surah number and ayah number.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-specific-verse-by-key)
+
+**Params:**
+
+`verses.findByKey(key: VerseKey, options?: GetVerseOptions)`
+
+| Param   | Type              | Description                                        |
+| ------- | ----------------- | -------------------------------------------------- |
+| key     | `VerseKey`        | surah number and ayah number separated by a colon. |
+| options | `GetVerseOptions` |                                                    |
+
+**Example:**
+
+```js
+quran.v4.verses.findByKey('1:1')
+quran.v4.verses.findByKey('101:5')
+```
+
+## findByPage
+
+Get all ayahs for a specific page in the Quran.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-page)
+
+**Params:**
+
+`verses.findByKey(page: PageNumber, options?: GetVerseOptions)`
+
+| Param   | Type                         | Description       |
+| ------- | ---------------------------- | ----------------- |
+| page    | <code>PageNumber</code>      | Quran page number |
+| options | <code>GetVerseOptions</code> |                   |
+
+**Example:**
+
+```js
+quran.v4.verses.findByPage('1')
+quran.v4.verses.findByPage('101')
+```
+
+## findRandom
+
+Get a random ayah.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/random)
+
+**Params:**
+
+`verses.findRandom(options?: GetVerseOptions)`
+
+| Param   | Type              |
+| ------- | ----------------- |
+| options | `GetVerseOptions` |
+
+**Example:**
+
+```js
+quran.v4.verses.findRandom()
+```

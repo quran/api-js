@@ -1,0 +1,67 @@
+---
+title: Chapters
+---
+
+## findAll
+
+Get all chapters.
+
+- [Quran.api API Docs](https://quran.api-docs.io/v4/chapters/list-chapters)
+
+**Params:**
+
+`chapters.findAll(options?: GetChapterOptions)`
+
+| Param   | Type                |
+| ------- | ------------------- |
+| options | `GetChapterOptions` |
+
+**Example:**
+
+```js
+quran.v4.chapters.findAll()
+```
+
+## findById
+
+Get chapter by id.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/chapters/get-chapter)
+
+**Params:**
+
+`chapters.findById(id: ChapterId, options?: GetChapterOptions)`
+
+| Param   | Type                | Description            |
+| ------- | ------------------- | ---------------------- |
+| id      | ChapterId (m)       | minimum 1, maximum 114 |
+| options | `GetChapterOptions` |                        |
+
+**Example:**
+
+```js
+quran.v4.chapters.findById('1')
+quran.v4.chapters.findById('114')
+```
+
+## findInfoById
+
+Get chapter info by id.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/chapters/chapter_info)
+
+**Params:**
+
+`chapters.findInfoById(id: ChapterId, options?: GetChapterOptions)`
+
+| Param   | Type                | Description            |
+| ------- | ------------------- | ---------------------- |
+| id      | ChapterId (m)       | minimum 1, maximum 114 |
+| options | `GetChapterOptions` |                        |
+
+**Example:**
+
+```js
+quran.v4.chapters.findInfoById('1')
+quran.v4.chapters.findInfoById('114')
+```
