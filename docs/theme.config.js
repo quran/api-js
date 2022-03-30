@@ -12,7 +12,7 @@ const SEO = {
 
 const theme = {
   github: `https://github.com/${SEO.github}`,
-  docsRepositoryBase: `https://github.com/${SEO.github}/blob/master/docs`,
+  docsRepositoryBase: `https://github.com/${SEO.github}/blob/master/docs/pages`,
   titleSuffix: SEO.titleSuffix,
   logo: (
     <>
