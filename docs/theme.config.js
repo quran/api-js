@@ -16,8 +16,8 @@ const theme = {
   titleSuffix: SEO.titleSuffix,
   logo: (
     <>
-      <span className="mr-2 font-extrabold hidden md:inline">QuranJS</span>
-      <span className="text-gray-600 font-normal hidden md:inline">API</span>
+      <span className="mr-2 font-extrabold inline">QuranJS</span>
+      <span className="text-gray-600 font-normal inline">API</span>
     </>
   ),
   head: (
