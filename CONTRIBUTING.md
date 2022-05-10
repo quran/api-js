@@ -22,7 +22,7 @@ If you have been assigned to fix an issue or develop a new feature, please follo
 - Auto-build files as you edit by running `$ yarn start`
 - Implement your changes and tests to files in the `src/` directory and corresponding test files
 - To run examples, follow their individual directions. Usually this is just `$ yarn && yarn start`.
-- To run examples using your local build, link to the local `@quranjs/api` by running `$ @quranjs/api` from the example's directory
+- To run examples using your local build, link to the local `@quranjs/api` by running `$ yarn link @quranjs/api` from the example's directory
 - Document your changes in the appropriate doc page, if needed
 - Git stage your required changes and commit (see below commit guidelines)
 - Submit PR for review
