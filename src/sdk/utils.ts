@@ -1,5 +1,5 @@
 // this maps chapterNumber to verseCount
-export const versesMaping = {
+export const versesMapping = {
   '1': 7,
   '2': 286,
   '3': 200,
@@ -211,7 +211,7 @@ const isValidVerseKey = (key: string) => {
   if (!chapterId || !verseId || !isValidChapterId(chapterId)) return false;
 
   const parsedVerse = Number(verseId);
-  const verseCount = (versesMaping as any)[chapterId];
+  const verseCount = (versesMapping as any)[chapterId];
   if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
     return false;
 
