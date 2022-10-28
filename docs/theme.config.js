@@ -3,11 +3,11 @@ const SEO = {
   titleSuffix: ' - QuranJS / API',
   description:
     'QuranJS / Api: A library for fetching quran data from the Quran.com API on both Node.js and the browser.',
-  image: 'https://github.com/quranjs/api/raw/master/media/repo-header.png',
+  image: 'https://github.com/quran/api-js/raw/master/media/repo-header.png',
   twitter: '@ahmedriad_',
-  github: 'quranjs/api',
+  github: 'quran/api-js',
   color: '#5120DB',
-  domain: 'quranjs.vercel.app',
+  domain: 'www.quranjs.com',
 }
 
 const theme = {
