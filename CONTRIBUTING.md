@@ -2,11 +2,11 @@
 
 ## Questions
 
-If you have questions about implementation details, help or support, then please use our dedicated community forum at [GitHub Discussions](https://github.com/quranjs/api/discussions) **PLEASE NOTE:** If you choose to instead open an issue for your question, your issue will be immediately closed and redirected to the forum.
+If you have questions about implementation details, help or support, then please use our dedicated community forum at [GitHub Discussions](https://github.com/quran/api-js/discussions) **PLEASE NOTE:** If you choose to instead open an issue for your question, your issue will be immediately closed and redirected to the forum.
 
 ## Reporting Issues
 
-If you have found what you think is a bug, please [file an issue](https://github.com/quranjs/api/issues/new). **PLEASE NOTE:** Issues that are identified as implementation questions or non-issues will be immediately closed and redirected to [GitHub Discussions](https://github.com/quranjs/api/discussions)
+If you have found what you think is a bug, please [file an issue](https://github.com/quran/api-js/issues/new). **PLEASE NOTE:** Issues that are identified as implementation questions or non-issues will be immediately closed and redirected to [GitHub Discussions](https://github.com/quran/api-js/discussions)
 
 ## Suggesting new features
 
@@ -18,18 +18,18 @@ If you have been assigned to fix an issue or develop a new feature, please follo
 
 - Fork this repository
 - Install dependencies by running `$ yarn`
-- Link `@quranjs/api` locally by running `$ yarn link`
+- Link `quran/api-js` locally by running `$ yarn link`
 - Auto-build files as you edit by running `$ yarn start`
 - Implement your changes and tests to files in the `src/` directory and corresponding test files
 - To run examples, follow their individual directions. Usually this is just `$ yarn && yarn start`.
-- To run examples using your local build, link to the local `@quranjs/api` by running `$ @quranjs/api` from the example's directory
+- To run examples using your local build, link to the local `quran/api-js` by running `$ quran/api-js` from the example's directory
 - Document your changes in the appropriate doc page, if needed
 - Git stage your required changes and commit (see below commit guidelines)
 - Submit PR for review
 
 ## Commit message conventions
 
-`@quranjs/api` is using [Angular Commit Message Conventions](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines).
+`quran/api-js` is using [Angular Commit Message Conventions](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines).
 
 We have very precise rules over how our git commit messages can be formatted. This leads to **more readable messages** that are easy to follow when looking through the **project history**.
 
