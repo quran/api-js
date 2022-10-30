@@ -1,17 +1,64 @@
 import { quran } from '../src/index';
+import fc from 'fast-check';
 
 const utils = quran.utils;
 
 describe('Utils', () => {
   describe(`isValidChapterId`, () => {
     it('should return true for valid chapter id', () => {
-      expect(utils.isValidChapterId(1)).toBeTruthy();
+      // This will generate numbers in the range [1, 114]
+      // and test them against the expected the value (which is truthy)
+      fc.assert(
+        fc.property(fc.integer({ min: 1, max: 114 }), (chaptedId) => {
+          expect(utils.isValidChapterId(chaptedId)).toBeTruthy();
+        })
+      );
     });
 
-    it('should return false for invalid chapter id', () => {
-      expect(utils.isValidChapterId(0)).toBeFalsy();
-      expect(utils.isValidChapterId(115)).toBeFalsy();
-      expect(utils.isValidChapterId(-10)).toBeFalsy();
+    it('should return false for invalid chapter id (out of the range [1, 114])', () => {
+      // Generate numbers that out of the range [1, 114]
+      fc.assert(
+        fc.property(fc.integer({ max: 0 }), (chaptedIdString) => {
+          expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+        })
+      );
+      fc.assert(
+        fc.property(fc.integer({ min: 115 }), (chaptedIdString) => {
+          expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+        })
+      );
+    });
+
+    it('should return false for invalid chapter id (random strings that do not represent numbers)', () => {
+      // Generate random strings that do not represent numbers
+      fc.assert(
+        fc.property(
+          fc.string().filter((s) => Number.isNaN(Number(s))),
+          (chaptedIdString) => {
+            expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+          }
+        ),
+        { numRuns: 1000 }
+      );
+    });
+
+    it('should return false for invalid chapter id (random strings that represent numbers that are out of the range [1, 114])', () => {
+      // Generate random strings that represent numbers that are out of the range [1, 114]
+      fc.assert(
+        fc.property(
+          fc
+            .string()
+            .filter(
+              (s) =>
+                Number.isInteger(Number(s)) &&
+                (Number(s) > 114 || Number(s) <= 0)
+            ),
+          (chaptedIdString) => {
+            expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+          }
+        ),
+        { numRuns: 250 }
+      );
     });
   });
 
