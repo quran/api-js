@@ -9,8 +9,8 @@ describe('Utils', () => {
       // This will generate numbers in the range [1, 114]
       // and test them against the expected the value (which is truthy)
       fc.assert(
-        fc.property(fc.integer({ min: 1, max: 114 }), (chaptedId) => {
-          expect(utils.isValidChapterId(chaptedId)).toBeTruthy();
+        fc.property(fc.integer({ min: 1, max: 114 }), (chapterId) => {
+          expect(utils.isValidChapterId(chapterId)).toBeTruthy();
         })
       );
     });
@@ -18,13 +18,13 @@ describe('Utils', () => {
     it('should return false for invalid chapter id (out of the range [1, 114])', () => {
       // Generate numbers that out of the range [1, 114]
       fc.assert(
-        fc.property(fc.integer({ max: 0 }), (chaptedIdString) => {
-          expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+        fc.property(fc.integer({ max: 0 }), (chapterIdString) => {
+          expect(utils.isValidChapterId(chapterIdString)).toBeFalsy();
         })
       );
       fc.assert(
-        fc.property(fc.integer({ min: 115 }), (chaptedIdString) => {
-          expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+        fc.property(fc.integer({ min: 115 }), (chapterIdString) => {
+          expect(utils.isValidChapterId(chapterIdString)).toBeFalsy();
         })
       );
     });
@@ -34,8 +34,8 @@ describe('Utils', () => {
       fc.assert(
         fc.property(
           fc.string().filter((s) => Number.isNaN(Number(s))),
-          (chaptedIdString) => {
-            expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+          (chapterIdString) => {
+            expect(utils.isValidChapterId(chapterIdString)).toBeFalsy();
           }
         ),
         { numRuns: 1000 }
@@ -53,8 +53,8 @@ describe('Utils', () => {
                 Number.isInteger(Number(s)) &&
                 (Number(s) > 114 || Number(s) <= 0)
             ),
-          (chaptedIdString) => {
-            expect(utils.isValidChapterId(chaptedIdString)).toBeFalsy();
+          (chapterIdString) => {
+            expect(utils.isValidChapterId(chapterIdString)).toBeFalsy();
           }
         ),
         { numRuns: 250 }
