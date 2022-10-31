@@ -1,6 +1,6 @@
 import {
   ChapterId,
-  // HizbNumber,
+  HizbNumber,
   JuzNumber,
   Language,
   PageNumber,
@@ -146,7 +146,6 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
   return verses;
 };
 
-// TODO: uncomment when API is fixed
 /**
  * Get all ayahs for a Hizb.
  * @description https://quran.api-docs.io/v4/verses/by-hizb-number
@@ -156,15 +155,15 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
  * quran.v4.verses.findByHizb('1')
  * quran.v4.verses.findByHizb('29')
  */
-// const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
-//   if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
+const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
+  if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
 
-//   const params = getVerseOptions(options);
-//   const url = `/verses/by_hizb/${hizb}`;
-//   const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const params = getVerseOptions(options);
+  const url = `/verses/by_hizb/${hizb}`;
+  const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
 
-//   return verses;
-// };
+  return verses;
+};
 
 // TODO: uncomment when API is fixed
 /**
@@ -205,7 +204,7 @@ const verses = {
   findByChapter,
   findByPage,
   findByJuz,
-  // findByHizb,
+  findByHizb,
   // findByRub,
   findRandom,
 };
