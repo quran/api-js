@@ -109,3 +109,25 @@ Get a random ayah.
 ```js
 quran.v4.verses.findRandom()
 ```
+
+## findByHizb
+
+Get all ayahs of a specific Hizb.
+
+- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-hizb-number)
+
+**Params:**
+
+`verses.findByHizb(id: HizbNumber, options?: GetVerseOptions)`
+
+| Param   | Type                         | Description       |
+| ------- | ---------------------------- | ----------------- |
+| page    | <code>HizbNumber</code>      | Quran Hizb number |
+| options | <code>GetVerseOptions</code> |                   |
+
+**Example:**
+
+```js
+quran.v4.verses.findByHizb('1')
+quran.v4.verses.findByHizb('60')
+```
