@@ -27,6 +27,13 @@ createApiTest('verses', {
     rejectParams: ['0' as any],
   },
   findRandom: {},
+  findByHizb: {
+    expect: {
+      array: true,
+    },
+    params: ['1'],
+    rejectParams: ['0' as any],
+  }
 });
 
-// TODO: test findByHizb and findByRub when fixed
+// TODO: test findByRub when fixed
