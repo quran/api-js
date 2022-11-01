@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import stringify from '../src/utils/qs-stringify';
 
 describe('Stringify Utils', () => {

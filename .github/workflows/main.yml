@@ -1,4 +1,5 @@
 name: CI
+
 on: [push]
 
 env:
@@ -6,6 +7,7 @@ env:
 
 jobs:
   build:
+    if: github.repository == 'quran/api-js' && (github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
     name: ⚒️ Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
 
     runs-on: ubuntu-latest
@@ -26,18 +28,18 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Lint
-        run: yarn lint
+        run: yarn lint --quiet
 
       - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
+        run: yarn test:coverage
 
       - name: Build
         run: yarn build
 
-  publish-module:
+  test-and-publish:
     name: 🎉 Publish to NPM
     needs: [build]
-    if: github.repository == 'quran/api-js' && (github.ref == 'refs/heads/master')
+    if: github.repository == 'quran/api-js' && (github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
