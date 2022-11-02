@@ -1,7 +1,9 @@
+import { describe, it, expect } from 'vitest';
 import { quran } from '../src/index';
 
+type Fn = (...args: any[]) => any;
 type ApiName = keyof typeof quran['v4'];
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
+type ArgumentTypes<F extends Fn> = F extends (...args: infer A) => any
   ? A
   : never;
 
@@ -9,6 +11,7 @@ type ApiFunctionParams<
   T extends ApiName,
   Func extends keyof typeof quran['v4'][T]
 > = ArgumentTypes<
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   typeof quran['v4'][T][Func]
 >;
@@ -47,7 +50,7 @@ export const createApiTest = <T extends ApiName>(
 
   return describe(`${title} API`, () => {
     Object.keys(api).forEach((functionKey) => {
-      const method = (api as any)[functionKey as ApiName] as Function;
+      const method = (api as any)[functionKey as ApiName] as Fn;
       const options = (params as any)[functionKey] || {};
 
       let args: any[] | undefined = [];

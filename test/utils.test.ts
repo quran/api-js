@@ -1,4 +1,5 @@
 import { quran } from '../src/index';
+import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 
 const utils = quran.utils;
