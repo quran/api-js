@@ -1,0 +1,46 @@
+name: PR
+
+on: [pull_request]
+
+env:
+  HUSKY: 0
+
+jobs:
+  build:
+    name: ⚒️ Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['14.x', '16.x']
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Lint
+        run: yarn lint --quiet
+
+      - name: Test
+        run: yarn test:coverage
+
+      - name: Build
+        run: yarn build
+
+  size:
+    runs-on: ubuntu-latest
+    env:
+      CI_JOB_NUMBER: 1
+    steps:
+      - uses: actions/checkout@v1
+      - uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
