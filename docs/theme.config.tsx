@@ -1,3 +1,5 @@
+import { DocsThemeConfig } from 'nextra-theme-docs';
+
 const SEO = {
   title: 'QuranJS / API',
   titleSuffix: ' - QuranJS / API',
@@ -8,18 +10,27 @@ const SEO = {
   github: 'quran/api-js',
   color: '#5120DB',
   domain: 'www.quranjs.com',
-}
+};
 
-const theme = {
-  github: `https://github.com/${SEO.github}`,
+const logo = (
+  <>
+    <span className="mr-2 font-extrabold inline">QuranJS</span>
+    <span className="text-gray-600 font-normal inline">API</span>
+  </>
+);
+
+const theme: DocsThemeConfig = {
+  primaryHue: 270,
+  project: {
+    link: `https://github.com/${SEO.github}`,
+  },
   docsRepositoryBase: `https://github.com/${SEO.github}/blob/master/docs/pages`,
-  titleSuffix: SEO.titleSuffix,
-  logo: (
-    <>
-      <span className="mr-2 font-extrabold inline">QuranJS</span>
-      <span className="text-gray-600 font-normal inline">API</span>
-    </>
-  ),
+  useNextSeoProps() {
+    return {
+      titleTemplate: `%s${SEO.titleSuffix}`,
+    };
+  },
+  logo,
   head: (
     <>
       <meta name="msapplication-TileColor" content={SEO.color} />
@@ -61,12 +72,25 @@ const theme = {
       />
     </>
   ),
-  search: true,
-  prevLinks: true,
-  nextLinks: true,
-  footer: true,
-  footerEditLink: 'Edit this page on GitHub',
-  footerText: <>MIT {new Date().getFullYear()} © QuranJS.</>,
-}
+  sidebar: {
+    titleComponent: ({ title, type }) => {
+      if (type === 'separator')
+        return <span className="cursor-default">{title}</span>;
 
-export default theme
+      return <>{title}</>;
+    },
+    defaultMenuCollapseLevel: 0,
+  },
+  navigation: {
+    next: true,
+    prev: true,
+  },
+  editLink: {
+    text: 'Edit this page on GitHub',
+  },
+  footer: {
+    text: () => <>MIT {new Date().getFullYear()} © QuranJS.</>,
+  },
+};
+
+export default theme;
