@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @media (min-width: 768px) {
+  aside {
+    width: 17.5rem !important;
+  } 
+} */
