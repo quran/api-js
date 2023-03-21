@@ -132,3 +132,5 @@ export * from './PageNumber';
 export * from './RubNumber';
 
 export * from './api';
+
+export * from './FetchFn';

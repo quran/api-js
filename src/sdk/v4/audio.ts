@@ -11,50 +11,24 @@ import {
   VerseKey,
   VerseRecitationField,
 } from '../../types';
-import { decamelize } from 'humps';
 import Utils from '../utils';
-import { fetcher } from './_fetcher';
+import { fetcher, mergeApiOptions } from './_fetcher';
+import { BaseApiOptions } from '../../types/BaseApiOptions';
 
-type GetChapterRecitationOptions = Partial<{
-  language: Language;
-}>;
+type GetChapterRecitationOptions = Partial<BaseApiOptions>;
 
 const defaultChapterRecitationsOptions: GetChapterRecitationOptions = {
   language: Language.ARABIC,
 };
 
-const getChapterRecitationsOptions = (
-  options: GetChapterRecitationOptions = {}
-) => {
-  const final: any = { ...defaultChapterRecitationsOptions, ...options };
-
-  return final;
-};
-
-type GetVerseRecitationOptions = Partial<{
-  language: Language;
-  fields: Partial<Record<VerseRecitationField, boolean>>;
-}>;
+type GetVerseRecitationOptions = Partial<
+  BaseApiOptions & {
+    fields: Partial<Record<VerseRecitationField, boolean>>;
+  }
+>;
 
 const defaultVerseRecitationsOptions: GetVerseRecitationOptions = {
   language: Language.ARABIC,
-};
-
-const getVerseRecitationsOptions = (
-  options: GetVerseRecitationOptions = {}
-) => {
-  const initial = { ...defaultVerseRecitationsOptions, ...options };
-  const final: any = { language: initial.language };
-
-  if (initial.fields) {
-    const fields: string[] = [];
-    for (const [key, value] of Object.entries(initial.fields)) {
-      if (value) fields.push(decamelize(key));
-    }
-    final.fields = fields.join(',');
-  }
-
-  return final;
 };
 
 /**
@@ -69,10 +43,11 @@ const findAllChapterRecitations = async (
   reciterId: string,
   options?: GetChapterRecitationOptions
 ) => {
-  const params = getChapterRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
   const { audioFiles } = await fetcher<{ audioFiles: ChapterRecitation[] }>(
     `/chapter_recitations/${reciterId}`,
-    params
+    params,
+    options?.fetchFn
   );
   return audioFiles;
 };
@@ -93,10 +68,11 @@ const findChapterRecitationById = async (
 ) => {
   if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
 
-  const params = getChapterRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
   const { audioFile } = await fetcher<{ audioFile: ChapterRecitation }>(
     `/chapter_recitations/${reciterId}/${chapterId}`,
-    params
+    params,
+    options?.fetchFn
   );
 
   return audioFile;
@@ -118,11 +94,15 @@ const findVerseRecitationsByChapter = async (
 ) => {
   if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_chapter/${chapterId}`, params);
+  }>(
+    `/recitations/${recitationId}/by_chapter/${chapterId}`,
+    params,
+    options?.fetchFn
+  );
 
   return data;
 };
@@ -143,11 +123,11 @@ const findVerseRecitationsByJuz = async (
 ) => {
   if (!Utils.isValidJuz(juz)) throw new Error('Invalid juz');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_juz/${juz}`, params);
+  }>(`/recitations/${recitationId}/by_juz/${juz}`, params, options?.fetchFn);
 
   return data;
 };
@@ -168,11 +148,11 @@ const findVerseRecitationsByPage = async (
 ) => {
   if (!Utils.isValidQuranPage(page)) throw new Error('Invalid page');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_page/${page}`, params);
+  }>(`/recitations/${recitationId}/by_page/${page}`, params, options?.fetchFn);
 
   return data;
 };
@@ -193,11 +173,11 @@ const findVerseRecitationsByRub = async (
 ) => {
   if (!Utils.isValidRub(rub)) throw new Error('Invalid rub');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_rub/${rub}`, params);
+  }>(`/recitations/${recitationId}/by_rub/${rub}`, params, options?.fetchFn);
 
   return data;
 };
@@ -218,11 +198,11 @@ const findVerseRecitationsByHizb = async (
 ) => {
   if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_hizb/${hizb}`, params);
+  }>(`/recitations/${recitationId}/by_hizb/${hizb}`, params, options?.fetchFn);
 
   return data;
 };
@@ -243,11 +223,11 @@ const findVerseRecitationsByKey = async (
 ) => {
   if (!Utils.isValidVerseKey(key)) throw new Error('Invalid verse key');
 
-  const params = getVerseRecitationsOptions(options);
+  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
-  }>(`/recitations/${recitationId}/by_ayah/${key}`, params);
+  }>(`/recitations/${recitationId}/by_ayah/${key}`, params, options?.fetchFn);
 
   return data;
 };
