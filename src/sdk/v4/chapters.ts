@@ -1,18 +1,12 @@
 import { Chapter, ChapterId, ChapterInfo, Language } from '../../types';
-import { fetcher } from './_fetcher';
+import { fetcher, mergeApiOptions } from './_fetcher';
 import Utils from '../utils';
+import { BaseApiOptions } from '../../types/BaseApiOptions';
 
-type GetChapterOptions = Partial<{
-  language: Language;
-}>;
+type GetChapterOptions = Partial<BaseApiOptions>;
 
 const defaultOptions: GetChapterOptions = {
   language: Language.ARABIC,
-};
-
-const getChapterOptions = (options: GetChapterOptions = {}) => {
-  const final: any = { ...defaultOptions, ...options };
-  return final;
 };
 
 /**
@@ -23,10 +17,11 @@ const getChapterOptions = (options: GetChapterOptions = {}) => {
  * quran.v4.chapters.findAll()
  */
 const findAll = async (options?: GetChapterOptions) => {
-  const params = getChapterOptions(options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { chapters } = await fetcher<{ chapters: Chapter[] }>(
     '/chapters',
-    params
+    params,
+    options?.fetchFn
   );
 
   return chapters;
@@ -44,10 +39,11 @@ const findAll = async (options?: GetChapterOptions) => {
 const findById = async (id: ChapterId, options?: GetChapterOptions) => {
   if (!Utils.isValidChapterId(id)) throw new Error('Invalid chapter id');
 
-  const params = getChapterOptions(options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { chapter } = await fetcher<{ chapter: Chapter }>(
     `/chapters/${id}`,
-    params
+    params,
+    options?.fetchFn
   );
 
   return chapter;
@@ -65,10 +61,11 @@ const findById = async (id: ChapterId, options?: GetChapterOptions) => {
 const findInfoById = async (id: ChapterId, options?: GetChapterOptions) => {
   if (!Utils.isValidChapterId(id)) throw new Error('Invalid chapter id');
 
-  const params = getChapterOptions(options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { chapterInfo } = await fetcher<{ chapterInfo: ChapterInfo }>(
     `/chapters/${id}/info`,
-    params
+    params,
+    options?.fetchFn
   );
 
   return chapterInfo;
