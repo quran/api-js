@@ -1,3 +1,12 @@
+import {
+  ChapterId,
+  HizbNumber,
+  JuzNumber,
+  PageNumber,
+  RubNumber,
+  VerseKey,
+} from '../types';
+
 // this maps chapterNumber to verseCount
 export const versesMapping = {
   '1': 7,
@@ -126,7 +135,7 @@ export const versesMapping = {
  isValidChapterId('-1') // false
  isValidChapterId('200') // false
  */
-const isValidChapterId = (id: string | number) => {
+const isValidChapterId = (id: string | number): id is ChapterId => {
   const parsedId = typeof id === 'number' ? id : Number(id);
   if (!parsedId || parsedId <= 0 || parsedId > 114) return false;
   return true;
@@ -142,7 +151,7 @@ const isValidChapterId = (id: string | number) => {
  isValidJuz('-1') // false
  isValidJuz('200') // false
  */
-const isValidJuz = (juz: string | number) => {
+const isValidJuz = (juz: string | number): juz is JuzNumber => {
   const parsedJuz = typeof juz === 'number' ? juz : Number(juz);
   if (!parsedJuz || parsedJuz <= 0 || parsedJuz > 30) return false;
   return true;
@@ -158,7 +167,7 @@ const isValidJuz = (juz: string | number) => {
  isValidRub('-1') // false
  isValidRub('300') // false
  */
-const isValidRub = (rub: string | number) => {
+const isValidRub = (rub: string | number): rub is RubNumber => {
   const parsedRub = typeof rub === 'number' ? rub : Number(rub);
   if (!parsedRub || parsedRub <= 0 || parsedRub > 240) return false;
   return true;
@@ -174,7 +183,7 @@ const isValidRub = (rub: string | number) => {
  isValidHizb('-1') // false
  isValidHizb('200') // false
  */
-const isValidHizb = (hizb: string | number) => {
+const isValidHizb = (hizb: string | number): hizb is HizbNumber => {
   const parsedHizb = typeof hizb === 'number' ? hizb : Number(hizb);
   if (!parsedHizb || parsedHizb <= 0 || parsedHizb > 60) return false;
   return true;
@@ -190,7 +199,7 @@ const isValidHizb = (hizb: string | number) => {
  isValidQuranPage('-1') // false
  isValidQuranPage('1000') // false
  */
-const isValidQuranPage = (page: string | number) => {
+const isValidQuranPage = (page: string | number): page is PageNumber => {
   const parsedPage = typeof page === 'number' ? page : Number(page);
   if (!parsedPage || parsedPage <= 0 || parsedPage > 604) return false;
   return true;
@@ -206,19 +215,19 @@ const isValidQuranPage = (page: string | number) => {
  isValidVerseKey('1:-') // false
  isValidVerseKey('1_1') // false
  */
-const isValidVerseKey = (key: string) => {
+const isValidVerseKey = (key: string): key is VerseKey => {
   const [chapterId, verseId] = key.trim().split(':');
   if (!chapterId || !verseId || !isValidChapterId(chapterId)) return false;
 
   const parsedVerse = Number(verseId);
-  const verseCount = (versesMapping as any)[chapterId];
+  const verseCount = (versesMapping as Record<string, number>)[chapterId];
   if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
     return false;
 
   return true;
 };
 
-const Utils = {
+const utils = {
   isValidChapterId,
   isValidJuz,
   isValidRub,
@@ -227,4 +236,4 @@ const Utils = {
   isValidVerseKey,
 };
 
-export default Utils;
+export default utils;
