@@ -1,4 +1,5 @@
 import { Juz } from '../../types';
+import { BaseApiOptions } from '../../types/BaseApiOptions';
 import { fetcher } from './_fetcher';
 
 /**
@@ -7,8 +8,12 @@ import { fetcher } from './_fetcher';
  * @example
  * quran.v4.juzs.findAll()
  */
-const findAll = async () => {
-  const { juzs } = await fetcher<{ juzs: Juz[] }>('/juzs');
+const findAll = async (options?: Omit<BaseApiOptions, 'language'>) => {
+  const { juzs } = await fetcher<{ juzs: Juz[] }>(
+    '/juzs',
+    undefined,
+    options?.fetchFn
+  );
   return juzs;
 };
 

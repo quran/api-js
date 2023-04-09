@@ -13,61 +13,59 @@ import {
 } from '../../types';
 import { decamelize } from 'humps';
 import Utils from '../utils';
-import { fetcher } from './_fetcher';
+import { fetcher, mergeApiOptions } from './_fetcher';
+import { BaseApiOptions } from '../../types/BaseApiOptions';
 
-type GetVerseOptions = Partial<{
-  language: Language;
-  reciter: string | number;
-  words: boolean;
-  translations: string[] | number[];
-  tafsirs: string[] | number[];
-  wordFields: Partial<Record<WordField, boolean>>;
-  translationFields: Partial<Record<TranslationField, boolean>>;
-  fields: Partial<Record<VerseField, boolean>>;
-  page: number;
-  perPage: number;
-}>;
+type GetVerseOptions = Partial<
+  BaseApiOptions & {
+    reciter: string | number;
+    words: boolean;
+    translations: string[] | number[];
+    tafsirs: string[] | number[];
+    wordFields: Partial<Record<WordField, boolean>>;
+    translationFields: Partial<Record<TranslationField, boolean>>;
+    fields: Partial<Record<VerseField, boolean>>;
+    page: number;
+    perPage: number;
+  }
+>;
 
 const defaultOptions: GetVerseOptions = {
   language: Language.ARABIC,
   perPage: 50,
+  words: false,
 };
 
-const getVerseOptions = (options: GetVerseOptions = {}) => {
-  const initial = { ...defaultOptions, ...options };
-  const result: any = { language: initial.language, perPage: initial.perPage };
+const mergeVerseOptions = (options: GetVerseOptions = {}) => {
+  const result = mergeApiOptions(options, defaultOptions);
 
-  if (initial.page) result.page = initial.page;
-  if (initial.words !== undefined) result.words = initial.words;
-  if (initial.translations)
-    result.translations = initial.translations.join(',');
-  if (initial.tafsirs) result.tafsirs = initial.tafsirs.join(',');
+  // @ts-expect-error - we accept an array of strings, however, the API expects a comma separated string
+  if (result.translations) result.translations = result.translations.join(',');
 
-  if (initial.fields) {
-    const fields: string[] = [];
-    for (const [key, value] of Object.entries(initial.fields)) {
-      if (value) fields.push(decamelize(key));
-    }
-    result.fields = fields.join(',');
-  }
+  // @ts-expect-error - we accept an array of strings, however, the API expects a comma separated string
+  if (result.tafsirs) result.tafsirs = result.tafsirs.join(',');
 
-  if (initial.wordFields) {
+  if (result.wordFields) {
     const wordFields: string[] = [];
-    for (const [key, value] of Object.entries(initial.wordFields)) {
+    Object.entries(result.wordFields).forEach(([key, value]) => {
       if (value) wordFields.push(decamelize(key));
-    }
+    });
     result.wordFields = wordFields.join(',');
   }
 
-  if (initial.translationFields) {
+  if (result.translationFields) {
     const translationFields: string[] = [];
-    for (const [key, value] of Object.entries(initial.translationFields)) {
+    Object.entries(result.translationFields).forEach(([key, value]) => {
       if (value) translationFields.push(decamelize(key));
-    }
+    });
     result.translationFields = translationFields.join(',');
   }
 
-  if (initial.reciter) result.audio = initial.reciter;
+  // rename `reciter` to `audio` because the API expects `audio`
+  if (result.reciter) {
+    result.audio = result.reciter;
+    result.reciter = undefined;
+  }
 
   return result;
 };
@@ -83,9 +81,13 @@ const getVerseOptions = (options: GetVerseOptions = {}) => {
  */
 const findByKey = async (key: VerseKey, options?: GetVerseOptions) => {
   if (!Utils.isValidVerseKey(key)) throw new Error('Invalid verse key');
-  const params = getVerseOptions(options);
+  const params = mergeVerseOptions(options);
   const url = `/verses/by_key/${key}`;
-  const { verse } = await fetcher<{ verse: Verse }>(url, params);
+  const { verse } = await fetcher<{ verse: Verse }>(
+    url,
+    params,
+    options?.fetchFn
+  );
 
   return verse;
 };
@@ -101,9 +103,13 @@ const findByKey = async (key: VerseKey, options?: GetVerseOptions) => {
  */
 const findByChapter = async (id: ChapterId, options?: GetVerseOptions) => {
   if (!Utils.isValidChapterId(id)) throw new Error('Invalid chapter id');
-  const params = getVerseOptions(options);
+  const params = mergeVerseOptions(options);
   const url = `/verses/by_chapter/${id}`;
-  const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const { verses } = await fetcher<{ verses: Verse[] }>(
+    url,
+    params,
+    options?.fetchFn
+  );
 
   return verses;
 };
@@ -120,9 +126,13 @@ const findByChapter = async (id: ChapterId, options?: GetVerseOptions) => {
 const findByPage = async (page: PageNumber, options?: GetVerseOptions) => {
   if (!Utils.isValidQuranPage(page)) throw new Error('Invalid page');
 
-  const params = getVerseOptions(options);
+  const params = mergeVerseOptions(options);
   const url = `/verses/by_page/${page}`;
-  const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const { verses } = await fetcher<{ verses: Verse[] }>(
+    url,
+    params,
+    options?.fetchFn
+  );
 
   return verses;
 };
@@ -139,9 +149,13 @@ const findByPage = async (page: PageNumber, options?: GetVerseOptions) => {
 const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
   if (!Utils.isValidJuz(juz)) throw new Error('Invalid juz');
 
-  const params = getVerseOptions(options);
+  const params = mergeVerseOptions(options);
   const url = `/verses/by_juz/${juz}`;
-  const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const { verses } = await fetcher<{ verses: Verse[] }>(
+    url,
+    params,
+    options?.fetchFn
+  );
 
   return verses;
 };
@@ -158,9 +172,13 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
 const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
   if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
 
-  const params = getVerseOptions(options);
+  const params = mergeVerseOptions(options);
   const url = `/verses/by_hizb/${hizb}`;
-  const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const { verses } = await fetcher<{ verses: Verse[] }>(
+    url,
+    params,
+    options?.fetchFn
+  );
 
   return verses;
 };
@@ -193,8 +211,12 @@ const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
  * quran.v4.verses.findRandom()
  */
 const findRandom = async (options?: GetVerseOptions) => {
-  const params = getVerseOptions(options);
-  const { verse } = await fetcher<{ verse: Verse }>('/verses/random', params);
+  const params = mergeVerseOptions(options);
+  const { verse } = await fetcher<{ verse: Verse }>(
+    '/verses/random',
+    params,
+    options?.fetchFn
+  );
 
   return verse;
 };
