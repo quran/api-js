@@ -33,12 +33,14 @@ export const fetcher = async <T extends object>(
     return camelizeKeys(json) as T;
   }
 
-  if (typeof fetch === 'undefined') {
-    throw new Error('fetch is not defined');
+  if (typeof globalThis.fetch !== 'function') {
+    throw new Error(
+      'Looks like there is no global fetch function. Take a look at https://quranjs.com/techniques#custom-fetcher for more info.'
+    );
   }
 
   // if there is no fetchFn, we use the global fetch
-  const res = await fetch(makeUrl(url, params));
+  const res = await globalThis.fetch(makeUrl(url, params));
 
   if (!res.ok || res.status >= 400) {
     throw new Error(`${res.status} ${res.statusText}`);
@@ -57,12 +59,14 @@ export const mergeApiOptions = (
   options: MergeApiOptionsObject = {},
   defaultOptions: Record<string, unknown> = {}
 ) => {
+  const clonedOptions = { ...options };
+
   // we can set it to undefined because `makeUrl` will filter it out
-  if (options.fetchFn) options.fetchFn = undefined;
+  if (clonedOptions.fetchFn) clonedOptions.fetchFn = undefined;
 
   const final: Record<string, unknown> = {
     ...defaultOptions,
-    ...options,
+    ...clonedOptions,
   };
 
   if (final.fields) {
