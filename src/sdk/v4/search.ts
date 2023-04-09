@@ -1,20 +1,17 @@
 import { Language, SearchResponse } from '../../types';
-import { fetcher } from './_fetcher';
+import { BaseApiOptions } from '../../types/BaseApiOptions';
+import { fetcher, mergeApiOptions } from './_fetcher';
 
-type SearchOptions = Partial<{
-  language: Language;
-  size: number;
-  page: number;
-}>;
+type SearchOptions = Partial<
+  BaseApiOptions & {
+    size: number;
+    page: number;
+  }
+>;
 
 const defaultSearchOptions: SearchOptions = {
   language: Language.ARABIC,
   size: 30,
-};
-
-const getSearchOptions = (q: string, options: SearchOptions = {}) => {
-  const all = { ...defaultSearchOptions, ...options, q };
-  return all;
 };
 
 /**
@@ -29,8 +26,12 @@ const getSearchOptions = (q: string, options: SearchOptions = {}) => {
  * quran.v4.search.search('نور', { language: Language.ENGLISH, page: 2 })
  */
 const search = async (q: string, options?: SearchOptions) => {
-  const params = getSearchOptions(q, options);
-  const { search } = await fetcher<SearchResponse>('/search', params);
+  const params = mergeApiOptions({ q, ...options }, defaultSearchOptions);
+  const { search } = await fetcher<SearchResponse>(
+    '/search',
+    params,
+    options?.fetchFn
+  );
 
   return search;
 };
