@@ -33,7 +33,7 @@ const defaultVerseRecitationsOptions: GetVerseRecitationOptions = {
 
 /**
  * Get all chapter recitations for specific reciter
- * @description https://quran.api-docs.io/v4/audio-recitations/list-of-all-surah-audio-files-for-specific-reciter
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-reciter-audio-files
  * @param {string} reciterId
  * @param {GetChapterRecitationOptions} options
  * @example
@@ -54,7 +54,7 @@ const findAllChapterRecitations = async (
 
 /**
  * Get chapter recitation for specific reciter and a specific chapter
- * @description https://quran.api-docs.io/v4/audio-recitations/get-single-surah-audio-for-specific-reciter
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-reciter-audio-file
  * @param {ChapterId} chapterId
  * @param {string} reciterId
  * @param {GetChapterRecitationOptions} options
@@ -80,7 +80,7 @@ const findChapterRecitationById = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific chapter
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-surah
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-surah-recitation
  * @param {ChapterId} chapterId
  * @param {string} recitationId
  * @param {GetVerseRecitationOptions} options
@@ -109,7 +109,7 @@ const findVerseRecitationsByChapter = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific juz
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-juz
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-juz-recitaiton
  * @param {JuzNumber} juz
  * @param {string} recitationId
  * @param {GetRecitationsOptions} options
@@ -134,7 +134,7 @@ const findVerseRecitationsByJuz = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific mushaf page
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-madani-mushaf-page
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-page-recitaiton
  * @param {PageNumber} page
  * @param {string} recitationId
  * @param {GetVerseRecitationOptions} options
@@ -159,7 +159,7 @@ const findVerseRecitationsByPage = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific rub
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-rub
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-rub-el-hizb-recitaiton
  * @param {RubNumber} rub
  * @param {string} recitationId
  * @param {GetVerseRecitationOptions} options
@@ -184,7 +184,7 @@ const findVerseRecitationsByRub = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific hizb
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-hizb
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-hizb-recitaiton
  * @param {HizbNumber} hizb
  * @param {string} recitationId
  * @param {GetVerseRecitationOptions} options
@@ -209,7 +209,7 @@ const findVerseRecitationsByHizb = async (
 
 /**
  * Get all verse audio files for a specific reciter and a specific verse
- * @description https://quran.api-docs.io/v4/audio-recitations/get-ayah-recitations-for-specific-ayah
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-ayah-recitaiton
  * @param {VerseKey} key
  * @param {string} recitationId
  * @param {GetVerseRecitationOptions} options
