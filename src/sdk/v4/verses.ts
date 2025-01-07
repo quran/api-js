@@ -4,8 +4,8 @@ import {
   JuzNumber,
   Language,
   PageNumber,
+  RubNumber,
   TranslationField,
-  // RubNumber,
   Verse,
   VerseField,
   VerseKey,
@@ -72,7 +72,7 @@ const mergeVerseOptions = (options: GetVerseOptions = {}) => {
 
 /**
  * Get a specific ayah with key. Key is combination of surah number and ayah number.
- * @description https://quran.api-docs.io/v4/verses/by-specific-verse-by-key
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-verse-key
  * @param {VerseKey} key - surah number and ayah number separated by a colon.
  * @param {GetVerseOptions} options
  * @example
@@ -94,7 +94,7 @@ const findByKey = async (key: VerseKey, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a specific chapter (surah).
- * @description https://quran.api-docs.io/v4/verses/by_chapter
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-chapter-number
  * @param {ChapterId} id - chapter id (surah number)
  * @param {GetVerseOptions} options
  * @example
@@ -116,7 +116,7 @@ const findByChapter = async (id: ChapterId, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a specific page in the Quran.
- * @description https://quran.api-docs.io/v4/verses/by-page
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-page-number
  * @param {PageNumber} page - Quran page number
  * @param {GetVerseOptions} options
  * @example
@@ -139,8 +139,8 @@ const findByPage = async (page: PageNumber, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a Juz.
- * @description https://quran.api-docs.io/v4/verses/by-juz
- * @param {JuzNumber} id - juz number
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-juz-number
+ * @param {JuzNumber} juz - juz number
  * @param {GetVerseOptions} options
  * @example
  * quran.v4.verses.findByJuz('1')
@@ -162,7 +162,7 @@ const findByJuz = async (juz: JuzNumber, options?: GetVerseOptions) => {
 
 /**
  * Get all ayahs for a Hizb.
- * @description https://quran.api-docs.io/v4/verses/by-hizb-number
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-hizb-number
  * @param {HizbNumber} hizb - hizb number
  * @param {GetVerseOptions} options
  * @example
@@ -183,29 +183,31 @@ const findByHizb = async (hizb: HizbNumber, options?: GetVerseOptions) => {
   return verses;
 };
 
-// TODO: uncomment when API is fixed
 /**
  * Get all ayahs for a Rub.
- * @description https://quran.api-docs.io/v4/verses/by-rub-number
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-rub-el-hizb-number
  * @param {RubNumber} rub - rub number
  * @param {GetVerseOptions} options
  * @example
  * quran.v4.verses.findByRub('1')
  * quran.v4.verses.findByRub('29')
  */
-// const findByRub = async (rub: RubNumber, options?: GetVerseOptions) => {
-//   if (!Utils.isValidRub(rub)) throw new Error('Invalid rub');
+const findByRub = async (rub: RubNumber, options?: GetVerseOptions) => {
+  if (!Utils.isValidRub(rub)) throw new Error('Invalid rub');
 
-//   const params = getVerseOptions(options);
-//   const url = `/verses/by_rub/${rub}`;
-//   const { verses } = await fetcher<{ verses: Verse[] }>(url, params);
+  const params = mergeVerseOptions(options);
+  const { verses } = await fetcher<{ verses: Verse[] }>(
+    `/verses/by_rub/${rub}`,
+    params,
+    options?.fetchFn
+  );
 
-//   return verses;
-// };
+  return verses;
+};
 
 /**
  * Get a random ayah.
- * @description https://quran.api-docs.io/v4/verses/random
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/random-verse
  * @param {GetVerseOptions} options
  * @example
  * quran.v4.verses.findRandom()
@@ -227,7 +229,7 @@ const verses = {
   findByPage,
   findByJuz,
   findByHizb,
-  // findByRub,
+  findByRub,
   findRandom,
 };
 
