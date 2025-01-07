@@ -3,12 +3,12 @@ import {
   ChapterReciterResource,
   Language,
   LanguageResource,
-  // RecitationInfoResource,
+  RecitationInfoResource,
   RecitationResource,
   RecitationStylesResource,
-  // TafsirInfoResource,
+  TafsirInfoResource,
   TafsirResource,
-  // TranslationInfoResource,
+  TranslationInfoResource,
   TranslationResource,
   VerseMediaResource,
 } from '../../types';
@@ -23,7 +23,7 @@ const defaultOptions: GetResourceOptions = {
 
 /**
  * Get all recitations.
- * @description https://quran.api-docs.io/v4/resources/recitations
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitations
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllRecitations()
@@ -37,27 +37,26 @@ const findAllRecitations = async (options?: GetResourceOptions) => {
   return recitations;
 };
 
-// TODO: uncomment when API is ready
 /**
  * Get all recitation info.
- * @description https://quran.api-docs.io/v4/resources/recitation-info
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitation-info
  * @param {string} id recitation id
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findRecitationInfo('1')
  */
-// const findRecitationInfo = async (id: string, options?: GetResourceOptions) => {
-//   const params = mergeApiOptions(options, defaultOptions);
-//   const { info } = await fetcher<{
-//     info: RecitationInfoResource;
-//   }>(`/resources/recitations/${id}/info`, params, options?.fetchFn);
+const findRecitationInfo = async (id: string, options?: GetResourceOptions) => {
+  const params = mergeApiOptions(options, defaultOptions);
+  const { info } = await fetcher<{
+    info: RecitationInfoResource;
+  }>(`/resources/recitations/${id}/info`, params, options?.fetchFn);
 
-//   return info;
-// };
+  return info;
+};
 
 /**
  * Get all translations.
- * @description https://quran.api-docs.io/v4/resources/translations
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/translations
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllTranslations()
@@ -71,27 +70,29 @@ const findAllTranslations = async (options?: GetResourceOptions) => {
   return translations;
 };
 
-// TODO: uncomment when API is ready
 /**
  * Get translation info.
- * @description https://quran.api-docs.io/v4/resources/translation-info
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/translation-info
  * @param {string} id translation id
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findTranslationInfo('169')
  */
-// const findTranslationInfo = async (id: string, options?: GetResourceOptions) => {
-//   const params = mergeApiOptions(options, defaultOptions);
-//   const { info } = await fetcher<{
-//     info: TranslationInfoResource;
-//   }>(`/resources/translations/${id}/info`, params, options?.fetchFn);
+const findTranslationInfo = async (
+  id: string,
+  options?: GetResourceOptions
+) => {
+  const params = mergeApiOptions(options, defaultOptions);
+  const { info } = await fetcher<{
+    info: TranslationInfoResource;
+  }>(`/resources/translations/${id}/info`, params, options?.fetchFn);
 
-//   return info;
-// };
+  return info;
+};
 
 /**
  * Get all tafsirs.
- * @description https://quran.api-docs.io/v4/resources/tafsirs
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/tafsirs
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllTafsirs()
@@ -105,27 +106,26 @@ const findAllTafsirs = async (options?: GetResourceOptions) => {
   return tafsirs;
 };
 
-// TODO: uncomment when API is ready
 /**
  * Get tafsir info.
- * @description https://quran.api-docs.io/v4/resources/tafsirs-info
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/tafsir-info
  * @param {string} id tafsir id
  * @param {GetResourceOptions} options
  * @example
- * quran.v4.resources.findTranslationInfo('1')
+ * quran.v4.resources.findTafsirInfo('1')
  */
-// const findTafsirInfo = async (id: string, options?: GetResourceOptions) => {
-//   const params = mergeApiOptions(options, defaultOptions);
-//   const { info } = await fetcher<{
-//     info: TafsirInfoResource;
-//   }>(`/resources/tafsirs/${id}/info`, params, options?.fetchFn);
+const findTafsirInfo = async (id: string, options?: GetResourceOptions) => {
+  const params = mergeApiOptions(options, defaultOptions);
+  const { info } = await fetcher<{
+    info: TafsirInfoResource;
+  }>(`/resources/tafsirs/${id}/info`, params, options?.fetchFn);
 
-//   return info;
-// };
+  return info;
+};
 
 /**
  * Get all recitation styles.
- * @description https://quran.api-docs.io/v4/resources/recitation-styles
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitation-styles
  * @example
  * quran.v4.resources.findAllRecitationStyles()
  */
@@ -141,7 +141,7 @@ const findAllRecitationStyles = async (
 
 /**
  * Get all languages.
- * @description https://quran.api-docs.io/v4/resources/languages
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/languages
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllLanguages()
@@ -157,7 +157,7 @@ const findAllLanguages = async (options?: GetResourceOptions) => {
 
 /**
  * Get all chapter infos.
- * @description https://quran.api-docs.io/v4/resources/chapter-info
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-info
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllChapterInfos()
@@ -173,7 +173,7 @@ const findAllChapterInfos = async (options?: GetResourceOptions) => {
 
 /**
  * Get verse media.
- * @description https://quran.api-docs.io/v4/resources/verse_media
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verse-media
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findVerseMedia()
@@ -189,7 +189,7 @@ const findVerseMedia = async (options?: GetResourceOptions) => {
 
 /**
  * Get all chapter reciters.
- * @description https://quran.api-docs.io/v4/resources/list-of-chapter-reciters
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-reciters
  * @param {GetResourceOptions} options
  * @example
  * quran.v4.resources.findAllChapterReciters()
@@ -212,9 +212,9 @@ const resources = {
   findVerseMedia,
   findAllChapterReciters,
   findAllChapterInfos,
-  // findRecitationInfo
-  // findTranslationInfo
-  // findTafsirInfo
+  findRecitationInfo,
+  findTranslationInfo,
+  findTafsirInfo,
 };
 
 export default resources;

@@ -11,7 +11,7 @@ const defaultOptions: GetChapterOptions = {
 
 /**
  * Get all chapters.
- * @description https://quran.api-docs.io/v4/chapters/list-chapters
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/list-chapters
  * @param {GetChapterOptions} options
  * @example
  * quran.v4.chapters.findAll()
@@ -29,7 +29,7 @@ const findAll = async (options?: GetChapterOptions) => {
 
 /**
  * Get chapter by id.
- * @description https://quran.api-docs.io/v4/chapters/get-chapter
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/get-chapter
  * @param {ChapterId} id chapter id, minimum 1, maximum 114
  * @param {GetChapterOptions} options
  * @example
@@ -51,7 +51,7 @@ const findById = async (id: ChapterId, options?: GetChapterOptions) => {
 
 /**
  * Get chapter info by id.
- * @description https://quran.api-docs.io/v4/chapters/chapter_info
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/info
  * @param {ChapterId} id chapter id, minimum 1, maximum 114
  * @param {GetChapterOptions} options
  * @example
