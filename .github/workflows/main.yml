@@ -13,28 +13,33 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['14.x', '16.x']
+        node: ['18.x', '20.x']
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v1
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+          cache: "pnpm"
+  
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Lint
-        run: yarn lint --quiet
+        run: pnpm lint --quiet
 
       - name: Test
-        run: yarn test:coverage
+        run: pnpm test:coverage
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
   test-and-publish:
     name: 🎉 Publish to NPM
@@ -42,18 +47,23 @@ jobs:
     if: github.repository == 'quran/api-js' && (github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 20
           registry-url: https://registry.npmjs.org/
+          cache: "pnpm"
 
-      - name: Install deps (with cache)
-        uses: bahmutov/npm-install@v1
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - run: npx semantic-release@17
         env:
