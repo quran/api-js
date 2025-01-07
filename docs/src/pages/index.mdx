@@ -3,7 +3,7 @@ import { Tab, Tabs } from 'nextra-theme-docs';
 
 <Image src="/banner.png" alt="QuranJS/API Banner" width={1280} height={680} />
 
-A library for fetching quran data from the [Quran.com API](https://quran.api-docs.io/). This library also works on both Node.js and the browser.
+A library for fetching quran data from the [Quran.com API](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/quran-com-api). This library also works on both Node.js and the browser.
 
 - [NPM](https://www.npmjs.com/package/@quranjs/api)
 - [MIT License](https://github.com/quran/api-js/blob/master/LICENSE)
@@ -11,7 +11,12 @@ A library for fetching quran data from the [Quran.com API](https://quran.api-doc
 ## Installation
 
 {/* prettier-ignore-start */}
-<Tabs items={['npm', 'yarn']}>
+<Tabs items={['pnpm', 'npm', 'yarn','CDN']}>
+ <Tab>
+    ```bash
+    pnpm add @quranjs/api
+    ```
+  </Tab>
   <Tab>
     ```bash
     npm install @quranjs/api
@@ -20,6 +25,16 @@ A library for fetching quran data from the [Quran.com API](https://quran.api-doc
   <Tab>
     ```bash
     yarn add @quranjs/api
+    ```
+  </Tab>
+  <Tab>
+    ```html
+    <script src="https://unpkg.com/@quranjs/api/dist/index.umd.min.js"></script>
+    <script>
+      // quranjsApi is the global variable set by the script tag
+      const { quran } = window.quranjsApi;
+      quran.v4.chapters.findAll().then(console.log); // log all chapters
+    </script>
     ```
   </Tab>
 </Tabs>

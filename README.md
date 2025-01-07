@@ -29,7 +29,7 @@ you can visit the [docs][docs] for more details.
 
 <!-- Links -->
 
-[qdc-api]: https://api-docs.quran.com/docs/category/quran.com-api
+[qdc-api]: https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/quran-com-api
 [docs]: https://quranjs.vercel.app/
 [build-badge]: https://github.com/quran/api-js/workflows/CI/badge.svg
 [build]: https://github.com/quran/api-js/actions?query=workflow%3ACI
