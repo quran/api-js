@@ -34,6 +34,8 @@ createApiTest('verses', {
     params: ['1'],
     rejectParams: ['0' as any],
   },
+  findByRub: {
+    params: ['1'],
+    rejectParams: ['0' as any],
+  },
 });
-
-// TODO: test findByRub when fixed
