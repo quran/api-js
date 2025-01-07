@@ -5,16 +5,25 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.0.0",
+  "packageManager": "pnpm@9.12.0",
+  "version": "1.7.1",
   "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "module": "dist/index.mjs",
+  "main": "dist/index.min.js",
+  "module": "dist/index.min.mjs",
+  "browser": "dist/index.umd.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.min.js",
+      "import": "./dist/index.min.mjs"
+    },
+    "./cdn": "./dist/index.umd.min.js"
+  },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
+    "postversion": "node ./scripts/postversion.mjs",
     "start": "tsup --watch",
     "build": "tsup",
     "test": "vitest run",
@@ -29,12 +38,14 @@
     "humps": "^2.0.1"
   },
   "devDependencies": {
-    "cross-fetch": "^3.1.5",
     "@size-limit/preset-small-lib": "^7.0.8",
+    "@swc/core": "^1.10.4",
     "@types/humps": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "@vitest/coverage-c8": "^0.24.4",
+    "cross-fetch": "^3.1.5",
+    "esbuild-plugin-umd-wrapper": "^3.0.0",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -51,11 +62,11 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.js",
+      "path": "dist/index.min.js",
       "limit": "15 KB"
     },
     {
-      "path": "dist/index.mjs",
+      "path": "dist/index.min.mjs",
       "limit": "15 KB"
     }
   ],
