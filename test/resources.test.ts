@@ -14,6 +14,13 @@ createApiTest('resources', {
   findAllTafsirs: {},
   findAllTranslations: {},
   findVerseMedia: {},
+  findRecitationInfo: {
+    params: ['1'],
+  },
+  findTranslationInfo: {
+    params: ['1'],
+  },
+  findTafsirInfo: {
+    params: ['169'],
+  },
 });
-
-// TODO: text findRecitationInfo, findTafsirInfo, and findTranslationInfo when fixed

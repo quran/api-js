@@ -2,7 +2,7 @@
 
 Get all chapter infos.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/chapter-info)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-info)
 
 **Params:**
 
@@ -22,7 +22,7 @@ quran.v4.resources.findAllChapterInfos();
 
 Get all chapter reciters.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/list-of-chapter-reciters)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/chapter-reciters)
 
 **Params:**
 
@@ -42,7 +42,7 @@ quran.v4.resources.findAllChapterReciters();
 
 Get all languages.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/languages)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/languages)
 
 **Params:**
 
@@ -62,7 +62,7 @@ quran.v4.resources.findAllLanguages();
 
 Get all recitations.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/recitations)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitations)
 
 **Params:**
 
@@ -78,11 +78,32 @@ Get all recitations.
 quran.v4.resources.findAllRecitations();
 ```
 
+## findRecitationInfo
+
+Get recitation info.
+
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitation-info)
+
+**Params:**
+
+`resources.findRecitationInfo(id: string, options?: GetResourceOptions)`
+
+| Param   | Type                 |
+| ------- | -------------------- |
+| id      | `string`             |
+| options | `GetResourceOptions` |
+
+**Example:**
+
+```js
+quran.v4.resources.findRecitationInfo('1');
+```
+
 ## findAllRecitationStyles
 
 Get all recitation styles.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/recitation-styles)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/recitation-styles)
 
 **Example:**
 
@@ -94,7 +115,7 @@ quran.v4.resources.findAllRecitationStyles();
 
 Get all tafsirs.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/tafsirs)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/tafsirs)
 
 **Params:**
 
@@ -110,11 +131,32 @@ Get all tafsirs.
 quran.v4.resources.findAllTafsirs();
 ```
 
+## findTafsirInfo
+
+Get tafsir info.
+
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/tafsir-info)
+
+**Params:**
+
+`resources.findTafsirInfo(id: string, options?: GetResourceOptions)`
+
+| Param   | Type                 |
+| ------- | -------------------- |
+| id      | `string`             |
+| options | `GetResourceOptions` |
+
+**Example:**
+
+```js
+quran.v4.resources.findTafsirInfo('1');
+```
+
 ## findAllTranslations
 
 Get all translations.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/translations)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/translations)
 
 **Params:**
 
@@ -130,11 +172,32 @@ Get all translations.
 quran.v4.resources.findAllTranslations();
 ```
 
+## findTranslationInfo
+
+Get all translations.
+
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/translation-info)
+
+**Params:**
+
+`resources.findTranslationInfo(id: string, options?: GetResourceOptions)`
+
+| Param   | Type                 |
+| ------- | -------------------- |
+| id      | `string`             |
+| options | `GetResourceOptions` |
+
+**Example:**
+
+```js
+quran.v4.resources.findTranslationInfo('169');
+```
+
 ## findVerseMedia
 
 Get verse media.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/resources/verse_media)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verse-media)
 
 **Params:**
 

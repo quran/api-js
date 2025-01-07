@@ -16,7 +16,7 @@ const defaultSearchOptions: SearchOptions = {
 
 /**
  * Search
- * @description https://quran.api-docs.io/v4/search/KfCmk4KQYbtyK9adj
+ * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/search
  * @param {string} q search query
  * @param {SearchOptions} options
  * @example

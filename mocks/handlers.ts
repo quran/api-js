@@ -1095,7 +1095,7 @@ export const handlers = [
     'https://api.quran.com/api/v4/resources/tafsirs/:tafsir_id/info',
     (req, res, ctx) => {
       const id = req.params.tafsir_id;
-      if (!id || !Number.isInteger(id))
+      if (!id || !Number.isInteger(Number(id)))
         return res(
           ctx.status(404),
           ctx.json({ status: 404, error: 'Tafsir not found' })

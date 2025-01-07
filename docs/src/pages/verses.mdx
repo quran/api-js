@@ -2,16 +2,16 @@
 
 Get all ayahs for a specific chapter.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by_chapter)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-chapter-number)
 
 **Params:**
 
 `verses.findByChapter(id: ChapterId, options?: GetVerseOptions)`
 
-| Param   | Type                               |
-| ------- | ---------------------------------- |
-| id      | ChapterId (minimum 1, maximum 114) |
-| options | `GetVerseOptions`                  |
+| Param   | Type                                 |
+| ------- | ------------------------------------ |
+| id      | `ChapterId` (minimum 1, maximum 114) |
+| options | `GetVerseOptions`                    |
 
 **Example:**
 
@@ -24,16 +24,16 @@ quran.v4.verses.findByChapter('114');
 
 Get all ayahs for a Juz.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-juz)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-juz-number)
 
 **Params:**
 
 `verses.findByJuz(juz: JuzNumber, options?: GetVerseOptions)`
 
-| Param   | Type                              |
-| ------- | --------------------------------- |
-| juz     | JuzNumber (minimum 1, maximum 30) |
-| options | `GetVerseOptions`                 |
+| Param   | Type                                |
+| ------- | ----------------------------------- |
+| juz     | `JuzNumber` (minimum 1, maximum 30) |
+| options | `GetVerseOptions`                   |
 
 **Example:**
 
@@ -46,7 +46,7 @@ quran.v4.verses.findByJuz('30');
 
 Get a specific ayah with key. Key is combination of surah number and ayah number.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-specific-verse-by-key)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-verse-key)
 
 **Params:**
 
@@ -68,16 +68,16 @@ quran.v4.verses.findByKey('101:5');
 
 Get all ayahs for a specific page in the Quran.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-page)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-page-number)
 
 **Params:**
 
 `verses.findByKey(page: PageNumber, options?: GetVerseOptions)`
 
-| Param   | Type                         | Description       |
-| ------- | ---------------------------- | ----------------- |
-| page    | <code>PageNumber</code>      | Quran page number |
-| options | <code>GetVerseOptions</code> |                   |
+| Param   | Type                                  |
+| ------- | ------------------------------------- |
+| page    | `PageNumber` (minimum 1, maximum 604) |
+| options | `GetVerseOptions`                     |
 
 **Example:**
 
@@ -90,7 +90,7 @@ quran.v4.verses.findByPage('101');
 
 Get a random ayah.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/random)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/random-verse)
 
 **Params:**
 
@@ -110,20 +110,42 @@ quran.v4.verses.findRandom();
 
 Get all ayahs of a specific Hizb.
 
-- [Quran.com API Docs](https://quran.api-docs.io/v4/verses/by-hizb-number)
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-hizb-number)
 
 **Params:**
 
 `verses.findByHizb(id: HizbNumber, options?: GetVerseOptions)`
 
-| Param   | Type                         | Description       |
-| ------- | ---------------------------- | ----------------- |
-| page    | <code>HizbNumber</code>      | Quran Hizb number |
-| options | <code>GetVerseOptions</code> |                   |
+| Param   | Type                                 |
+| ------- | ------------------------------------ |
+| hizb    | `HizbNumber` (minimum 1, maximum 60) |
+| options | `GetVerseOptions`                    |
 
 **Example:**
 
 ```js
 quran.v4.verses.findByHizb('1');
 quran.v4.verses.findByHizb('60');
+```
+
+## findByRub
+
+Get all ayahs of a specific Rub.
+
+- [Quran.com API Docs](https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/verses-by-rub-el-hizb-number)
+
+**Params:**
+
+`verses.findByRub(id: RubNumber, options?: GetVerseOptions)`
+
+| Param   | Type                                 |
+| ------- | ------------------------------------ |
+| rub     | `RubNumber` (minimum 1, maximum 240) |
+| options | `GetVerseOptions`                    |
+
+**Example:**
+
+```js
+quran.v4.verses.findByRub('1');
+quran.v4.verses.findByRub('240');
 ```
