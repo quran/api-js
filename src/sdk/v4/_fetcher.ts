@@ -1,9 +1,11 @@
-import { camelizeKeys, decamelize, decamelizeKeys } from 'humps';
+import humps from 'humps';
 import { FetchFn } from '../../types';
 import { BaseApiOptions } from '../../types/BaseApiOptions';
 import { removeBeginningSlash } from '../../utils/misc';
 
 export const API_BASE_URL = 'https://api.quran.com/api/v4/';
+
+const { camelizeKeys, decamelize, decamelizeKeys } = humps;
 
 export const makeUrl = (url: string, params?: Record<string, unknown>) => {
   const baseUrl = `${API_BASE_URL}${removeBeginningSlash(url)}`;
