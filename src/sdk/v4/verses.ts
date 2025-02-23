@@ -11,10 +11,12 @@ import {
   VerseKey,
   WordField,
 } from '../../types';
-import { decamelize } from 'humps';
+import humps from 'humps';
 import Utils from '../utils';
 import { fetcher, mergeApiOptions } from './_fetcher';
 import { BaseApiOptions } from '../../types/BaseApiOptions';
+
+const { decamelize } = humps;
 
 type GetVerseOptions = Partial<
   BaseApiOptions & {
