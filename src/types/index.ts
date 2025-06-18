@@ -90,6 +90,7 @@ export type VerseField =
   | 'textImlaei'
   | 'textImlaeiSimple'
   | 'textIndopak'
+  | 'textIndopakNastaleeq'
   | 'textUthmaniTajweed'
   | 'imageUrl'
   | 'imageWidth'

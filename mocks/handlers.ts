@@ -313,6 +313,8 @@ export const handlers = [
               rub_number: 1,
               sajdah_type: null,
               sajdah_number: null,
+              text_indopak_nastaleeq:
+                'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ ۟',
               words: [
                 {
                   id: 1,
