@@ -1,8 +1,8 @@
-import v4 from './v4';
+import qf from './qf';
 import utils from './utils';
 
 const quran = {
-  v4,
+  qf,
   utils,
 };
 

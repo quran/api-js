@@ -1,6 +1,6 @@
-import { FetchFn, Language } from '.';
+import { Language } from '.';
 
 export interface BaseApiOptions {
   language: Language;
-  fetchFn?: FetchFn;
+  fetchFn?: typeof fetch;
 }

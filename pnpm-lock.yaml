@@ -27,6 +27,9 @@ importers:
       '@swc/core':
         specifier: ^1.10.4
         version: 1.10.4
+      '@types/async-retry':
+        specifier: ^1.4.9
+        version: 1.4.9
       '@types/humps':
         specifier: ^2.0.1
         version: 2.0.1
@@ -245,6 +248,9 @@ packages:
   '@swc/types@0.1.17':
     resolution: {integrity: sha512-V5gRru+aD8YVyCOMAjMpWR1Ui577DD5KSJsHP8RAxopAH22jFz6GZd/qxqjO6MJHQhcsjvjOFXyDhyLQUnMveQ==}
 
+  '@types/async-retry@1.4.9':
+    resolution: {integrity: sha512-s1ciZQJzRh3708X/m3vPExr5KJlzlZJvXsKpbtE2luqNcbROr64qU+3KpJsYHqWMeaxI839OvXf9PrUSw1Xtyg==}
+
   '@types/chai-subset@1.3.3':
     resolution: {integrity: sha512-frBecisrNGz+F4T6bcc+NLeolfiojh5FxW2klu669+8BARtyQv2C/GkNW6FUodVe4BroGMP/wER/YDGc7rEllw==}
 
@@ -268,6 +274,9 @@ packages:
 
   '@types/node@17.0.22':
     resolution: {integrity: sha512-8FwbVoG4fy+ykY86XCAclKZDORttqE5/s7dyWZKLXTdv3vRy5HozBEinG5IqhvPXXzIZEcTVbuHlQEI6iuwcmw==}
+
+  '@types/retry@0.12.5':
+    resolution: {integrity: sha512-3xSjTp3v03X/lSQLkczaN9UIEwJMoMCA1+Nb5HfbJEQWogdeQIyVtTvxPXDQjZ5zws8rFQfVfRdz03ARihPJgw==}
 
   '@types/semver@7.3.13':
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
@@ -1871,6 +1880,10 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
+  '@types/async-retry@1.4.9':
+    dependencies:
+      '@types/retry': 0.12.5
+
   '@types/chai-subset@1.3.3':
     dependencies:
       '@types/chai': 4.3.3
@@ -1888,6 +1901,8 @@ snapshots:
   '@types/json-schema@7.0.10': {}
 
   '@types/node@17.0.22': {}
+
+  '@types/retry@0.12.5': {}
 
   '@types/semver@7.3.13': {}
 
