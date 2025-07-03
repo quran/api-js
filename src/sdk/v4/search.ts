@@ -26,7 +26,7 @@ const defaultSearchOptions: SearchOptions = {
  * quran.v4.search.search('نور', { language: Language.ENGLISH, page: 2 })
  */
 const search = async (q: string, options?: SearchOptions) => {
-  const params = mergeApiOptions(defaultSearchOptions, { q, ...options });
+  const params = mergeApiOptions({ q, ...options }, defaultSearchOptions);
   const { search } = await fetcher<SearchResponse>(
     '/search',
     params,
