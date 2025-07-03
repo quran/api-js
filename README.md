@@ -1,7 +1,10 @@
 ![Quranjs Api Header](https://github.com/quran/api-js/raw/master/media/repo-header.png)
-A library for fetching quran data from the [quran.com API][qdc-api]. This library also works on both Node.js and the browser.
 
-[Checkout Docs][docs]
+# Quran Foundation Content API - JavaScript SDK
+
+This package provides a JavaScript SDK for the **Quran Foundation Content API** and works in both Node.js and the browser.
+
+> **Full documentation is available at <https://api-docs.quran.foundation/sdk>.**
 
 [![Build Status][build-badge]][build]
 [![MIT License][license-badge]][license]
@@ -11,26 +14,40 @@ A library for fetching quran data from the [quran.com API][qdc-api]. This librar
 
 ## Installation
 
-using npm:
-
-```ssh
+```bash
 npm install @quranjs/api
 ```
 
-using yarn:
+or using pnpm / yarn:
 
-```ssh
+```bash
+pnpm add @quranjs/api
+# or
 yarn add @quranjs/api
 ```
 
-## Getting Started
+## Quick Start
 
-you can visit the [docs][docs] for more details.
+```js
+import { configure, quran } from '@quranjs/api';
+
+configure({
+  clientId: '<YOUR_QF_CLIENT_ID>',
+  clientSecret: '<YOUR_QF_CLIENT_SECRET>',
+});
+
+const chapters = await quran.qf.chapters.findAll();
+console.log(chapters);
+```
+
+For more examples and a complete API reference, see the [SDK documentation](https://api-docs.quran.foundation/sdk).
+
+## Migrating from previous versions
+
+If you used an earlier version of this SDK, please check the migration guide on the [documentation site](https://api-docs.quran.foundation/sdk) for details on upgrading.
 
 <!-- Links -->
 
-[qdc-api]: https://api-docs.quran.com/docs/category/content-apis
-[docs]: https://quranjs.com/
 [build-badge]: https://github.com/quran/api-js/workflows/CI/badge.svg
 [build]: https://github.com/quran/api-js/actions?query=workflow%3ACI
 [license-badge]: https://badgen.net/github/license/quranjs/api
