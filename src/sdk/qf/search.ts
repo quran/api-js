@@ -28,7 +28,7 @@ const defaultSearchOptions: SearchOptions = {
  */
 const search = async (q: string, options?: SearchOptions) => {
 
-  const params = mergeApiOptions({ q, ...options }, defaultSearchOptions);
+  const params = mergeApiOptions(defaultSearchOptions, { q, ...options });
 
   const { search } = await fetcher<SearchResponse>(
     '/search',

@@ -43,7 +43,7 @@ const findAllChapterRecitations = async (
   reciterId: string,
   options?: GetChapterRecitationOptions
 ) => {
-  const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
+  const params = mergeApiOptions(defaultChapterRecitationsOptions, options);
   const { audioFiles } = await fetcher<{ audioFiles: ChapterRecitation[] }>(
     `/chapter_recitations/${reciterId}`,
     params,
@@ -68,7 +68,7 @@ const findChapterRecitationById = async (
 ) => {
   if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
 
-  const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
+  const params = mergeApiOptions(defaultChapterRecitationsOptions, options);
   const { audioFile } = await fetcher<{ audioFile: ChapterRecitation }>(
     `/chapter_recitations/${reciterId}/${chapterId}`,
     params,
@@ -94,7 +94,7 @@ const findVerseRecitationsByChapter = async (
 ) => {
   if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
@@ -123,7 +123,7 @@ const findVerseRecitationsByJuz = async (
 ) => {
   if (!Utils.isValidJuz(juz)) throw new Error('Invalid juz');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
@@ -148,7 +148,7 @@ const findVerseRecitationsByPage = async (
 ) => {
   if (!Utils.isValidQuranPage(page)) throw new Error('Invalid page');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
@@ -173,7 +173,7 @@ const findVerseRecitationsByRub = async (
 ) => {
   if (!Utils.isValidRub(rub)) throw new Error('Invalid rub');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
@@ -198,7 +198,7 @@ const findVerseRecitationsByHizb = async (
 ) => {
   if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
@@ -223,7 +223,7 @@ const findVerseRecitationsByKey = async (
 ) => {
   if (!Utils.isValidVerseKey(key)) throw new Error('Invalid verse key');
 
-  const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
+  const params = mergeApiOptions(defaultVerseRecitationsOptions, options);
   const data = await fetcher<{
     audioFiles: VerseRecitation[];
     pagination: Pagination;
