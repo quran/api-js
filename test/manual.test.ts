@@ -17,7 +17,7 @@ import { configure, quran } from '../src';
     console.log(`✅ Chapters: ${chapters.length}`);
 
     const chapter = await quran.qf.chapters.findById(1);
-    console.log(`✅ Chapter 1 name: ${chapter.nameArabic}`);
+    console.log(`✅ Chapter 1 name: ${chapter.name_arabic}`);
 
     // 3. Verses
     const verses = await quran.qf.verses.findByChapter(1, {
@@ -59,9 +59,7 @@ import { configure, quran } from '../src';
     console.log(`✅ Audio files for Chapter 1: ${audioFiles.length}`);
 
     // 7. Search
-    
     const search = await quran.qf.search.search('نور');
-
     console.log(`✅ Search for "نور": ${search.results?.length} matches`);
 
     console.log('🎉 ALL TESTS PASSED SUCCESSFULLY 🎉');
