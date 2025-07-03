@@ -46,7 +46,7 @@ const findAllRecitations = async (options?: GetResourceOptions) => {
  * quran.v4.resources.findRecitationInfo('1')
  */
 const findRecitationInfo = async (id: string, options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { info } = await fetcher<{
     info: RecitationInfoResource;
   }>(`/resources/recitations/${id}/info`, params, options?.fetchFn);
@@ -62,7 +62,7 @@ const findRecitationInfo = async (id: string, options?: GetResourceOptions) => {
  * quran.v4.resources.findAllTranslations()
  */
 const findAllTranslations = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { translations } = await fetcher<{
     translations: TranslationResource[];
   }>('/resources/translations', params, options?.fetchFn);
@@ -82,7 +82,7 @@ const findTranslationInfo = async (
   id: string,
   options?: GetResourceOptions
 ) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { info } = await fetcher<{
     info: TranslationInfoResource;
   }>(`/resources/translations/${id}/info`, params, options?.fetchFn);
@@ -98,7 +98,7 @@ const findTranslationInfo = async (
  * quran.v4.resources.findAllTafsirs()
  */
 const findAllTafsirs = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { tafsirs } = await fetcher<{
     tafsirs: TafsirResource[];
   }>('/resources/tafsirs', params, options?.fetchFn);
@@ -115,7 +115,7 @@ const findAllTafsirs = async (options?: GetResourceOptions) => {
  * quran.v4.resources.findTafsirInfo('1')
  */
 const findTafsirInfo = async (id: string, options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { info } = await fetcher<{
     info: TafsirInfoResource;
   }>(`/resources/tafsirs/${id}/info`, params, options?.fetchFn);
@@ -147,7 +147,7 @@ const findAllRecitationStyles = async (
  * quran.v4.resources.findAllLanguages()
  */
 const findAllLanguages = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { languages } = await fetcher<{
     languages: LanguageResource[];
   }>('/resources/languages', params, options?.fetchFn);
@@ -163,7 +163,7 @@ const findAllLanguages = async (options?: GetResourceOptions) => {
  * quran.v4.resources.findAllChapterInfos()
  */
 const findAllChapterInfos = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { chapterInfos } = await fetcher<{
     chapterInfos: ChapterInfoResource[];
   }>('/resources/chapter_infos', params, options?.fetchFn);
@@ -179,7 +179,7 @@ const findAllChapterInfos = async (options?: GetResourceOptions) => {
  * quran.v4.resources.findVerseMedia()
  */
 const findVerseMedia = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { verseMedia } = await fetcher<{
     verseMedia: VerseMediaResource;
   }>(`/resources/verse_media`, params, options?.fetchFn);
@@ -195,7 +195,7 @@ const findVerseMedia = async (options?: GetResourceOptions) => {
  * quran.v4.resources.findAllChapterReciters()
  */
 const findAllChapterReciters = async (options?: GetResourceOptions) => {
-  const params = mergeApiOptions(defaultOptions, options);
+  const params = mergeApiOptions(options, defaultOptions);
   const { reciters } = await fetcher<{
     reciters: ChapterReciterResource[];
   }>(`/resources/chapter_reciters`, params, options?.fetchFn);
