@@ -13,18 +13,19 @@ export enum CharType {
 export interface Word {
   id?: number;
   position: number;
-  audioUrl: string;
-  charTypeName: CharType;
-  codeV1?: string;
-  codeV2?: string;
-  pageNumber?: number;
-  lineNumber?: number;
-  text?: string;
-  textUthmani?: string;
-  textIndopak?: string;
-  textImlaei?: string;
-  translation: Translation;
-  transliteration: Transliteration;
-  location?: string; // chapter:verse:word
-  verseKey?: VerseKey;
+  audio_url: string;
+  char_type: CharType
+  text_uthmani?: string;
+  text_indopak?: string;
+  text_imlaei?: string;
+  verse_key?: VerseKey
+  page_number?: number;
+  line_number?: number;
+  code_v1?: string;
+  code_v2?: string;
+  translation: Translation
+  transliteration: Transliteration
+  location?: string;
+  v1_page?: number;
+  v2_page?: number;
 }

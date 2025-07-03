@@ -2,14 +2,13 @@ import { TranslatedName } from './TranslatedName';
 
 export interface Chapter {
   id: number;
-  versesCount: number;
-  bismillahPre: boolean;
-  revelationOrder: number;
-  revelationPlace: string;
-  pages: Array<number>;
-  nameComplex: string;
-  nameSimple: string;
-  transliteratedName: string;
-  nameArabic: string;
-  translatedName: TranslatedName;
+  revelation_place: string;
+  revelation_order: number;
+  bismillah_pre: boolean;
+  name_simple: string;
+  name_complex: string;
+  name_arabic: string;
+  verses_count: number;
+  pages: number[];
+  translated_name: TranslatedName;
 }

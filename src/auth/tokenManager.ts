@@ -9,21 +9,24 @@ export async function getAccessToken() {
     return cachedToken.value; // still fresh
   }
 
-  const { clientId, clientSecret, baseUrl, fetchFn } = getConfig();
+  const { clientId, clientSecret, authBaseUrl, fetchFn } = getConfig();
   const doFetch = fetchFn ?? globalThis.fetch;
 
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
   const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
     grant_type: 'client_credentials',
     scope: 'content',
   }).toString();
 
   const res = await retry(
     () =>
-      doFetch(`${baseUrl}/oauth2/token`, {
+      doFetch(`${authBaseUrl}/oauth2/token`, {
         method: 'POST',
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'content-type': 'application/x-www-form-urlencoded',
+        },
         body,
       }),
     { retries: 3 }

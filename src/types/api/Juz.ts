@@ -1,8 +1,8 @@
 export interface Juz {
   id: number;
-  juzNumber: number;
-  verseMapping: Record<number, string>;
-  firstVerseId: number;
-  lastVerseId: number;
-  versesCount: number;
+  juz_number: number;
+  verse_mapping: Record<string, string>;
+  first_verse_id: number;
+  last_verse_id: number;
+  verses_count: number;
 }

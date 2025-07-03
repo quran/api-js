@@ -1,4 +1,4 @@
 export interface Transliteration {
-  languageName?: string;
+  language_name?: string;
   text?: string;
 }

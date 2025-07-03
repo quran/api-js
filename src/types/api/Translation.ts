@@ -1,21 +1,21 @@
 import { VerseKey } from '../VerseKey';
 
 export interface Translation {
-  id?: number;
+  id: number;
   text: string;
-  resourceId: number;
-  resourceName?: string;
+  resource_id: number;
+  resource_name?: string;
 
-  verseId?: number;
+  verse_id?: number;
 
-  languageId?: number;
-  languageName?: string;
+  language_id?: number;
+  language_name?: string;
 
-  verseKey?: VerseKey;
-  chapterId?: number;
-  verseNumber?: number;
-  juzNumber?: number;
-  hizbNumber?: number;
-  rubNumber?: number;
-  pageNumber?: number;
+  verse_key?: VerseKey;
+  chapter_id?: number;
+  verse_number?: number;
+  juz_number?: number;
+  hizb_number?: number;
+  rub_number?: number;
+  page_number?: number;
 }

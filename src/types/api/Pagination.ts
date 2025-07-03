@@ -1,7 +1,7 @@
 export interface Pagination {
-  perPage: number;
-  currentPage: number;
-  nextPage: number;
-  totalPages: number;
-  totalRecords: number;
+  per_page: number;
+  current_page: number;
+  next_page: number | null;
+  total_pages: number;
+  total_records: number;
 }

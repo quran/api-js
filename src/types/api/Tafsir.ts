@@ -1,7 +1,7 @@
 export interface Tafsir {
-  id?: number;
-  resourceId?: number;
-  text?: string;
-  resourceName?: string;
-  languageName?: string;
+  id: number;
+  resource_id?: number;
+  text: string;
+  resource_name?: string;
+  language_name?: string;
 }

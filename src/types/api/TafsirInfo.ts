@@ -3,8 +3,8 @@ import { TranslatedName } from './TranslatedName';
 export interface TafsirInfo {
   id?: number;
   name?: string;
-  authorName?: string;
+  author_name?: string;
   slug?: string;
-  languageName?: string;
-  translatedName: TranslatedName;
+  language_name?: string;
+  translated_name: TranslatedName;
 }

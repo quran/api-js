@@ -1,6 +1,6 @@
 export interface Footnote {
   id: number | string;
   text: string;
-  languageName?: string;
-  languageId?: number;
+  language_name?: string;
+  language_id?: number;
 }

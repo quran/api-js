@@ -1,4 +1,4 @@
 export interface TranslatedName {
   name: string;
-  languageName: string;
+  language_name: string;
 }

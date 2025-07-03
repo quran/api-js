@@ -1,9 +1,9 @@
 import { Segment } from './Segment';
 
 export interface AudioResponse {
-  url?: string;
+  url: string;
   duration?: number;
   format?: string;
   verseKey: string;
-  segments?: Segment[];
+  segments: Segment[];
 }

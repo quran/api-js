@@ -1,4 +1,4 @@
-import { Language, SearchResponse } from '../../types';
+import { SearchResponse } from '../../types';
 import { BaseApiOptions } from '../../types/BaseApiOptions';
 import { mergeApiOptions } from '../../utils/misc';
 import { fetcher } from './_fetcher';
@@ -12,7 +12,6 @@ type SearchOptions = Partial<
 >;
 
 const defaultSearchOptions: SearchOptions = {
-  language: Language.ARABIC,
   size: 30,
 };
 
@@ -28,7 +27,9 @@ const defaultSearchOptions: SearchOptions = {
  * quran.v4.search.search('نور', { language: Language.ENGLISH, page: 2 })
  */
 const search = async (q: string, options?: SearchOptions) => {
+
   const params = mergeApiOptions({ q, ...options }, defaultSearchOptions);
+
   const { search } = await fetcher<SearchResponse>(
     '/search',
     params,

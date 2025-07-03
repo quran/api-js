@@ -3,18 +3,17 @@ import { Segment } from './Segment';
 
 export interface ChapterRecitation {
   id: number;
-  chapterId: number;
-  fileSize: number;
+  chapter_id: number;
+  file_size: number;
   format: string;
-  audioUrl: string;
+  audio_url: string;
 }
 
 export interface VerseRecitation {
   verseKey: VerseKey;
   url: string;
-
   id?: number;
-  chapterId?: number;
+  chapter_id?: number;
   segments?: Segment[];
   format?: string;
 }

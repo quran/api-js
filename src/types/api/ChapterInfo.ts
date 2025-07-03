@@ -1,8 +1,8 @@
 export interface ChapterInfo {
   id: number;
-  chapterId: number;
+  chapter_id: number;
   text: string;
-  shortText: string;
+  short_text: string;
   source: string;
-  languageName?: string;
+  language_name?: string;
 }

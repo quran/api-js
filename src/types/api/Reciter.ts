@@ -1,21 +1,18 @@
+import { TranslatedName } from "./TranslatedName";
+
 export interface Reciter {
   id: number;
   name: string;
-  recitationStyle: string;
-  relativePath: string;
-  profilePicture?: string;
-  coverImage?: string;
+  profile_picture?: string;
+  cover_image?: string;
   bio?: string;
-  qirat?: {
-    languageName: string;
+  qirat: {
+    language_name: string;
     name: string;
   };
-  style?: {
-    languageName: string;
+  style: {
+    language_name: string;
     name: string;
   };
-  translatedName?: {
-    languageName: string;
-    name: string;
-  };
+  translated_name: TranslatedName
 }

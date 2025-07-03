@@ -1,11 +1,11 @@
 import {
   ChapterInfoResource,
-  ChapterReciterResource,
   Language,
   LanguageResource,
   RecitationInfoResource,
   RecitationResource,
   RecitationStylesResource,
+  Reciter,
   TafsirInfoResource,
   TafsirResource,
   TranslationInfoResource,
@@ -198,7 +198,7 @@ const findVerseMedia = async (options?: GetResourceOptions) => {
 const findAllChapterReciters = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { reciters } = await fetcher<{
-    reciters: ChapterReciterResource[];
+    reciters: Reciter[];
   }>(`/resources/chapter_reciters`, params, options?.fetchFn);
 
   return reciters;

@@ -7,8 +7,8 @@ import { removeBeginningSlash } from '../../utils/misc';
 const { camelizeKeys, decamelizeKeys } = humps;
 
 export const makeUrl = (url: string, params: Record<string, any> = {}) => {
-  const { baseUrl } = getConfig();
-  const apiRoot = `${baseUrl}/content/api/v4/`; // new root :contentReference[oaicite:2]{index=2}
+  const { contentBaseUrl } = getConfig();
+  const apiRoot = `${contentBaseUrl}/content/api/v4/`;
   const u = `${apiRoot}${removeBeginningSlash(url)}`;
 
   if (!Object.keys(params).length) return u;
@@ -28,10 +28,12 @@ export async function fetcher<T>(
   const { clientId } = getConfig();
   const doFetch = fetchFn ?? globalThis.fetch;
 
-  const res = await doFetch(makeUrl(url, params), {
+  const fullUrl = makeUrl(url, params);
+
+  const res = await doFetch(fullUrl, {
     headers: {
       'x-auth-token': token,
-      'x-client-id': clientId, // required headers :contentReference[oaicite:3]{index=3}
+      'x-client-id': clientId,
     },
   });
 
