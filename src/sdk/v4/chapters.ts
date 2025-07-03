@@ -17,7 +17,7 @@ const defaultOptions: GetChapterOptions = {
  * quran.v4.chapters.findAll()
  */
 const findAll = async (options?: GetChapterOptions) => {
-  const params = mergeApiOptions(options, defaultOptions);
+  const params = mergeApiOptions(defaultOptions, options);
   const { chapters } = await fetcher<{ chapters: Chapter[] }>(
     '/chapters',
     params,
@@ -39,7 +39,7 @@ const findAll = async (options?: GetChapterOptions) => {
 const findById = async (id: ChapterId, options?: GetChapterOptions) => {
   if (!Utils.isValidChapterId(id)) throw new Error('Invalid chapter id');
 
-  const params = mergeApiOptions(options, defaultOptions);
+  const params = mergeApiOptions(defaultOptions, options);
   const { chapter } = await fetcher<{ chapter: Chapter }>(
     `/chapters/${id}`,
     params,
@@ -61,7 +61,7 @@ const findById = async (id: ChapterId, options?: GetChapterOptions) => {
 const findInfoById = async (id: ChapterId, options?: GetChapterOptions) => {
   if (!Utils.isValidChapterId(id)) throw new Error('Invalid chapter id');
 
-  const params = mergeApiOptions(options, defaultOptions);
+  const params = mergeApiOptions(defaultOptions, options);
   const { chapterInfo } = await fetcher<{ chapterInfo: ChapterInfo }>(
     `/chapters/${id}/info`,
     params,

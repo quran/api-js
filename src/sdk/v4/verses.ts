@@ -39,7 +39,7 @@ const defaultOptions: GetVerseOptions = {
 };
 
 const mergeVerseOptions = (options: GetVerseOptions = {}) => {
-  const result = mergeApiOptions(options, defaultOptions);
+  const result = mergeApiOptions(defaultOptions, options);
 
   // @ts-expect-error - we accept an array of strings, however, the API expects a comma separated string
   if (result.translations) result.translations = result.translations.join(',');
