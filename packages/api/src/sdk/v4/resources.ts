@@ -1,7 +1,6 @@
-import {
+import type {
   ChapterInfoResource,
   ChapterReciterResource,
-  Language,
   LanguageResource,
   RecitationInfoResource,
   RecitationResource,
@@ -11,9 +10,11 @@ import {
   TranslationInfoResource,
   TranslationResource,
   VerseMediaResource,
-} from '../../types';
-import { BaseApiOptions } from '../../types/BaseApiOptions';
-import { fetcher, mergeApiOptions } from './_fetcher';
+} from "@/types";
+import type { BaseApiOptions } from "@/types/BaseApiOptions";
+import { Language } from "@/types";
+
+import { fetcher, mergeApiOptions } from "./_fetcher";
 
 type GetResourceOptions = Partial<BaseApiOptions>;
 
@@ -32,7 +33,7 @@ const findAllRecitations = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options);
   const { recitations } = await fetcher<{
     recitations: RecitationResource[];
-  }>('/resources/recitations', params, options?.fetchFn);
+  }>("/resources/recitations", params, options?.fetchFn);
 
   return recitations;
 };
@@ -65,7 +66,7 @@ const findAllTranslations = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { translations } = await fetcher<{
     translations: TranslationResource[];
-  }>('/resources/translations', params, options?.fetchFn);
+  }>("/resources/translations", params, options?.fetchFn);
 
   return translations;
 };
@@ -80,7 +81,7 @@ const findAllTranslations = async (options?: GetResourceOptions) => {
  */
 const findTranslationInfo = async (
   id: string,
-  options?: GetResourceOptions
+  options?: GetResourceOptions,
 ) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { info } = await fetcher<{
@@ -101,7 +102,7 @@ const findAllTafsirs = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { tafsirs } = await fetcher<{
     tafsirs: TafsirResource[];
-  }>('/resources/tafsirs', params, options?.fetchFn);
+  }>("/resources/tafsirs", params, options?.fetchFn);
 
   return tafsirs;
 };
@@ -130,11 +131,11 @@ const findTafsirInfo = async (id: string, options?: GetResourceOptions) => {
  * quran.v4.resources.findAllRecitationStyles()
  */
 const findAllRecitationStyles = async (
-  options?: Omit<BaseApiOptions, 'language'>
+  options?: Omit<BaseApiOptions, "language">,
 ) => {
   const { recitationStyles } = await fetcher<{
     recitationStyles: RecitationStylesResource;
-  }>('/resources/recitation_styles', undefined, options?.fetchFn);
+  }>("/resources/recitation_styles", undefined, options?.fetchFn);
 
   return recitationStyles;
 };
@@ -150,7 +151,7 @@ const findAllLanguages = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { languages } = await fetcher<{
     languages: LanguageResource[];
-  }>('/resources/languages', params, options?.fetchFn);
+  }>("/resources/languages", params, options?.fetchFn);
 
   return languages;
 };
@@ -166,7 +167,7 @@ const findAllChapterInfos = async (options?: GetResourceOptions) => {
   const params = mergeApiOptions(options, defaultOptions);
   const { chapterInfos } = await fetcher<{
     chapterInfos: ChapterInfoResource[];
-  }>('/resources/chapter_infos', params, options?.fetchFn);
+  }>("/resources/chapter_infos", params, options?.fetchFn);
 
   return chapterInfos;
 };

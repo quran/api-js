@@ -1,9 +1,7 @@
-import v4 from './v4';
-import utils from './utils';
+import v4 from "./v4";
 
 const quran = {
   v4,
-  utils,
 };
 
 export default quran;

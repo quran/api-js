@@ -1,5 +1,11 @@
 {
   "extends": "@quranjs/tsconfig/internal-package.json",
   "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
   "exclude": ["node_modules"]
 }

@@ -1,19 +1,27 @@
-import {
-  ChapterRecitation,
-  VerseRecitation,
+import type {
   ChapterId,
+  ChapterRecitation,
   HizbNumber,
   JuzNumber,
-  Language,
   PageNumber,
   Pagination,
   RubNumber,
   VerseKey,
+  VerseRecitation,
   VerseRecitationField,
-} from '../../types';
-import Utils from '../utils';
-import { fetcher, mergeApiOptions } from './_fetcher';
-import { BaseApiOptions } from '../../types/BaseApiOptions';
+} from "@/types";
+import type { BaseApiOptions } from "@/types/BaseApiOptions";
+import { Language } from "@/types";
+import {
+  isValidChapterId,
+  isValidHizb,
+  isValidJuz,
+  isValidQuranPage,
+  isValidRub,
+  isValidVerseKey,
+} from "@/utils";
+
+import { fetcher, mergeApiOptions } from "./_fetcher";
 
 type GetChapterRecitationOptions = Partial<BaseApiOptions>;
 
@@ -41,13 +49,13 @@ const defaultVerseRecitationsOptions: GetVerseRecitationOptions = {
  */
 const findAllChapterRecitations = async (
   reciterId: string,
-  options?: GetChapterRecitationOptions
+  options?: GetChapterRecitationOptions,
 ) => {
   const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
   const { audioFiles } = await fetcher<{ audioFiles: ChapterRecitation[] }>(
     `/chapter_recitations/${reciterId}`,
     params,
-    options?.fetchFn
+    options?.fetchFn,
   );
   return audioFiles;
 };
@@ -64,15 +72,15 @@ const findAllChapterRecitations = async (
 const findChapterRecitationById = async (
   chapterId: ChapterId,
   reciterId: string,
-  options?: GetChapterRecitationOptions
+  options?: GetChapterRecitationOptions,
 ) => {
-  if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
+  if (!isValidChapterId(chapterId)) throw new Error("Invalid chapter id");
 
   const params = mergeApiOptions(options, defaultChapterRecitationsOptions);
   const { audioFile } = await fetcher<{ audioFile: ChapterRecitation }>(
     `/chapter_recitations/${reciterId}/${chapterId}`,
     params,
-    options?.fetchFn
+    options?.fetchFn,
   );
 
   return audioFile;
@@ -90,9 +98,9 @@ const findChapterRecitationById = async (
 const findVerseRecitationsByChapter = async (
   chapterId: ChapterId,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidChapterId(chapterId)) throw new Error('Invalid chapter id');
+  if (!isValidChapterId(chapterId)) throw new Error("Invalid chapter id");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
@@ -101,7 +109,7 @@ const findVerseRecitationsByChapter = async (
   }>(
     `/recitations/${recitationId}/by_chapter/${chapterId}`,
     params,
-    options?.fetchFn
+    options?.fetchFn,
   );
 
   return data;
@@ -119,9 +127,9 @@ const findVerseRecitationsByChapter = async (
 const findVerseRecitationsByJuz = async (
   juz: JuzNumber,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidJuz(juz)) throw new Error('Invalid juz');
+  if (!isValidJuz(juz)) throw new Error("Invalid juz");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
@@ -144,9 +152,9 @@ const findVerseRecitationsByJuz = async (
 const findVerseRecitationsByPage = async (
   page: PageNumber,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidQuranPage(page)) throw new Error('Invalid page');
+  if (!isValidQuranPage(page)) throw new Error("Invalid page");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
@@ -169,9 +177,9 @@ const findVerseRecitationsByPage = async (
 const findVerseRecitationsByRub = async (
   rub: RubNumber,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidRub(rub)) throw new Error('Invalid rub');
+  if (!isValidRub(rub)) throw new Error("Invalid rub");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
@@ -194,9 +202,9 @@ const findVerseRecitationsByRub = async (
 const findVerseRecitationsByHizb = async (
   hizb: HizbNumber,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidHizb(hizb)) throw new Error('Invalid hizb');
+  if (!isValidHizb(hizb)) throw new Error("Invalid hizb");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
@@ -219,9 +227,9 @@ const findVerseRecitationsByHizb = async (
 const findVerseRecitationsByKey = async (
   key: VerseKey,
   recitationId: string,
-  options?: GetVerseRecitationOptions
+  options?: GetVerseRecitationOptions,
 ) => {
-  if (!Utils.isValidVerseKey(key)) throw new Error('Invalid verse key');
+  if (!isValidVerseKey(key)) throw new Error("Invalid verse key");
 
   const params = mergeApiOptions(options, defaultVerseRecitationsOptions);
   const data = await fetcher<{
