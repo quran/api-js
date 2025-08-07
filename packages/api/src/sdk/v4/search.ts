@@ -1,6 +1,8 @@
-import { Language, SearchResponse } from '../../types';
-import { BaseApiOptions } from '../../types/BaseApiOptions';
-import { fetcher, mergeApiOptions } from './_fetcher';
+import type { SearchResponse } from "@/types";
+import type { BaseApiOptions } from "@/types/BaseApiOptions";
+import { Language } from "@/types";
+
+import { fetcher, mergeApiOptions } from "./_fetcher";
 
 type SearchOptions = Partial<
   BaseApiOptions & {
@@ -28,9 +30,9 @@ const defaultSearchOptions: SearchOptions = {
 const search = async (q: string, options?: SearchOptions) => {
   const params = mergeApiOptions({ q, ...options }, defaultSearchOptions);
   const { search } = await fetcher<SearchResponse>(
-    '/search',
+    "/search",
     params,
-    options?.fetchFn
+    options?.fetchFn,
   );
 
   return search;

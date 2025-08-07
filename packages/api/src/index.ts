@@ -1,2 +1,3 @@
-export { default as quran } from './sdk';
-export * from './types';
+export { default as quran } from "./sdk";
+export * from "./types";
+export * from "./utils";
