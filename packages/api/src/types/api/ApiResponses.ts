@@ -1,5 +1,5 @@
-import { Translation } from './Translation';
-import { Word } from './Word';
+import type { Translation } from "./Translation";
+import type { Word } from "./Word";
 
 export interface SearchResponse {
   search: {

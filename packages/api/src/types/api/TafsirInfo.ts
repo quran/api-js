@@ -1,4 +1,4 @@
-import { TranslatedName } from './TranslatedName';
+import type { TranslatedName } from "./TranslatedName";
 
 export interface TafsirInfo {
   id?: number;

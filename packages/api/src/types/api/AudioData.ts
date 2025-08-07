@@ -1,5 +1,5 @@
-import { VerseKey } from '../VerseKey';
-import { Segment } from './Segment';
+import type { VerseKey } from "../VerseKey";
+import type { Segment } from "./Segment";
 
 export interface ChapterRecitation {
   id: number;

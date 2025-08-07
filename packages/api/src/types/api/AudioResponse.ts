@@ -1,4 +1,4 @@
-import { Segment } from './Segment';
+import type { Segment } from "./Segment";
 
 export interface AudioResponse {
   url?: string;

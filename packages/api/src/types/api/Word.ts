@@ -1,13 +1,13 @@
-import { VerseKey } from '../VerseKey';
-import { Translation } from './Translation';
-import { Transliteration } from './Transliteration';
+import type { VerseKey } from "../VerseKey";
+import type { Translation } from "./Translation";
+import type { Transliteration } from "./Transliteration";
 
 export enum CharType {
-  Word = 'word',
-  End = 'end',
-  Pause = 'pause',
-  Sajdah = 'sajdah',
-  RubElHizb = 'rub-el-hizb',
+  Word = "word",
+  End = "end",
+  Pause = "pause",
+  Sajdah = "sajdah",
+  RubElHizb = "rub-el-hizb",
 }
 
 export interface Word {

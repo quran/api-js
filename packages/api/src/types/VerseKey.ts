@@ -1,4 +1,4 @@
-import { NumberRange } from './utils';
+import type { NumberRange } from "./utils";
 
 export type VerseKey =
   | `1:${NumberRange<1, 8>}`
