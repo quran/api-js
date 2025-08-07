@@ -13,7 +13,10 @@ import { QuranVerses } from "./verses";
  * Main Quran API client
  */
 export class QuranClient {
-  private config: QuranClientConfig;
+  private config: Required<
+    Pick<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">
+  > &
+    Omit<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">;
   private fetcher: QuranFetcher;
 
   public readonly chapters: QuranChapters;

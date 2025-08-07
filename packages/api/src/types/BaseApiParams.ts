@@ -2,7 +2,7 @@ import type { Language } from ".";
 
 export type ApiParams = Record<
   string,
-  string | number | boolean | unknown[] | undefined
+  string | number | boolean | unknown[] | undefined | Record<string, boolean>
 >;
 
 /**

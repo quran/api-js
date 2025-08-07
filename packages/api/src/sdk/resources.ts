@@ -34,7 +34,7 @@ export class QuranResources {
   ): Promise<RecitationResource[]> {
     const { recitations } = await this.fetcher.fetch<{
       recitations: RecitationResource[];
-    }>("/resources/recitations", options);
+    }>("/content/api/v4/resources/recitations", options);
 
     return recitations;
   }
@@ -50,7 +50,7 @@ export class QuranResources {
   ): Promise<TranslationResource[]> {
     const { translations } = await this.fetcher.fetch<{
       translations: TranslationResource[];
-    }>("/resources/translations", options);
+    }>("/content/api/v4/resources/translations", options);
 
     return translations;
   }
@@ -66,7 +66,7 @@ export class QuranResources {
   ): Promise<TafsirResource[]> {
     const { tafsirs } = await this.fetcher.fetch<{
       tafsirs: TafsirResource[];
-    }>("/resources/tafsirs", options);
+    }>("/content/api/v4/resources/tafsirs", options);
 
     return tafsirs;
   }
@@ -82,7 +82,7 @@ export class QuranResources {
   ): Promise<LanguageResource[]> {
     const { languages } = await this.fetcher.fetch<{
       languages: LanguageResource[];
-    }>("/resources/languages", options);
+    }>("/content/api/v4/resources/languages", options);
 
     return languages;
   }
@@ -100,7 +100,7 @@ export class QuranResources {
   ): Promise<RecitationInfoResource> {
     const { recitationInfo } = await this.fetcher.fetch<{
       recitationInfo: RecitationInfoResource;
-    }>(`/resources/recitations/${id}/info`, options);
+    }>(`/content/api/v4/resources/recitations/${id}/info`, options);
 
     return recitationInfo;
   }
@@ -118,7 +118,7 @@ export class QuranResources {
   ): Promise<TranslationInfoResource> {
     const { translationInfo } = await this.fetcher.fetch<{
       translationInfo: TranslationInfoResource;
-    }>(`/resources/translations/${id}/info`, options);
+    }>(`/content/api/v4/resources/translations/${id}/info`, options);
 
     return translationInfo;
   }
@@ -136,7 +136,7 @@ export class QuranResources {
   ): Promise<TafsirInfoResource> {
     const { tafsirInfo } = await this.fetcher.fetch<{
       tafsirInfo: TafsirInfoResource;
-    }>(`/resources/tafsirs/${id}/info`, options);
+    }>(`/content/api/v4/resources/tafsirs/${id}/info`, options);
 
     return tafsirInfo;
   }
@@ -152,7 +152,7 @@ export class QuranResources {
   ): Promise<ChapterInfoResource[]> {
     const { chapterInfos } = await this.fetcher.fetch<{
       chapterInfos: ChapterInfoResource[];
-    }>("/resources/chapter_infos", options);
+    }>("/content/api/v4/resources/chapter_infos", options);
 
     return chapterInfos;
   }
@@ -168,7 +168,7 @@ export class QuranResources {
   ): Promise<ChapterReciterResource[]> {
     const { reciters } = await this.fetcher.fetch<{
       reciters: ChapterReciterResource[];
-    }>("/resources/chapter_reciters", options);
+    }>("/content/api/v4/resources/chapter_reciters", options);
 
     return reciters;
   }
@@ -184,7 +184,7 @@ export class QuranResources {
   ): Promise<RecitationStylesResource> {
     const { recitationStyles } = await this.fetcher.fetch<{
       recitationStyles: RecitationStylesResource;
-    }>("/resources/recitation_styles", options);
+    }>("/content/api/v4/resources/recitation_styles", options);
 
     return recitationStyles;
   }
@@ -200,7 +200,7 @@ export class QuranResources {
   ): Promise<VerseMediaResource> {
     const { verseMedia } = await this.fetcher.fetch<{
       verseMedia: VerseMediaResource;
-    }>("/resources/verse_media", options);
+    }>("/content/api/v4/resources/verse_media", options);
 
     return verseMedia;
   }

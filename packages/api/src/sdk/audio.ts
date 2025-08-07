@@ -36,7 +36,7 @@ export class QuranAudio {
   ): Promise<ChapterRecitation[]> {
     const { audioFiles } = await this.fetcher.fetch<{
       audioFiles: ChapterRecitation[];
-    }>(`/recitations/${reciterId}`, options);
+    }>(`/content/api/v4/recitations/${reciterId}`, options);
 
     return audioFiles;
   }
@@ -58,7 +58,7 @@ export class QuranAudio {
 
     const { audioFile } = await this.fetcher.fetch<{
       audioFile: ChapterRecitation;
-    }>(`/recitations/${reciterId}/${chapterId}`, options);
+    }>(`/content/api/v4/recitations/${reciterId}/${chapterId}`, options);
 
     return audioFile;
   }
@@ -81,7 +81,10 @@ export class QuranAudio {
     const data = await this.fetcher.fetch<{
       audioFiles: VerseRecitation[];
       pagination: Pagination;
-    }>(`/recitations/${recitationId}/by_chapter/${chapterId}`, options);
+    }>(
+      `/content/api/v4/recitations/${recitationId}/by_chapter/${chapterId}`,
+      options,
+    );
 
     return data;
   }
@@ -104,7 +107,7 @@ export class QuranAudio {
     const data = await this.fetcher.fetch<{
       audioFiles: VerseRecitation[];
       pagination: Pagination;
-    }>(`/recitations/${recitationId}/by_ayah/${key}`, options);
+    }>(`/content/api/v4/recitations/${recitationId}/by_ayah/${key}`, options);
 
     return data;
   }

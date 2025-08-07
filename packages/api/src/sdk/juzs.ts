@@ -15,7 +15,9 @@ export class QuranJuzs {
    * client.juzs.findAll()
    */
   async findAll(): Promise<Juz[]> {
-    const { juzs } = await this.fetcher.fetch<{ juzs: Juz[] }>("/juzs");
+    const { juzs } = await this.fetcher.fetch<{ juzs: Juz[] }>(
+      "/content/api/v4/juzs",
+    );
     return juzs;
   }
 }

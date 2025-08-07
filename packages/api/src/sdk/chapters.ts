@@ -20,7 +20,7 @@ export class QuranChapters {
    */
   async findAll(options?: GetChapterOptions): Promise<Chapter[]> {
     const { chapters } = await this.fetcher.fetch<{ chapters: Chapter[] }>(
-      "/chapters",
+      "/content/api/v4/chapters",
       options,
     );
 
@@ -40,7 +40,7 @@ export class QuranChapters {
     if (!isValidChapterId(id)) throw new Error("Invalid chapter id");
 
     const { chapter } = await this.fetcher.fetch<{ chapter: Chapter }>(
-      `/chapters/${id}`,
+      `/content/api/v4/chapters/${id}`,
       options,
     );
 
@@ -64,7 +64,7 @@ export class QuranChapters {
 
     const { chapterInfo } = await this.fetcher.fetch<{
       chapterInfo: ChapterInfo;
-    }>(`/chapters/${id}/info`, options);
+    }>(`/content/api/v4/chapters/${id}/info`, options);
 
     return chapterInfo;
   }

@@ -25,11 +25,14 @@ export class QuranSearch {
     q: string,
     options?: SearchOptions,
   ): Promise<SearchResponse["search"]> {
-    const { search } = await this.fetcher.fetch<SearchResponse>("/search", {
-      q,
-      size: 30, // search-specific default
-      ...options,
-    });
+    const { search } = await this.fetcher.fetch<SearchResponse>(
+      "/content/api/v4/search",
+      {
+        q,
+        size: 30, // search-specific default
+        ...options,
+      },
+    );
 
     return search;
   }

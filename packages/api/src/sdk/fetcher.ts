@@ -8,18 +8,23 @@ import { retry } from "@/lib/retry";
 import { paramsToString, removeBeginningSlash } from "@/lib/url";
 import { camelizeKeys } from "humps";
 
+type Config = Required<
+  Pick<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">
+> &
+  Omit<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">;
+
 /**
  * Handles HTTP requests with authentication for the Quran API
  */
 export class QuranFetcher {
   private cachedToken: CachedToken | null = null;
 
-  constructor(private config: QuranClientConfig) {}
+  constructor(private config: Config) {}
 
   /**
    * Update the configuration
    */
-  updateConfig(config: QuranClientConfig): void {
+  updateConfig(config: Config): void {
     this.config = config;
   }
 
@@ -31,12 +36,7 @@ export class QuranFetcher {
       return this.cachedToken.value; // still fresh
     }
 
-    const {
-      clientId,
-      clientSecret,
-      authBaseUrl = "https://oauth2.quran.foundation",
-      fetch: fetchFn,
-    } = this.config;
+    const { clientId, clientSecret, authBaseUrl, fetch: fetchFn } = this.config;
 
     const doFetch = fetchFn ?? globalThis.fetch;
 
@@ -59,7 +59,8 @@ export class QuranFetcher {
           method: "POST",
           headers: {
             Authorization: `Basic ${auth}`,
-            "content-type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
           },
           body,
         }),
@@ -94,7 +95,7 @@ export class QuranFetcher {
    * Make URL with base URL and query parameters
    */
   private makeUrl(url: string, params?: ApiParams): string {
-    const { contentBaseUrl = "https://apis.quran.foundation" } = this.config;
+    const { contentBaseUrl } = this.config;
     return `${contentBaseUrl}/${removeBeginningSlash(url)}${paramsToString(params)}`;
   }
 
