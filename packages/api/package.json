@@ -5,7 +5,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "packageManager": "pnpm@9.12.0",
   "version": "1.7.1",
   "license": "MIT",
   "main": "dist/index.min.js",
@@ -24,22 +23,20 @@
     "dist"
   ],
   "scripts": {
-    "postversion": "node ./scripts/postversion.mjs",
-    "start": "tsup --watch",
     "build": "tsup",
+    "dev": "tsup --watch",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src/** test/** mocks/**",
+    "lint": "eslint \"src/**/*.ts*\" \"test/**/*.ts*\" \"mocks/**/*.ts*\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
   "dependencies": {
     "humps": "^2.0.1"
   },
-  "prettier": "@quranjs/prettier-config",
   "devDependencies": {
-    "@changesets/cli": "^2.29.5",
     "@quranjs/eslint-config": "workspace:*",
     "@quranjs/prettier-config": "workspace:*",
     "@quranjs/tsconfig": "workspace:*",
@@ -56,11 +53,11 @@
     "prettier": "catalog:",
     "rollup-plugin-analyzer": "^4.0.0",
     "size-limit": "^7.0.8",
-    "tslib": "^2.3.1",
     "tsup": "^8.5.0",
     "typescript": "catalog:",
     "vitest": "^3.2.4"
   },
+  "prettier": "@quranjs/prettier-config",
   "size-limit": [
     {
       "path": "dist/index.min.js",
