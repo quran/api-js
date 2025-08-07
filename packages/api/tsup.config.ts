@@ -1,25 +1,27 @@
-import { defineConfig, Format, type Options } from 'tsup';
-import { createUmdWrapper } from './umd-wrapper-plugin';
-import { dependencies, version } from './package.json';
+import type { Options } from "tsup";
+import { defineConfig, Format } from "tsup";
+
+import { dependencies, version } from "./package.json";
+import { createUmdWrapper } from "./umd-wrapper-plugin";
 
 const externalDependencies = Object.keys(dependencies);
 
-const clientName = 'quranjsApi';
+const clientName = "quranjsApi";
 const clientVersion = version;
 
 const baseConfig: Options = {
-  entry: ['src/index.ts'],
-  outDir: 'dist',
+  entry: ["src/index.ts"],
+  outDir: "dist",
   outExtension({ format, options }) {
-    const ext = format === 'esm' ? 'mjs' : 'js';
-    const finalFormat = format === 'cjs' || format === 'esm' ? '' : format;
+    const ext = format === "esm" ? "mjs" : "js";
+    const finalFormat = format === "cjs" || format === "esm" ? "" : format;
 
     const outputExtension = options.minify
       ? `${finalFormat}.min.${ext}`
       : `${finalFormat}.${ext}`;
 
     return {
-      js: outputExtension.startsWith('.')
+      js: outputExtension.startsWith(".")
         ? outputExtension
         : `.${outputExtension}`,
     };
@@ -33,15 +35,15 @@ const baseConfig: Options = {
 
 const umdConfig: Options = {
   ...baseConfig,
-  platform: 'browser',
-  target: ['chrome90', 'edge90', 'firefox90', 'opera98', 'safari15'],
-  format: ['umd' as Format],
+  platform: "browser",
+  target: ["chrome90", "edge90", "firefox90", "opera98", "safari15"],
+  format: ["umd" as Format],
   noExternal: externalDependencies,
   banner: { js: `/* @QuranJS/API version ${clientVersion} */\n` },
   define: {
     __VERSION__: `'${clientVersion}'`,
   },
-  name: '@quranjs/api',
+  name: "@quranjs/api",
   globalName: clientName,
   bundle: true,
   esbuildPlugins: [],
@@ -50,7 +52,7 @@ const umdConfig: Options = {
 export default defineConfig((options) => [
   {
     ...baseConfig,
-    format: ['cjs', 'esm'],
+    format: ["cjs", "esm"],
     minify: !options.watch,
   },
   {

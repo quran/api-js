@@ -1,6 +1,6 @@
 {
   "extends": "@quranjs/tsconfig/internal-package.json",
-  "include": ["src"],
+  "include": ["src", "test", "mocks"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

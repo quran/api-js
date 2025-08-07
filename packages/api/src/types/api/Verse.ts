@@ -1,8 +1,8 @@
-import { VerseKey } from '../VerseKey';
-import { AudioResponse } from './AudioResponse';
-import { Tafsir } from './Tafsir';
-import { Translation } from './Translation';
-import { Word } from './Word';
+import type { VerseKey } from "../VerseKey";
+import type { AudioResponse } from "./AudioResponse";
+import type { Tafsir } from "./Tafsir";
+import type { Translation } from "./Translation";
+import type { Word } from "./Word";
 
 export interface Verse {
   id: number;
