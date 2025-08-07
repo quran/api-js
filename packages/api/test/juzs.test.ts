@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { quran } from "../src/index";
+import { testClient } from "./test-client";
 
 describe("Juzs API", () => {
   describe("findAll()", () => {
     it("should return an array of juzs", async () => {
-      const response = await quran.v4.juzs.findAll();
+      const response = await testClient.juzs.findAll();
       expect(response).toBeInstanceOf(Array);
       expect(response).toBeDefined();
     });
