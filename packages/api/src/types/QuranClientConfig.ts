@@ -10,10 +10,12 @@ export interface QuranClientConfig {
   clientId: string;
   /** Client secret for authentication */
   clientSecret: string;
+
   /** Base URL for content APIs */
   contentBaseUrl?: string;
   /** Base URL for authentication */
   authBaseUrl?: string;
+
   /** Custom fetch implementation */
   fetch?: CustomFetcher;
 

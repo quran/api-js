@@ -52,7 +52,7 @@ export class QuranVerses {
     if (!isValidVerseKey(key)) throw new Error("Invalid verse key");
 
     const { verse } = await this.fetcher.fetch<{ verse: Verse }>(
-      `/verses/by_key/${key}`,
+      `/content/api/v4/verses/by_key/${key}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -76,7 +76,7 @@ export class QuranVerses {
     if (!isValidChapterId(id)) throw new Error("Invalid chapter id");
 
     const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
-      `/verses/by_chapter/${id}`,
+      `/content/api/v4/verses/by_chapter/${id}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -100,7 +100,7 @@ export class QuranVerses {
     if (!isValidQuranPage(page)) throw new Error("Invalid page number");
 
     const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
-      `/verses/by_page/${page}`,
+      `/content/api/v4/verses/by_page/${page}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -121,7 +121,7 @@ export class QuranVerses {
     if (!isValidJuz(juz)) throw new Error("Invalid juz");
 
     const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
-      `/verses/by_juz/${juz}`,
+      `/content/api/v4/verses/by_juz/${juz}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -145,7 +145,7 @@ export class QuranVerses {
     if (!isValidHizb(hizb)) throw new Error("Invalid hizb");
 
     const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
-      `/verses/by_hizb/${hizb}`,
+      `/content/api/v4/verses/by_hizb/${hizb}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -166,7 +166,7 @@ export class QuranVerses {
     if (!isValidRub(rub)) throw new Error("Invalid rub");
 
     const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
-      `/verses/by_rub/${rub}`,
+      `/content/api/v4/verses/by_rub/${rub}`,
       {
         words: false, // verses-specific default
         ...options,
@@ -184,7 +184,7 @@ export class QuranVerses {
    */
   async findRandom(options?: GetVerseOptions): Promise<Verse> {
     const { verse } = await this.fetcher.fetch<{ verse: Verse }>(
-      "/verses/random",
+      "/content/api/v4/verses/random",
       {
         words: false, // verses-specific default
         ...options,
