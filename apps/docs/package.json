@@ -1,0 +1,35 @@
+{
+  "name": "@quranjs/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --turbo",
+    "start": "next start",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "fumadocs-core": "15.6.9",
+    "fumadocs-mdx": "11.7.3",
+    "fumadocs-ui": "15.6.9",
+    "next": "15.4.5",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@quranjs/eslint-config": "workspace:*",
+    "@quranjs/prettier-config": "workspace:*",
+    "@quranjs/tsconfig": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^24.2.0",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "catalog:",
+    "postcss": "^8.5.6",
+    "prettier": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@quranjs/prettier-config"
+}
