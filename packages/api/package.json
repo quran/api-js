@@ -1,0 +1,81 @@
+{
+  "name": "@quranjs/api",
+  "description": "A library for fetching quran data from the quran.com API.",
+  "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "version": "1.7.1",
+  "license": "MIT",
+  "main": "dist/index.min.js",
+  "module": "dist/index.min.mjs",
+  "browser": "dist/index.umd.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.min.js",
+      "import": "./dist/index.min.mjs"
+    },
+    "./cdn": "./dist/index.umd.min.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "postversion": "node ./scripts/postversion.mjs",
+    "start": "tsup --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/** test/** mocks/**",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "dependencies": {
+    "humps": "^2.0.1"
+  },
+  "prettier": "@quranjs/prettier-config",
+  "devDependencies": {
+    "@changesets/cli": "^2.29.5",
+    "@quranjs/eslint-config": "workspace:*",
+    "@quranjs/prettier-config": "workspace:*",
+    "@quranjs/tsconfig": "workspace:*",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@swc/core": "^1.10.4",
+    "@types/humps": "^2.0.1",
+    "@types/node": "^24.2.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "cross-fetch": "^3.1.5",
+    "esbuild-plugin-umd-wrapper": "^3.0.0",
+    "eslint": "catalog:",
+    "fast-check": "^3.3.0",
+    "msw": "^0.39.2",
+    "prettier": "catalog:",
+    "rollup-plugin-analyzer": "^4.0.0",
+    "size-limit": "^7.0.8",
+    "tslib": "^2.3.1",
+    "tsup": "^8.5.0",
+    "typescript": "catalog:",
+    "vitest": "^3.2.4"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.min.js",
+      "limit": "15 KB"
+    },
+    {
+      "path": "dist/index.min.mjs",
+      "limit": "15 KB"
+    },
+    {
+      "path": "dist/index.umd.min.js",
+      "limit": "15 KB"
+    }
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
