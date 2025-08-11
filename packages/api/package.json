@@ -2,11 +2,16 @@
   "name": "@quranjs/api",
   "description": "A library for fetching quran data from the quran.com API.",
   "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quran/api-js",
+    "directory": "packages/api"
+  },
   "publishConfig": {
     "access": "public"
   },
   "version": "1.7.1",
-  "license": "MIT",
   "main": "dist/index.min.js",
   "module": "dist/index.min.mjs",
   "browser": "dist/index.umd.min.js",
@@ -20,7 +25,10 @@
     "./cdn": "./dist/index.umd.min.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",

@@ -1,6 +1,11 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.0.0/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "quran/api-js"
+    }
+  ],
   "baseBranch": "main",
   "commit": false,
   "fixed": [],
@@ -8,6 +13,6 @@
   "access": "public",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@quranjs/github"
+    "@quranjs/docs"
   ]
 }

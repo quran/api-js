@@ -1,4 +1,4 @@
-import type { VerseKey } from "../VerseKey";
+import type { VerseKey } from "../common/verse-key";
 import type { Translation } from "./Translation";
 import type { Transliteration } from "./Transliteration";
 

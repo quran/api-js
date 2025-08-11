@@ -5,9 +5,10 @@ on:
     branches: ["main"]
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 env:
   HUSKY: 0
-  
+
 permissions:
   contents: write
   issues: write
@@ -23,10 +24,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup
-        uses: ./tooling/github/setup
+        uses: ./.github/setup
 
       - name: Build
-        run: pnpm build --filter quranjs --filter @quranjs/\*
+        run: pnpm build --filter @quranjs/\*
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

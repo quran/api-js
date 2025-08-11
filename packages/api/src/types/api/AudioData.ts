@@ -1,4 +1,4 @@
-import type { VerseKey } from "../VerseKey";
+import type { VerseKey } from "../common/verse-key";
 import type { Segment } from "./Segment";
 
 export interface ChapterRecitation {
