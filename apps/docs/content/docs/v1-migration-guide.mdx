@@ -1,3 +1,8 @@
+---
+title: Migration Guide
+description: How to migrate from v1 to v2
+---
+
 # Migration Guide: From quran.v4 to QuranClient
 
 This document outlines how to migrate from the old `quran.v4` API to the new class-based `QuranClient`.
@@ -5,32 +10,32 @@ This document outlines how to migrate from the old `quran.v4` API to the new cla
 ## Old Usage (Deprecated)
 
 ```javascript
-import { quran } from '@quranjs/api';
+import { quran } from "@quranjs/api";
 
 // Old way
 const chapters = await quran.v4.chapters.findAll();
-const verse = await quran.v4.verses.findByKey('1:1');
+const verse = await quran.v4.verses.findByKey("1:1");
 ```
 
 ## New Usage (Recommended)
 
 ```javascript
-import { QuranClient } from '@quranjs/api';
+import { QuranClient } from "@quranjs/api";
 
 // Create a client instance with your credentials
 const client = new QuranClient({
-  clientId: 'your-client-id',
-  clientSecret: 'your-client-secret',
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret",
   // Optional: custom base URLs
-  contentBaseUrl: 'https://apis.quran.foundation', // default
-  authBaseUrl: 'https://oauth2.quran.foundation', // default
+  contentBaseUrl: "https://apis.quran.foundation", // default
+  authBaseUrl: "https://oauth2.quran.foundation", // default
   // Optional: custom fetch implementation
   fetch: fetch, // default: global fetch
 });
 
 // Use the client
 const chapters = await client.chapters.findAll();
-const verse = await client.verses.findByKey('1:1');
+const verse = await client.verses.findByKey("1:1");
 ```
 
 ## Authentication
@@ -47,11 +52,13 @@ The new client automatically handles OAuth2 authentication using the client cred
 All API methods remain the same, but they're now organized under the client instance:
 
 ### Chapters
+
 - `client.chapters.findAll()`
 - `client.chapters.findById(id)`
 - `client.chapters.findInfoById(id)`
 
-### Verses  
+### Verses
+
 - `client.verses.findByKey(key)`
 - `client.verses.findByChapter(id)`
 - `client.verses.findByPage(page)`
@@ -61,15 +68,18 @@ All API methods remain the same, but they're now organized under the client inst
 - `client.verses.findRandom()`
 
 ### Juzs
+
 - `client.juzs.findAll()`
 
 ### Audio
+
 - `client.audio.findAllChapterRecitations(reciterId)`
 - `client.audio.findChapterRecitationById(reciterId, chapterId)`
 - `client.audio.findVerseRecitationsByChapter(chapterId, recitationId)`
 - `client.audio.findVerseRecitationsByKey(key, recitationId)`
 
 ### Resources
+
 - `client.resources.findAllRecitations()`
 - `client.resources.findAllTranslations()`
 - `client.resources.findAllTafsirs()`
@@ -79,6 +89,7 @@ All API methods remain the same, but they're now organized under the client inst
 - `client.resources.findTafsirInfo(id)`
 
 ### Search
+
 - `client.search.search(query, options)`
 
 ## Configuration Updates
@@ -87,7 +98,7 @@ You can update the client configuration at runtime:
 
 ```javascript
 client.updateConfig({
-  contentBaseUrl: 'https://new-api-base.com',
+  contentBaseUrl: "https://new-api-base.com",
 });
 ```
 
@@ -96,7 +107,7 @@ client.updateConfig({
 The old `quran.v4` API is still available for backward compatibility but is deprecated:
 
 ```javascript
-import { quran } from '@quranjs/api';
+import { quran } from "@quranjs/api";
 
 // Still works but deprecated
 const chapters = await quran.v4.chapters.findAll();
@@ -110,12 +121,12 @@ The new client provides better error handling with authentication-specific error
 try {
   const chapters = await client.chapters.findAll();
 } catch (error) {
-  if (error.message.includes('Token request failed')) {
+  if (error.message.includes("Token request failed")) {
     // Handle authentication error
-    console.error('Authentication failed:', error.message);
+    console.error("Authentication failed:", error.message);
   } else {
     // Handle other API errors
-    console.error('API error:', error.message);
+    console.error("API error:", error.message);
   }
 }
 ```
@@ -125,11 +136,11 @@ try {
 You can provide a custom fetch implementation for environments that don't have global fetch:
 
 ```javascript
-import nodeFetch from 'node-fetch';
+import nodeFetch from "node-fetch";
 
 const client = new QuranClient({
-  clientId: 'your-client-id',
-  clientSecret: 'your-client-secret',
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret",
   fetch: nodeFetch,
 });
 ```

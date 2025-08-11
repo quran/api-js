@@ -1,13 +1,39 @@
 ---
-title: Hello World
-description: Your first document
+title: Introduction
+description: A library for fetching quran data from the Quran.com API on both Node.js and the browser.
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+## What is QuranJS?
 
-## What is Next?
+QuranJS is a library for fetching quran data from the Quran.com API on both Node.js and the browser.
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.vercel.app" />
-</Cards>
+## Installation
+
+<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+
+  <Tab>
+  ```bash 
+  npm install @quranjs/api 
+  ```
+  </Tab>
+  <Tab>
+  ```bash 
+  pnpm install @quranjs/api 
+  ```
+  </Tab>
+  <Tab>
+  ```bash 
+  yarn add @quranjs/api 
+  ```
+  </Tab>
+  <Tab>
+  ```bash 
+  bun add @quranjs/api 
+  ```
+  </Tab>
+</Tabs>
+
+<AutoTypeTable
+  path="../../packages/api/src/types/quran-client.ts"
+  name="QuranClientConfig"
+/>

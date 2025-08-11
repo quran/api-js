@@ -1,4 +1,4 @@
-import type { VerseKey } from "../VerseKey";
+import type { VerseKey } from "../common/verse-key";
 
 export interface Translation {
   id?: number;

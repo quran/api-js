@@ -1,4 +1,4 @@
-import type { VerseKey } from "../VerseKey";
+import type { VerseKey } from "../common/verse-key";
 import type { AudioResponse } from "./AudioResponse";
 import type { Tafsir } from "./Tafsir";
 import type { Translation } from "./Translation";

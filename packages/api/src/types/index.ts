@@ -124,13 +124,13 @@ export type TranslationField =
 
 export type VerseRecitationField = "id" | "chapterId" | "segments" | "format";
 
-export * from "./VerseKey";
-export * from "./ChapterId";
-export * from "./HizbNumber";
-export * from "./JuzNumber";
-export * from "./PageNumber";
-export * from "./RubNumber";
+export * from "./common/verse-key";
+export * from "./common/chapter-id";
+export * from "./common/hizb-number";
+export * from "./common/juz-number";
+export * from "./common/page-number";
+export * from "./common/rub-number";
 
 export * from "./api";
 export * from "./BaseApiParams";
-export * from "./QuranClientConfig";
+export * from "./quran-client";
