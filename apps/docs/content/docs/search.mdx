@@ -1,0 +1,67 @@
+---
+title: Search API
+description: Search Quran content with language support and pagination.
+---
+
+The Search API enables searching through Quranic content with multi-language support.
+
+## Basic Search
+
+```ts
+const results = await client.search.search("light");
+
+console.log(`Found ${results.totalResults} results`);
+
+results.results.forEach((result) => {
+  console.log(`${result.verseKey}: ${result.highlightedText}`);
+});
+```
+
+### SearchResult Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/search-result.ts"
+  name="SearchResult"
+/>
+
+### With Language
+
+```ts
+import { Language } from "@quranjs/api";
+
+const results = await client.search.search("نور", {
+  language: Language.ARABIC,
+  size: 10,
+  page: 1,
+});
+```
+
+## Options
+
+### Pagination
+
+```ts
+const results = await client.search.search("mercy", {
+  size: 10,    // Results per page (default: 30)
+  page: 1,     // Page number
+  language: Language.ENGLISH,
+});
+
+console.log(`Page ${results.currentPage} of ${results.totalPages}`);
+```
+
+### Language-Specific
+
+```ts
+const english = await client.search.search("mercy", {
+  language: Language.ENGLISH,
+});
+
+const arabic = await client.search.search("رحمة", {
+  language: Language.ARABIC,
+});
+
+const urdu = await client.search.search("رحمت", {
+  language: Language.URDU,
+});
+```

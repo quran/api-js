@@ -1,81 +1,33 @@
 {
-  "name": "@quranjs/api",
-  "description": "A library for fetching quran data from the quran.com API.",
-  "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
-  "publishConfig": {
-    "access": "public"
+  "name": "quranjs",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22.12.0"
   },
-  "packageManager": "pnpm@9.12.0",
-  "version": "1.7.1",
-  "license": "MIT",
-  "main": "dist/index.min.js",
-  "module": "dist/index.min.mjs",
-  "browser": "dist/index.umd.min.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.min.js",
-      "import": "./dist/index.min.mjs"
-    },
-    "./cdn": "./dist/index.umd.min.js"
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "postversion": "node ./scripts/postversion.mjs",
-    "start": "tsup --watch",
-    "build": "tsup",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "lint": "eslint src/** test/** mocks/**",
-    "prepare": "husky install",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
-  },
-  "dependencies": {
-    "humps": "^2.0.1"
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "dev": "turbo watch dev --continue",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "lint": "turbo run lint --continue --filter=\"./packages/*\" -- --cache --cache-location .cache/.eslintcache",
+    "test": "turbo run test --continue --filter=\"./packages/*\"",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "typecheck": "turbo run typecheck --filter=\"./packages/*\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
-    "@swc/core": "^1.10.4",
-    "@types/humps": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
-    "@vitest/coverage-c8": "^0.24.4",
-    "cross-fetch": "^3.1.5",
-    "esbuild-plugin-umd-wrapper": "^3.0.0",
-    "eslint": "^8.26.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "fast-check": "^3.3.0",
-    "husky": "^7.0.4",
-    "msw": "^0.39.2",
-    "prettier": "^2.7.1",
-    "rollup-plugin-analyzer": "^4.0.0",
-    "size-limit": "^7.0.8",
-    "tslib": "^2.3.1",
-    "tsup": "^6.3.0",
-    "typescript": "^4.6.2",
-    "vitest": "^0.24.4"
+    "@changesets/cli": "^2.29.5",
+    "@quranjs/prettier-config": "workspace:*",
+    "prettier": "catalog:",
+    "turbo": "^2.5.5",
+    "typescript": "catalog:"
   },
-  "size-limit": [
-    {
-      "path": "dist/index.min.js",
-      "limit": "15 KB"
-    },
-    {
-      "path": "dist/index.min.mjs",
-      "limit": "15 KB"
-    },
-    {
-      "path": "dist/index.umd.min.js",
-      "limit": "15 KB"
-    }
-  ],
-  "engines": {
-    "node": ">=12"
-  }
+  "prettier": "@quranjs/prettier-config"
 }
