@@ -69,7 +69,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -95,7 +95,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -107,7 +107,7 @@ export const handlers = [
       try {
         validateAuth(request);
         return HttpResponse.json({});
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -131,7 +131,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -155,7 +155,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -175,7 +175,7 @@ export const handlers = [
             recitation_id: params.reciterId,
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -205,7 +205,7 @@ export const handlers = [
             total_records: 1,
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -234,7 +234,7 @@ export const handlers = [
             total_records: 1,
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -254,7 +254,7 @@ export const handlers = [
             qirat: "Hafs",
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -274,7 +274,7 @@ export const handlers = [
             language_name: "english",
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -294,7 +294,7 @@ export const handlers = [
             language_name: "arabic",
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -317,7 +317,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -337,7 +337,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -354,7 +354,7 @@ export const handlers = [
             murattal: "Murattal",
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -373,7 +373,7 @@ export const handlers = [
             url: "https://example.com/verse-media.jpg",
           },
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },
@@ -1146,7 +1146,7 @@ export const handlers = [
             },
           ],
         });
-      } catch (_error) {
+      } catch {
         return HttpResponse.text("Unauthorized", { status: 401 });
       }
     },

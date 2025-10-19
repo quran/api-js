@@ -1,10 +1,9 @@
-import fetch from "cross-fetch";
 import { describe, expect, it } from "vitest";
 
 import { QuranClient } from "../src";
 
 describe("Custom fetcher", () => {
-  it("should fail with no fetch", async () => {
+  it("should fail with no fetch", () => {
     // @ts-expect-error - we are testing this
     globalThis.fetch = undefined;
 
