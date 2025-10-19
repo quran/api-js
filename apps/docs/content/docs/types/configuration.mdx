@@ -1,0 +1,376 @@
+---
+title: Configuration Types
+description: Client configuration and parameter interfaces for API setup and requests.
+---
+
+# Configuration Types
+
+Client configuration and parameter interfaces for setting up the API client and making requests.
+
+## QuranClientConfig
+
+Client configuration interface for initializing the API client:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/quran-client.ts"
+  name="QuranClientConfig"
+/>
+
+## BaseApiParams
+
+Common parameters for API requests:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/BaseApiParams.ts"
+  name="BaseApiParams"
+/>
+
+## BaseApiOptions
+
+Base options for API requests:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/BaseApiOptions.ts"
+  name="BaseApiOptions"
+/>
+
+## Usage Examples
+
+### Basic Client Configuration
+
+```ts
+import { QuranClient } from "@quranjs/api";
+import type { QuranClientConfig } from "@quranjs/api";
+
+// Minimal configuration
+const config: QuranClientConfig = {
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret"
+};
+
+const client = new QuranClient(config);
+```
+
+### Advanced Client Configuration
+
+```ts
+import type { QuranClientConfig, BaseApiParams } from "@quranjs/api";
+import { Language } from "@quranjs/api";
+
+// Custom fetch function
+const customFetch = async (url: string, options?: RequestInit) => {
+  console.log(`Making request to: ${url}`);
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      'User-Agent': 'MyQuranApp/1.0'
+    }
+  });
+
+  return response;
+};
+
+// Full configuration
+const advancedConfig: QuranClientConfig = {
+  clientId: process.env.QURAN_CLIENT_ID!,
+  clientSecret: process.env.QURAN_CLIENT_SECRET!,
+  contentBaseUrl: "https://api.quran.com",
+  authBaseUrl: "https://auth.quran.com",
+  fetch: customFetch,
+  defaults: {
+    language: Language.ENGLISH,
+    perPage: 20
+  } as Partial<BaseApiParams>
+};
+
+const client = new QuranClient(advancedConfig);
+```
+
+### Environment-Based Configuration
+
+```ts
+import type { QuranClientConfig } from "@quranjs/api";
+
+function createQuranClientConfig(): QuranClientConfig {
+  const config: QuranClientConfig = {
+    clientId: process.env.QURAN_CLIENT_ID!,
+    clientSecret: process.env.QURAN_CLIENT_SECRET!
+  };
+
+  // Development environment
+  if (process.env.NODE_ENV === 'development') {
+    config.contentBaseUrl = 'http://localhost:3000/api';
+    config.defaults = {
+      language: 'en',
+      perPage: 10 // Smaller pages for development
+    };
+  }
+
+  // Production environment
+  if (process.env.NODE_ENV === 'production') {
+    config.defaults = {
+      language: 'en',
+      perPage: 50, // Larger pages for production
+      timeout: 30000 // 30 second timeout
+    };
+  }
+
+  return config;
+}
+
+const client = new QuranClient(createQuranClientConfig());
+```
+
+### Custom API Parameters
+
+```ts
+import type { BaseApiParams } from "@quranjs/api";
+
+// Create reusable parameter sets
+const defaultParams: Partial<BaseApiParams> = {
+  language: 'en',
+  perPage: 20,
+  page: 1
+};
+
+const arabicParams: Partial<BaseApiParams> = {
+  ...defaultParams,
+  language: 'ar'
+};
+
+const detailedParams: Partial<BaseApiParams> = {
+  ...defaultParams,
+  fields: {
+    textUthmani: true,
+    textImlaei: true,
+    imageUrl: true,
+    pageNumber: true
+  },
+  words: true,
+  audio: true
+};
+
+// Use with API calls
+const chapter = await client.chapters.findById("1", arabicParams);
+const verse = await client.verses.findByKey("2:255", detailedParams);
+```
+
+### Configuration Validation
+
+```ts
+import type { QuranClientConfig } from "@quranjs/api";
+
+function validateConfig(config: Partial<QuranClientConfig>): {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+} {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Required fields
+  if (!config.clientId) {
+    errors.push('clientId is required');
+  }
+
+  if (!config.clientSecret) {
+    errors.push('clientSecret is required');
+  }
+
+  // Validate URLs if provided
+  if (config.contentBaseUrl) {
+    try {
+      new URL(config.contentBaseUrl);
+    } catch {
+      errors.push('contentBaseUrl must be a valid URL');
+    }
+  }
+
+  if (config.authBaseUrl) {
+    try {
+      new URL(config.authBaseUrl);
+    } catch {
+      errors.push('authBaseUrl must be a valid URL');
+    }
+  }
+
+  // Warnings for best practices
+  if (!config.defaults?.language) {
+    warnings.push('Consider setting a default language');
+  }
+
+  if (!config.defaults?.perPage) {
+    warnings.push('Consider setting a default page size');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings
+  };
+}
+
+// Usage
+const configToValidate = {
+  clientId: 'my-client-id',
+  clientSecret: 'my-secret'
+};
+
+const validation = validateConfig(configToValidate);
+if (!validation.isValid) {
+  console.error('Configuration errors:', validation.errors);
+} else if (validation.warnings.length > 0) {
+  console.warn('Configuration warnings:', validation.warnings);
+}
+```
+
+### Request Options and Parameters
+
+```ts
+import type { BaseApiOptions, BaseApiParams } from "@quranjs/api";
+
+// Create request options with custom headers
+const requestOptions: BaseApiOptions = {
+  headers: {
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache'
+  },
+  timeout: 15000,
+  retries: 3
+};
+
+// Combine with parameters
+const requestParams: BaseApiParams = {
+  language: 'en',
+  page: 1,
+  perPage: 25,
+  fields: {
+    textUthmani: true,
+    textImlaei: false
+  }
+};
+
+// Use in API calls
+const verses = await client.verses.findByChapter("2", {
+  ...requestParams,
+  ...requestOptions
+});
+```
+
+### Dynamic Configuration
+
+```ts
+import type { QuranClientConfig, BaseApiParams } from "@quranjs/api";
+
+class ConfigurableQuranClient {
+  private baseConfig: QuranClientConfig;
+  private client: QuranClient;
+
+  constructor(baseConfig: QuranClientConfig) {
+    this.baseConfig = baseConfig;
+    this.client = new QuranClient(baseConfig);
+  }
+
+  // Update default parameters
+  setDefaults(defaults: Partial<BaseApiParams>) {
+    this.baseConfig.defaults = {
+      ...this.baseConfig.defaults,
+      ...defaults
+    };
+
+    // Recreate client with new defaults
+    this.client = new QuranClient(this.baseConfig);
+  }
+
+  // Get client with current configuration
+  getClient() {
+    return this.client;
+  }
+
+  // Update language preference
+  setLanguage(language: string) {
+    this.setDefaults({ language });
+  }
+
+  // Update page size preference
+  setPageSize(perPage: number) {
+    this.setDefaults({ perPage });
+  }
+}
+
+// Usage
+const configurableClient = new ConfigurableQuranClient({
+  clientId: 'my-id',
+  clientSecret: 'my-secret'
+});
+
+// Change language preference
+configurableClient.setLanguage('ar');
+
+// Change page size
+configurableClient.setPageSize(50);
+
+// Use the updated client
+const client = configurableClient.getClient();
+const verses = await client.verses.findByChapter("1");
+```
+
+### Configuration Presets
+
+```ts
+import type { QuranClientConfig } from "@quranjs/api";
+
+// Configuration presets for different use cases
+export const CONFIG_PRESETS = {
+  // Minimal setup for basic usage
+  basic: (credentials: { clientId: string; clientSecret: string }): QuranClientConfig => ({
+    ...credentials,
+    defaults: {
+      language: 'en',
+      perPage: 20
+    }
+  }),
+
+  // High-performance setup
+  performance: (credentials: { clientId: string; clientSecret: string }): QuranClientConfig => ({
+    ...credentials,
+    defaults: {
+      language: 'en',
+      perPage: 100
+    },
+    fetch: async (url, options) => {
+      return fetch(url, {
+        ...options,
+        keepalive: true
+      });
+    }
+  }),
+
+  // Development setup with debugging
+  development: (credentials: { clientId: string; clientSecret: string }): QuranClientConfig => ({
+    ...credentials,
+    contentBaseUrl: 'http://localhost:3000/api',
+    defaults: {
+      language: 'en',
+      perPage: 5
+    },
+    fetch: async (url, options) => {
+      console.log(`🔗 API Request: ${url}`);
+      const response = await fetch(url, options);
+      console.log(`📦 Response: ${response.status}`);
+      return response;
+    }
+  })
+};
+
+// Usage
+const client = new QuranClient(
+  CONFIG_PRESETS.development({
+    clientId: process.env.CLIENT_ID!,
+    clientSecret: process.env.CLIENT_SECRET!
+  })
+);
+```
+

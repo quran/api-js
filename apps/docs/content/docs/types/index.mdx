@@ -1,0 +1,136 @@
+---
+title: Types & Interfaces
+description: Complete TypeScript reference for all types, interfaces, and enums in the @quranjs/api library.
+---
+
+The `@quranjs/api` library provides comprehensive TypeScript definitions for all data structures and API responses. This reference covers all exported types, interfaces, and enums organized by category.
+
+## Categories
+
+### Core Data Types
+
+Essential interfaces for Quranic content including verses, chapters, words, and translations.
+
+- [**Verse**](./core-data#verse) - Main interface for Quranic verses
+- [**Chapter**](./core-data#chapter) - Interface for Quran chapters (surahs)
+- [**Word**](./core-data#word) - Word-by-word breakdown with translations
+- [**Translation**](./core-data#translation) - Verse and word translations
+- [**Tafsir**](./core-data#tafsir) - Quranic commentary and explanations
+
+### Audio Types
+
+Interfaces for audio recitations and timing data.
+
+- [**AudioResponse**](./audio#audioresponse) - Main audio response for verses
+- [**Segment**](./audio#segment) - Audio timing segments for word-by-word playback
+- [**Reciter**](./audio#reciter) - Reciter information and metadata
+
+### Resource Types
+
+Metadata interfaces for various resource types.
+
+- [**Resources**](./resources#resources) - Collection of all resource types
+- [**TranslationResource**](./resources#translationresource) - Translation metadata
+- [**RecitationResource**](./resources#recitationresource) - Recitation metadata
+- [**TafsirResource**](./resources#tafsirresource) - Tafsir/commentary metadata
+- [**LanguageResource**](./resources#languageresource) - Language information
+
+### Search Types
+
+Interfaces for search functionality and results.
+
+- [**SearchResult**](./search#searchresult) - Individual search result
+- [**SearchResponse**](./search#searchresponse) - Complete search API response
+
+### Common Types
+
+Shared interfaces and utility types used throughout the library.
+
+- [**TranslatedName**](./common#translatedname) - Localized name with language info
+- [**Footnote**](./common#footnote) - Translation footnotes
+- [**Pagination**](./common#pagination) - Pagination metadata
+- [**Juz**](./common#juz) - Juz (Para) information
+
+### Primitive Types
+
+String literal types for identifiers and primitive values.
+
+- [**VerseKey**](./primitives#versekey) - String type for verse identifiers
+- [**ChapterId**](./primitives#chapterid) - String type for chapter identifiers
+- [**JuzNumber**](./primitives#juznumber) - String type for Juz numbers
+- [**PageNumber**](./primitives#pagenumber) - String type for page numbers
+- [**HizbNumber**](./primitives#hizbnumber) - String type for Hizb numbers
+- [**RubNumber**](./primitives#rubnumber) - String type for Rub numbers
+
+### Field Types
+
+Field selection types for API requests.
+
+- [**VerseField**](./fields#versefield) - Available verse fields for field selection
+- [**WordField**](./fields#wordfield) - Available word fields
+- [**TranslationField**](./fields#translationfield) - Available translation fields
+
+### Configuration Types
+
+Client configuration and parameter interfaces.
+
+- [**QuranClientConfig**](./configuration#quranclientconfig) - Client configuration interface
+- [**BaseApiParams**](./configuration#baseapiparams) - Common parameters for API requests
+
+## Quick Reference
+
+### Most Common Types
+
+```ts
+import type {
+  Verse,
+  Chapter,
+  SearchResult,
+  VerseKey,
+  QuranClient
+} from "@quranjs/api";
+```
+
+### Type Guards and Utilities
+
+The library provides utility functions for type checking and validation:
+
+```ts
+import {
+  isValidVerseKey,
+  isValidChapterId,
+  isValidJuzNumber
+} from "@quranjs/api";
+
+// Type-safe validation
+const userInput = "2:255";
+if (isValidVerseKey(userInput)) {
+  // userInput is now typed as VerseKey
+  const verse = await client.verses.findByKey(userInput);
+}
+```
+
+### Field Selection
+
+Use field types for type-safe field selection:
+
+```ts
+import type { VerseField } from "@quranjs/api";
+
+const verseWithFields = await client.verses.findByKey("1:1", {
+  fields: {
+    textUthmani: true,
+    textImlaei: false,
+    imageUrl: true,
+  } as Partial<Record<VerseField, boolean>>,
+});
+```
+
+## Type Safety Features
+
+- **Strong typing** - All interfaces use explicit types, avoiding `any`
+- **Literal types** - String literals for IDs ensure compile-time validation
+- **Optional properties** - Clear distinction between required and optional data
+- **Generic constraints** - Type parameters ensure API consistency
+- **Type guards** - Runtime validation functions with type narrowing
+

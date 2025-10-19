@@ -1,0 +1,195 @@
+---
+title: Resource Types
+description: Metadata interfaces for translations, recitations, tafsirs, and language resources.
+---
+
+# Resource Types
+
+Metadata interfaces for various resource types including translations, recitations, tafsirs, and languages.
+
+## Resources
+
+Collection of all available resource types:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="Resources"
+/>
+
+## TranslationResource
+
+Translation metadata and information:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="TranslationResource"
+/>
+
+## RecitationResource
+
+Recitation metadata and reciter information:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationResource"
+/>
+
+## TafsirResource
+
+Tafsir/commentary metadata:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="TafsirResource"
+/>
+
+## LanguageResource
+
+Language information and metadata:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="LanguageResource"
+/>
+
+## ChapterInfoResource
+
+Chapter information resource:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Resources.ts"
+  name="ChapterInfoResource"
+/>
+
+## Usage Examples
+
+### Working with Translation Resources
+
+```ts
+import type { TranslationResource } from "@quranjs/api";
+
+// Get available translations
+const resources = await client.resources.getTranslations();
+
+// Filter by language
+const englishTranslations = resources.translations.filter(
+  (resource: TranslationResource) => resource.languageName === "English"
+);
+
+// Find specific translator
+const sahihInternational = englishTranslations.find(
+  resource => resource.slug === "sahih-international"
+);
+
+if (sahihInternational) {
+  console.log(`Translation: ${sahihInternational.name}`);
+  console.log(`Author: ${sahihInternational.authorName}`);
+  console.log(`Language: ${sahihInternational.languageName}`);
+}
+```
+
+### Working with Recitation Resources
+
+```ts
+import type { RecitationResource } from "@quranjs/api";
+
+// Get available recitations
+const resources = await client.resources.getRecitations();
+
+// Filter by style
+const murattalRecitations = resources.recitations.filter(
+  (resource: RecitationResource) => resource.style === "Murattal"
+);
+
+// Get reciter info
+murattalRecitations.forEach(recitation => {
+  console.log(`Reciter: ${recitation.reciterName}`);
+  console.log(`Style: ${recitation.style}`);
+});
+```
+
+### Working with Language Resources
+
+```ts
+import type { LanguageResource } from "@quranjs/api";
+
+// Get available languages
+const resources = await client.resources.getLanguages();
+
+// Filter RTL languages
+const rtlLanguages = resources.languages.filter(
+  (lang: LanguageResource) => lang.direction === "rtl"
+);
+
+// Get languages with translations
+const languagesWithTranslations = resources.languages.filter(
+  lang => lang.translationsCount > 0
+);
+
+languagesWithTranslations.forEach(lang => {
+  console.log(`${lang.nativeName} (${lang.name}): ${lang.translationsCount} translations`);
+});
+```
+
+### Working with Tafsir Resources
+
+```ts
+import type { TafsirResource } from "@quranjs/api";
+
+// Get available tafsirs
+const resources = await client.resources.getTafsirs();
+
+// Filter by language
+const englishTafsirs = resources.tafsirs.filter(
+  (tafsir: TafsirResource) => tafsir.languageName === "English"
+);
+
+englishTafsirs.forEach(tafsir => {
+  console.log(`Tafsir: ${tafsir.name}`);
+  console.log(`Author: ${tafsir.authorName}`);
+  console.log(`Slug: ${tafsir.slug}`);
+});
+```
+
+### Resource Discovery
+
+```ts
+import type { Resources } from "@quranjs/api";
+
+// Get all resources at once
+const allResources: Resources = await client.resources.getAll();
+
+// Access different resource types
+const {
+  languages,
+  translations,
+  recitations,
+  tafsirs,
+  chapterInfos
+} = allResources;
+
+// Build resource selector
+function buildResourceSelector() {
+  return {
+    translations: translations.map(t => ({
+      id: t.id,
+      label: `${t.name} (${t.authorName})`,
+      language: t.languageName
+    })),
+
+    recitations: recitations.map(r => ({
+      id: r.id,
+      label: `${r.reciterName} - ${r.style}`,
+      style: r.style
+    })),
+
+    languages: languages.map(l => ({
+      id: l.id,
+      label: l.nativeName,
+      iso: l.iso,
+      direction: l.direction
+    }))
+  };
+}
+```
+

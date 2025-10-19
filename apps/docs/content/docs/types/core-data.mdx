@@ -1,0 +1,116 @@
+---
+title: Core Data Types
+description: Essential interfaces for Quranic content including verses, chapters, words, translations, and tafsir.
+---
+
+# Core Data Types
+
+Essential interfaces for working with Quranic content, including verses, chapters, words, translations, and commentary.
+
+## Verse
+
+The main interface for Quranic verses with optional translations, audio, and word data:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Verse.ts"
+  name="Verse"
+/>
+
+## Chapter
+
+Interface for Quran chapters (surahs):
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Chapter.ts"
+  name="Chapter"
+/>
+
+## Word
+
+Word-by-word breakdown with translations and audio:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Word.ts"
+  name="Word"
+/>
+
+### CharType Enum
+
+Character type enumeration for words:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Word.ts"
+  name="CharType"
+/>
+
+## Translation
+
+Verse or word translations:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Translation.ts"
+  name="Translation"
+/>
+
+## Tafsir
+
+Quranic commentary/explanation:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Tafsir.ts"
+  name="Tafsir"
+/>
+
+## Usage Examples
+
+### Working with Verses
+
+```ts
+import type { Verse, VerseKey } from "@quranjs/api";
+
+// Type-safe verse handling
+const verse: Verse = await client.verses.findByKey("2:255" as VerseKey);
+
+// Access optional properties safely
+if (verse.translations) {
+  verse.translations.forEach(translation => {
+    console.log(translation.text);
+  });
+}
+
+// Word-by-word access
+if (verse.words) {
+  verse.words.forEach(word => {
+    console.log(`${word.textUthmani} - ${word.translation.text}`);
+  });
+}
+```
+
+### Working with Chapters
+
+```ts
+import type { Chapter } from "@quranjs/api";
+
+const chapter: Chapter = await client.chapters.findById("1");
+
+console.log(`${chapter.nameArabic} (${chapter.nameSimple})`);
+console.log(`Verses: ${chapter.versesCount}`);
+console.log(`Revelation place: ${chapter.revelationPlace}`);
+```
+
+### Translation Handling
+
+```ts
+import type { Translation } from "@quranjs/api";
+
+// Filter translations by language
+const englishTranslations = verse.translations?.filter(
+  (t: Translation) => t.languageName === "English"
+);
+
+// Access translation metadata
+englishTranslations?.forEach(translation => {
+  console.log(`${translation.resourceName}: ${translation.text}`);
+});
+```
+

@@ -1,0 +1,296 @@
+---
+title: Primitive Types
+description: String literal types for identifiers and primitive values.
+---
+
+# Primitive Types
+
+String literal types for identifiers and primitive values with strong typing and validation.
+
+## VerseKey
+
+String type for verse identifiers in `chapter:verse` format:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/verse-key.ts"
+  name="VerseKey"
+/>
+
+## ChapterId
+
+String type for chapter identifiers:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/chapter-id.ts"
+  name="ChapterId"
+/>
+
+## JuzNumber
+
+String type for Juz numbers:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/juz-number.ts"
+  name="JuzNumber"
+/>
+
+## PageNumber
+
+String type for page numbers:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/page-number.ts"
+  name="PageNumber"
+/>
+
+## HizbNumber
+
+String type for Hizb numbers:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/hizb-number.ts"
+  name="HizbNumber"
+/>
+
+## RubNumber
+
+String type for Rub numbers:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/common/rub-number.ts"
+  name="RubNumber"
+/>
+
+## Usage Examples
+
+### Working with VerseKey
+
+```ts
+import type { VerseKey } from "@quranjs/api";
+import { isValidVerseKey } from "@quranjs/api";
+
+// Type-safe verse key usage
+const verseKey: VerseKey = "2:255"; // ✓ Valid
+const invalidKey = "999:1"; // ✗ TypeScript error
+
+// Runtime validation
+function getVerse(key: string) {
+  if (isValidVerseKey(key)) {
+    // key is now typed as VerseKey
+    return client.verses.findByKey(key);
+  }
+  throw new Error("Invalid verse key");
+}
+
+// Parse verse key components
+function parseVerseKey(verseKey: VerseKey) {
+  const [chapter, verse] = verseKey.split(':').map(Number);
+  return { chapter, verse };
+}
+
+// Validate and convert user input
+function sanitizeVerseKey(input: string): VerseKey | null {
+  const trimmed = input.trim();
+
+  if (isValidVerseKey(trimmed)) {
+    return trimmed;
+  }
+
+  return null;
+}
+```
+
+### Working with ChapterId
+
+```ts
+import type { ChapterId } from "@quranjs/api";
+import { isValidChapterId } from "@quranjs/api";
+
+// Type-safe chapter ID usage
+const chapterId: ChapterId = "1"; // Al-Fatiha
+const lastChapter: ChapterId = "114"; // An-Nas
+
+// Validate chapter ID
+function getChapter(id: string) {
+  if (isValidChapterId(id)) {
+    return client.chapters.findById(id);
+  }
+  throw new Error("Invalid chapter ID");
+}
+
+// Chapter navigation
+function getNextChapter(currentId: ChapterId): ChapterId | null {
+  const current = parseInt(currentId);
+  const next = current + 1;
+
+  if (next <= 114) {
+    return next.toString() as ChapterId;
+  }
+
+  return null; // Last chapter
+}
+
+function getPreviousChapter(currentId: ChapterId): ChapterId | null {
+  const current = parseInt(currentId);
+  const prev = current - 1;
+
+  if (prev >= 1) {
+    return prev.toString() as ChapterId;
+  }
+
+  return null; // First chapter
+}
+```
+
+### Working with Juz, Page, Hizb, and Rub Numbers
+
+```ts
+import type {
+  JuzNumber,
+  PageNumber,
+  HizbNumber,
+  RubNumber
+} from "@quranjs/api";
+
+// Type-safe navigation
+const juzNumber: JuzNumber = "1"; // First Juz
+const pageNumber: PageNumber = "1"; // First page
+const hizbNumber: HizbNumber = "1"; // First Hizb
+const rubNumber: RubNumber = "1"; // First Rub
+
+// Juz navigation
+function getJuzRange(): JuzNumber[] {
+  return Array.from({ length: 30 }, (_, i) =>
+    (i + 1).toString() as JuzNumber
+  );
+}
+
+// Page navigation
+function getPageRange(): PageNumber[] {
+  return Array.from({ length: 604 }, (_, i) =>
+    (i + 1).toString() as PageNumber
+  );
+}
+
+// Hierarchical navigation (Page → Juz → Hizb → Rub)
+interface QuranNavigation {
+  juz: JuzNumber;
+  page: PageNumber;
+  hizb: HizbNumber;
+  rub: RubNumber;
+}
+
+function createNavigationContext(verseKey: VerseKey): Promise<QuranNavigation> {
+  return client.verses.findByKey(verseKey).then(verse => ({
+    juz: verse.juzNumber.toString() as JuzNumber,
+    page: verse.pageNumber.toString() as PageNumber,
+    hizb: verse.hizbNumber.toString() as HizbNumber,
+    rub: verse.rubElHizbNumber.toString() as RubNumber
+  }));
+}
+```
+
+### Type Guards and Validation
+
+```ts
+import type { VerseKey, ChapterId, JuzNumber } from "@quranjs/api";
+
+// Custom type guards
+function isValidVerseKeyFormat(value: string): value is VerseKey {
+  const pattern = /^\d{1,3}:\d{1,3}$/;
+  return pattern.test(value);
+}
+
+function isValidChapterIdFormat(value: string): value is ChapterId {
+  const num = parseInt(value);
+  return !isNaN(num) && num >= 1 && num <= 114;
+}
+
+function isValidJuzNumberFormat(value: string): value is JuzNumber {
+  const num = parseInt(value);
+  return !isNaN(num) && num >= 1 && num <= 30;
+}
+
+// Validation utilities
+const validators = {
+  verseKey: (value: unknown): value is VerseKey => {
+    return typeof value === 'string' && isValidVerseKeyFormat(value);
+  },
+
+  chapterId: (value: unknown): value is ChapterId => {
+    return typeof value === 'string' && isValidChapterIdFormat(value);
+  },
+
+  juzNumber: (value: unknown): value is JuzNumber => {
+    return typeof value === 'string' && isValidJuzNumberFormat(value);
+  }
+};
+
+// Usage in API validation
+function validateApiInput(input: {
+  verseKey?: unknown;
+  chapterId?: unknown;
+  juzNumber?: unknown;
+}) {
+  const errors: string[] = [];
+
+  if (input.verseKey !== undefined && !validators.verseKey(input.verseKey)) {
+    errors.push('Invalid verse key format');
+  }
+
+  if (input.chapterId !== undefined && !validators.chapterId(input.chapterId)) {
+    errors.push('Invalid chapter ID');
+  }
+
+  if (input.juzNumber !== undefined && !validators.juzNumber(input.juzNumber)) {
+    errors.push('Invalid Juz number');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    data: errors.length === 0 ? input : null
+  };
+}
+```
+
+### Conversion Utilities
+
+```ts
+// Convert between different formats
+function verseKeyToComponents(verseKey: VerseKey) {
+  const [chapterStr, verseStr] = verseKey.split(':');
+  return {
+    chapterId: chapterStr as ChapterId,
+    verseNumber: parseInt(verseStr)
+  };
+}
+
+function componentsToVerseKey(
+  chapterId: ChapterId,
+  verseNumber: number
+): VerseKey {
+  return `${chapterId}:${verseNumber}` as VerseKey;
+}
+
+// Range operations
+function getVerseRange(
+  startKey: VerseKey,
+  endKey: VerseKey
+): VerseKey[] {
+  const start = verseKeyToComponents(startKey);
+  const end = verseKeyToComponents(endKey);
+
+  const keys: VerseKey[] = [];
+
+  // Simple implementation for same chapter
+  if (start.chapterId === end.chapterId) {
+    for (let v = start.verseNumber; v <= end.verseNumber; v++) {
+      keys.push(componentsToVerseKey(start.chapterId, v));
+    }
+  }
+
+  return keys;
+}
+```
+
