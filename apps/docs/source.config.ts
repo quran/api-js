@@ -10,6 +10,9 @@ import { createGenerator, remarkAutoTypeTable } from "fumadocs-typescript";
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
   docs: {
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
     schema: frontmatterSchema,
   },
   meta: {
