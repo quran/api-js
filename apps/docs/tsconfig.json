@@ -5,12 +5,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/.source": [
-        "./.source/index.ts"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "@/.source": ["./.source/index.ts"],
+      "@/*": ["./src/*"]
     },
     "plugins": [{ "name": "next" }],
     "module": "esnext"
