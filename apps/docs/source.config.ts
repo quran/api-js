@@ -6,9 +6,8 @@ import {
 } from "fumadocs-mdx/config";
 import { createGenerator, remarkAutoTypeTable } from "fumadocs-typescript";
 
-// You can customise Zod schemas for frontmatter and `meta.json` here
-// see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
+  dir: "content/docs",
   docs: {
     postprocess: {
       includeProcessedMarkdown: true,

@@ -8,10 +8,14 @@
       "dependsOn": [
         "^build"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "content/**"
+      ],
       "outputs": [
         ".next/**",
-        ".source/**",
         "!.next/cache/**",
+        ".source/**",
         "next-env.d.ts"
       ]
     },
