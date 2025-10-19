@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prebuild": "mkdir -p .next/fumadocs-typescript",
     "build": "next build",
     "dev": "next dev --turbo",
     "start": "next start",
