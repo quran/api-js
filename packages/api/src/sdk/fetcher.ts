@@ -6,7 +6,9 @@ import type {
 } from "@/types";
 import { retry } from "@/lib/retry";
 import { paramsToString, removeBeginningSlash } from "@/lib/url";
-import { camelizeKeys } from "humps";
+import humps from "humps";
+
+const { camelizeKeys } = humps;
 
 type Config = Required<
   Pick<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">

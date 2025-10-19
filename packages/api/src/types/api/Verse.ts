@@ -21,6 +21,7 @@ export interface Verse {
   textImlaei?: string;
   textImlaeiSimple?: string;
   textIndopak?: string;
+  textIndopakNastaleeq?: string;
   sajdahNumber: null;
   // sajdahType: null;
   imageUrl?: string;
