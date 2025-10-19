@@ -1,0 +1,46 @@
+---
+title: Juzs API
+description: Access information about the 30 Juzs (Para/Siparah) of the Quran.
+---
+
+The Juzs API provides information about the 30 Juzs, which are traditional divisions of the Quran.
+
+## Get All Juzs
+
+```ts
+const juzs = await client.juzs.findAll();
+
+console.log(juzs[0]); // First Juz
+// {
+//   id: 1,
+//   juzNumber: 1,
+//   verseMapping: {
+//     "1:1": "1:7",
+//     "2:1": "2:141"
+//   },
+//   firstVerseId: 1,
+//   lastVerseId: 148,
+//   versesCount: 148
+// }
+```
+
+## Juz Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Juz.ts"
+  name="Juz"
+/>
+
+## Understanding Verse Mapping
+
+```ts
+const juz = juzs[0];
+
+Object.entries(juz.verseMapping).forEach(([start, end]) => {
+  console.log(`${start} to ${end}`);
+});
+
+// Output:
+// 1:1 to 1:7     (Al-Fatiha complete)
+// 2:1 to 2:141   (First part of Al-Baqarah)
+```
