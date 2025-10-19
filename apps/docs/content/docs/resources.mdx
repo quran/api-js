@@ -1,0 +1,200 @@
+---
+title: Resources API
+description: Access metadata about translations, tafsirs, reciters, and languages.
+---
+
+The Resources API provides metadata about translations, tafsirs, reciters, and other Quranic resources.
+
+## Recitations
+
+### Get All Recitations
+
+```ts
+const recitations = await client.resources.findAllRecitations();
+
+recitations.forEach((r) => {
+  console.log(`${r.id}. ${r.reciterName} (${r.style})`);
+});
+```
+
+### RecitationResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationResource"
+/>
+
+### Get Recitation Details
+
+```ts
+const info = await client.resources.findRecitationInfo("2");
+
+console.log(info.reciterName);
+console.log(info.bio);
+console.log(info.photo);
+```
+
+### RecitationInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationInfoResource"
+/>
+
+## Translations
+
+### Get All Translations
+
+```ts
+const translations = await client.resources.findAllTranslations();
+
+const english = translations.filter((t) => t.languageName === "english");
+const urdu = translations.filter((t) => t.languageName === "urdu");
+```
+
+### TranslationResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TranslationResource"
+/>
+
+### Get Translation Details
+
+```ts
+const info = await client.resources.findTranslationInfo("131");
+
+console.log(info.name);
+console.log(info.authorName);
+console.log(info.languageName);
+console.log(info.bio);
+```
+
+### TranslationInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TranslationInfoResource"
+/>
+
+## Tafsirs
+
+### Get All Tafsirs
+
+```ts
+const tafsirs = await client.resources.findAllTafsirs();
+
+tafsirs.forEach((t) => {
+  console.log(`${t.name} by ${t.authorName}`);
+});
+```
+
+### TafsirResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TafsirResource"
+/>
+
+### Get Tafsir Details
+
+```ts
+const info = await client.resources.findTafsirInfo("171");
+
+console.log(info.name);       // "Tafsir Ibn Kathir"
+console.log(info.authorName); // "Ibn Kathir"
+console.log(info.bio);
+```
+
+### TafsirInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TafsirInfoResource"
+/>
+
+## Languages
+
+```ts
+const languages = await client.resources.findAllLanguages();
+
+languages.forEach((lang) => {
+  console.log(`${lang.name} (${lang.iso}): ${lang.translationsCount} translations`);
+});
+```
+
+### LanguageResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="LanguageResource"
+/>
+
+## Chapter Resources
+
+### Chapter Information
+
+```ts
+const chapterInfos = await client.resources.findAllChapterInfos();
+
+chapterInfos.forEach((info) => {
+  console.log(`${info.name} - ${info.languageName}`);
+});
+```
+
+### ChapterInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ChapterInfoResource"
+/>
+
+### Chapter Reciters
+
+```ts
+const reciters = await client.resources.findAllChapterReciters();
+
+reciters.forEach((r) => {
+  console.log(`${r.name} (${r.arabicName})`);
+});
+```
+
+### ChapterReciterResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ChapterReciterResource"
+/>
+
+## Recitation Styles
+
+```ts
+const styles = await client.resources.findAllRecitationStyles();
+
+console.log(styles.murattal);  // Murattal reciters
+console.log(styles.mujawwad);  // Mujawwad reciters
+```
+
+### RecitationStylesResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationStylesResource"
+/>
+
+## Verse Media
+
+```ts
+const media = await client.resources.findVerseMedia();
+
+console.log(media.unicode); // Font URL
+console.log(media.image);   // Images base URL
+console.log(media.audio);   // Audio base URL
+```
+
+### VerseMediaResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="VerseMediaResource"
+/>

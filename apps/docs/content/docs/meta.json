@@ -1,0 +1,14 @@
+{
+  "title": "Quran API",
+  "description": "The Quran API documentation",
+  "icon": "Building",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "---API---",
+    "...",
+    "---Migration from v1---",
+    "v1-migration-guide"
+  ]
+}

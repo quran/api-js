@@ -1,0 +1,149 @@
+---
+title: Verses API
+description: Retrieve Quran verses with translations, tafsirs, audio, and word-by-word analysis.
+---
+
+The Verses API provides access to Quranic verses with support for translations, tafsirs, audio, and word analysis.
+
+## Get Verse by Key
+
+```ts
+const verse = await client.verses.findByKey("2:255");
+const firstVerse = await client.verses.findByKey("1:1");
+const lastVerse = await client.verses.findByKey("114:6");
+```
+
+### Verse Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Verse.ts"
+  name="Verse"
+/>
+
+### With Translations
+
+```ts
+const verse = await client.verses.findByKey("2:255", {
+  translations: [20, 131], // English and Urdu
+  words: true,
+  translationFields: {
+    text: true,
+    languageName: true,
+    resourceName: true,
+  },
+});
+```
+
+### With Audio
+
+```ts
+const verse = await client.verses.findByKey("1:1", {
+  reciter: 2,
+  words: true,
+});
+```
+
+### With Tafsir
+
+```ts
+const verse = await client.verses.findByKey("1:1", {
+  tafsirs: [171],
+  translations: [20],
+});
+```
+
+## Get Verses by Chapter
+
+```ts
+const verses = await client.verses.findByChapter("1");
+
+const paginated = await client.verses.findByChapter("2", {
+  translations: [20],
+  perPage: 10,
+  page: 1,
+  words: true,
+});
+```
+
+## Get Verses by Page
+
+```ts
+const firstPage = await client.verses.findByPage("1");
+const page42 = await client.verses.findByPage("42", {
+  translations: [131],
+});
+```
+
+## Get Verses by Divisions
+
+```ts
+// By Juz
+const juz1 = await client.verses.findByJuz("1");
+
+// By Hizb
+const hizb1 = await client.verses.findByHizb("1");
+
+// By Rub
+const rub1 = await client.verses.findByRub("1");
+```
+
+## Get Random Verse
+
+```ts
+const random = await client.verses.findRandom({
+  translations: [20],
+  words: true,
+});
+```
+
+## Field Selection
+
+### Word Fields
+
+```ts
+const verse = await client.verses.findByKey("1:1", {
+  words: true,
+  wordFields: {
+    textUthmani: true,
+    transliteration: true,
+    translation: true,
+    audio: true,
+  },
+});
+```
+
+### Translation Fields
+
+```ts
+const verse = await client.verses.findByKey("2:255", {
+  translations: [20, 131],
+  translationFields: {
+    text: true,
+    languageName: true,
+    resourceName: true,
+  },
+});
+```
+
+### Verse Fields
+
+```ts
+const verse = await client.verses.findByKey("1:1", {
+  fields: {
+    textUthmani: true,
+    textUthmaniTajweed: true,
+    pageNumber: true,
+    juzNumber: true,
+  },
+});
+```
+
+## Pagination
+
+```ts
+const verses = await client.verses.findByChapter("2", {
+  page: 1,
+  perPage: 20,
+  translations: [20],
+});
+```

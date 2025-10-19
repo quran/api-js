@@ -1,0 +1,88 @@
+---
+title: Audio API
+description: Access Quran audio recitations from different reciters.
+---
+
+The Audio API provides access to audio recitations including chapter audio and verse-by-verse audio with timing.
+
+## Chapter Recitations
+
+### Get All Chapter Recitations
+
+```ts
+const recitations = await client.audio.findAllChapterRecitations("2");
+
+console.log(recitations[0]);
+// {
+//   id: 1,
+//   chapterId: 1,
+//   fileSize: 12345,
+//   format: "mp3",
+//   audioUrl: "https://audio.quran.com/...",
+//   duration: 120
+// }
+```
+
+### ChapterRecitation Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/AudioData.ts"
+  name="ChapterRecitation"
+/>
+
+### Get Specific Chapter
+
+```ts
+const audio = await client.audio.findChapterRecitationById("2", "1");
+
+console.log(`URL: ${audio.audioUrl}`);
+console.log(`Duration: ${audio.duration}s`);
+```
+
+## Verse Recitations
+
+### By Chapter
+
+```ts
+const { audioFiles, pagination } = await client.audio.findVerseRecitationsByChapter(
+  "1",  // Chapter ID
+  "2"   // Recitation ID
+);
+
+audioFiles.forEach((audio) => {
+  console.log(`${audio.verseKey}: ${audio.url}`);
+});
+```
+
+### VerseRecitation Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/AudioData.ts"
+  name="VerseRecitation"
+/>
+
+### By Verse Key
+
+```ts
+const { audioFiles } = await client.audio.findVerseRecitationsByKey(
+  "2:255",
+  "2"
+);
+
+const audio = audioFiles[0];
+console.log(`URL: ${audio.url}`);
+console.log(`Duration: ${audio.duration}s`);
+```
+
+## Field Selection
+
+```ts
+const { audioFiles } = await client.audio.findVerseRecitationsByChapter("1", "2", {
+  fields: {
+    url: true,
+    duration: true,
+    segments: true,
+    format: false,
+  },
+});
+```
