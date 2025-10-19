@@ -5,7 +5,7 @@ import reactConfig from "@quranjs/eslint-config/react";
 /** @type {import('typescript-eslint').Config} */
 export default [
   {
-    ignores: [".next/**"],
+    ignores: [".next/**", ".source/**"],
   },
   ...baseConfig,
   ...reactConfig,
