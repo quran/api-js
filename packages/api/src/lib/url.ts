@@ -1,5 +1,7 @@
 import type { ApiParams } from "@/types";
-import { decamelize, decamelizeKeys } from "humps";
+import humps from "humps";
+
+const { decamelize, decamelizeKeys } = humps;
 
 export const removeBeginningSlash = (url: string) => {
   return url.startsWith("/") ? url.slice(1) : url;
