@@ -39,11 +39,7 @@ export enum Language {
   BULGARIAN = "bg",
   CHECHEN = "ce",
   CZECH = "cs",
-
   DIVEHI = "dv",
-  DHIVEHI = "dv",
-  MALDIVIAN = "dv",
-
   FINNISH = "fi",
   GUJAARATI = "gu",
   HEBREW = "he",
@@ -57,10 +53,7 @@ export enum Language {
   SWEDISH = "sv",
   TELUGU = "te",
   TATAR = "tt",
-
-  UIGHUR = "ug",
   UYGHUR = "ug",
-
   UKRAINIAN = "uk",
   NORWEGIAN = "no",
   OROMO = "om",
@@ -69,10 +62,7 @@ export enum Language {
   ROMANIAN = "ro",
   SINDHI = "sd",
   NORTHERN_SAMI = "se",
-
   SINHALA = "si",
-  SINHALESE = "si",
-
   SOMALI = "so",
   ALBANIAN_SQ = "sq",
 }

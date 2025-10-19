@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { testClient } from "./test-client";
 
 const VALID_RECITATION_ID = "1";
-const INVALID_RECITATION_ID = "0";
 const VALID_CHAPTER_ID = "1";
 const INVALID_CHAPTER_ID = "0";
 const VALID_VERSE_KEY = "1:1";

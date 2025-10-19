@@ -25,7 +25,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid chapter ID", async () => {
       await expect(
-        testClient.verses.findByChapter(INVALID_CHAPTER_ID as any),
+        // @ts-expect-error - testing invalid chapter ID
+        testClient.verses.findByChapter(INVALID_CHAPTER_ID),
       ).rejects.toThrowError();
     });
   });
@@ -39,7 +40,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid juz number", async () => {
       await expect(
-        testClient.verses.findByJuz(INVALID_JUZ_NUMBER as any),
+        // @ts-expect-error - testing invalid juz number
+        testClient.verses.findByJuz(INVALID_JUZ_NUMBER),
       ).rejects.toThrowError();
     });
   });
@@ -52,7 +54,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid verse key", async () => {
       await expect(
-        testClient.verses.findByKey(INVALID_VERSE_KEY as any),
+        // @ts-expect-error - testing invalid verse key
+        testClient.verses.findByKey(INVALID_VERSE_KEY),
       ).rejects.toThrowError();
     });
   });
@@ -66,7 +69,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid page number", async () => {
       await expect(
-        testClient.verses.findByPage(INVALID_PAGE_NUMBER as any),
+        // @ts-expect-error - testing invalid page number
+        testClient.verses.findByPage(INVALID_PAGE_NUMBER),
       ).rejects.toThrowError();
     });
   });
@@ -87,7 +91,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid hizb number", async () => {
       await expect(
-        testClient.verses.findByHizb(INVALID_HIZB_NUMBER as any),
+        // @ts-expect-error - testing invalid hizb number
+        testClient.verses.findByHizb(INVALID_HIZB_NUMBER),
       ).rejects.toThrowError();
     });
   });
@@ -100,7 +105,8 @@ describe("Verses API", () => {
 
     it("should throw error for invalid rub number", async () => {
       await expect(
-        testClient.verses.findByRub(INVALID_CHAPTER_ID as any),
+        // @ts-expect-error - testing invalid rub number
+        testClient.verses.findByRub(INVALID_CHAPTER_ID),
       ).rejects.toThrowError();
     });
   });

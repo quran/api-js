@@ -8,11 +8,15 @@ type _NumbersFrom0ToN<Nr extends number> = Nr extends Nr
 
 type _NumbersFrom0ToNRec<
   Nr extends number,
-  Counter extends any[],
+  Counter extends unknown[],
   Accumulator extends number,
 > = Counter["length"] extends Nr
   ? Accumulator
-  : _NumbersFrom0ToNRec<Nr, [any, ...Counter], Accumulator | Counter["length"]>;
+  : _NumbersFrom0ToNRec<
+      Nr,
+      [unknown, ...Counter],
+      Accumulator | Counter["length"]
+    >;
 
 export type NumberRange<Start extends number, End extends number> = Exclude<
   _NumbersFrom0ToN<End>,

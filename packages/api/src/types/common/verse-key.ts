@@ -8,8 +8,9 @@ import type { Increment, NumberRange } from "../utils";
  * - `verse` is within the range 1..(verseCount for that chapter)
  */
 export type VerseKey = {
-  [TChapter in keyof typeof versesMapping & number]: `${TChapter}:${NumberRange<
+  [TChapter in keyof typeof versesMapping]: `${TChapter}:${NumberRange<
     1,
-    Increment<(typeof versesMapping)[TChapter] & number> & number
+    // @ts-expect-error - we are using the versesMapping type
+    Increment<(typeof versesMapping)[TChapter]>
   >}`;
-}[keyof typeof versesMapping & number];
+}[keyof typeof versesMapping];
