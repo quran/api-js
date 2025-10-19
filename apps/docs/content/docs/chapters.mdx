@@ -1,0 +1,64 @@
+---
+title: Chapters API
+description: Access Quran chapter (surah) information and metadata.
+---
+
+The Chapters API provides access to information about the 114 chapters (surahs) of the Quran.
+
+## Get All Chapters
+
+```ts
+const chapters = await client.chapters.findAll();
+
+chapters.forEach((chapter) => {
+  console.log(`${chapter.id}. ${chapter.nameSimple} (${chapter.nameArabic})`);
+  console.log(`   Verses: ${chapter.versesCount}`);
+  console.log(`   Revelation: ${chapter.revelationPlace}`);
+});
+```
+
+### Chapter Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Chapter.ts"
+  name="Chapter"
+/>
+
+### With Language Options
+
+```ts
+import { Language } from "@quranjs/api";
+
+const arabicChapters = await client.chapters.findAll({
+  language: Language.ARABIC,
+});
+
+const urduChapters = await client.chapters.findAll({
+  language: Language.URDU,
+});
+```
+
+## Get Chapter by ID
+
+```ts
+const alFatiha = await client.chapters.findById("1");
+const alBaqarah = await client.chapters.findById("2");
+const anNas = await client.chapters.findById("114");
+```
+
+## Get Chapter Info
+
+```ts
+const info = await client.chapters.findInfoById("1");
+
+console.log(info.shortText); // Brief description
+console.log(info.text); // Full description
+console.log(info.source); // Source attribution
+```
+
+### ChapterInfo Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/ChapterInfo.ts"
+  name="ChapterInfo"
+/>

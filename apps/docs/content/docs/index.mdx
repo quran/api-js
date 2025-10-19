@@ -1,0 +1,82 @@
+---
+title: Getting Started
+description: Install and configure @quranjs/api - a TypeScript SDK for the Quran.com API.
+---
+
+## Installation
+
+```bash tab="npm"
+npm install @quranjs/api
+```
+
+```bash tab="pnpm"
+pnpm install @quranjs/api
+```
+
+```bash tab="yarn"
+yarn add @quranjs/api
+```
+
+```bash tab="bun"
+bun add @quranjs/api
+```
+
+## Quick Start
+
+```ts
+import { Language, QuranClient } from "@quranjs/api";
+
+// Initialize the client
+const client = new QuranClient({
+  clientId: process.env.QURAN_CLIENT_ID!,
+  clientSecret: process.env.QURAN_CLIENT_SECRET!,
+  defaults: {
+    language: Language.ENGLISH,
+  },
+});
+
+// Fetch all chapters
+const chapters = await client.chapters.findAll();
+
+// Get a specific verse
+const verse = await client.verses.findByKey("2:255", {
+  translations: [20],
+  words: true,
+});
+
+// Search
+const results = await client.search.search("light", {
+  language: Language.ENGLISH,
+  size: 10,
+});
+```
+
+## Environment Variables
+
+```bash
+# .env
+QURAN_CLIENT_ID=your_client_id
+QURAN_CLIENT_SECRET=your_client_secret
+```
+
+```ts
+const client = new QuranClient({
+  clientId: process.env.QURAN_CLIENT_ID!,
+  clientSecret: process.env.QURAN_CLIENT_SECRET!,
+});
+```
+
+## Runtime Configuration
+
+```ts
+// Get current config
+const config = client.getConfig();
+
+// Update config
+client.updateConfig({
+  defaults: { language: Language.ARABIC },
+});
+
+// Clear auth token
+client.clearCachedToken();
+```
