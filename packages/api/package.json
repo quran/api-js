@@ -14,15 +14,13 @@
   "version": "2.0.0",
   "main": "dist/index.min.js",
   "module": "dist/index.min.mjs",
-  "browser": "dist/index.umd.min.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.min.js",
       "import": "./dist/index.min.mjs"
-    },
-    "./cdn": "./dist/index.umd.min.js"
+    }
   },
   "files": [
     "dist",
