@@ -74,10 +74,6 @@
     {
       "path": "dist/index.min.mjs",
       "limit": "15 KB"
-    },
-    {
-      "path": "dist/index.umd.min.js",
-      "limit": "15 KB"
     }
   ],
   "engines": {

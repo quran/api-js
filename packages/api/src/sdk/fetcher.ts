@@ -28,16 +28,8 @@ export class QuranFetcher {
     this.config = config;
   }
 
-  /**
-   * Get access token for API authentication
-   */
-  private async getAccessToken(): Promise<string> {
-    if (this.cachedToken && this.cachedToken.expiresAt > Date.now() + 30_000) {
-      return this.cachedToken.value; // still fresh
-    }
-
-    const { clientId, clientSecret, authBaseUrl, fetch: fetchFn } = this.config;
-
+  private doFetch(...args: Parameters<typeof fetch>) {
+    const { fetch: fetchFn } = this.config;
     const doFetch = fetchFn ?? globalThis.fetch;
 
     if (typeof doFetch !== "function") {
@@ -45,6 +37,20 @@ export class QuranFetcher {
         "No fetch function available. Please provide a fetch implementation or ensure global fetch is available.",
       );
     }
+
+    return doFetch(...args);
+  }
+
+  /**
+   * Get access token for API authentication
+   */
+  private async getAccessToken(): Promise<string> {
+    // add 30 seconds to the expiration time to account for clock skew
+    if (this.cachedToken && this.cachedToken.expiresAt > Date.now() + 30_000) {
+      return this.cachedToken.value; // still fresh
+    }
+
+    const { clientId, clientSecret, authBaseUrl } = this.config;
 
     const auth = btoa(`${clientId}:${clientSecret}`);
 
@@ -55,7 +61,7 @@ export class QuranFetcher {
 
     const res = await retry(
       () =>
-        doFetch(`${authBaseUrl}/oauth2/token`, {
+        this.doFetch(`${authBaseUrl}/oauth2/token`, {
           method: "POST",
           headers: {
             Authorization: `Basic ${auth}`,
@@ -103,19 +109,12 @@ export class QuranFetcher {
    * Make authenticated HTTP request
    */
   async fetch<T extends object>(url: string, params?: ApiParams): Promise<T> {
-    const { fetch: fetchFn, clientId, defaults } = this.config;
-    const doFetch = fetchFn ?? globalThis.fetch;
-
-    if (typeof doFetch !== "function") {
-      throw new Error(
-        "No fetch function available. Please provide a fetch implementation or ensure global fetch is available.",
-      );
-    }
+    const { clientId, defaults } = this.config;
 
     const token = await this.getAccessToken();
     const fullUrl = this.makeUrl(url, { ...defaults, ...params });
 
-    const res = await doFetch(fullUrl, {
+    const res = await this.doFetch(fullUrl, {
       headers: {
         "x-auth-token": token,
         "x-client-id": clientId,

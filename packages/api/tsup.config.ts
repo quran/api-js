@@ -1,13 +1,5 @@
 import type { Options } from "tsup";
-import { defineConfig, Format } from "tsup";
-
-import { dependencies, version } from "./package.json";
-import { createUmdWrapper } from "./umd-wrapper-plugin";
-
-const externalDependencies = Object.keys(dependencies);
-
-const clientName = "quranjsApi";
-const clientVersion = version;
+import { defineConfig } from "tsup";
 
 const baseConfig: Options = {
   entry: ["src/index.ts"],
@@ -33,36 +25,10 @@ const baseConfig: Options = {
   dts: true,
 };
 
-const umdConfig: Options = {
-  ...baseConfig,
-  platform: "browser",
-  target: ["chrome90", "edge90", "firefox90", "opera98", "safari15"],
-  format: ["umd" as Format],
-  noExternal: externalDependencies,
-  banner: { js: `/* @QuranJS/API version ${clientVersion} */\n` },
-  define: {
-    __VERSION__: `'${clientVersion}'`,
-  },
-  name: "@quranjs/api",
-  globalName: clientName,
-  bundle: true,
-  esbuildPlugins: [],
-};
-
 export default defineConfig((options) => [
   {
     ...baseConfig,
     format: ["cjs", "esm"],
     minify: !options.watch,
-  },
-  {
-    ...umdConfig,
-    minify: false,
-    plugins: [createUmdWrapper({ libraryName: clientName, external: [] })],
-  },
-  {
-    ...umdConfig,
-    minify: true,
-    plugins: [createUmdWrapper({ libraryName: clientName, external: [] })],
   },
 ]);
