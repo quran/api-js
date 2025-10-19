@@ -40,6 +40,7 @@ export class QuranClient {
 
     // Initialize the fetcher
     this.fetcher = new QuranFetcher(this.config);
+    this.fetcher.getFetch(); // validate fetch function is available
 
     // Initialize all API modules with the fetcher only
     this.chapters = new QuranChapters(this.fetcher);

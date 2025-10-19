@@ -1,6 +1,7 @@
 import type {
   ApiParams,
   CachedToken,
+  CustomFetcher,
   QuranClientConfig,
   TokenResponse,
 } from "@/types";
@@ -30,7 +31,7 @@ export class QuranFetcher {
     this.config = config;
   }
 
-  private doFetch(...args: Parameters<typeof fetch>) {
+  public getFetch(): CustomFetcher {
     const { fetch: fetchFn } = this.config;
     const doFetch = fetchFn ?? globalThis.fetch;
 
@@ -40,7 +41,12 @@ export class QuranFetcher {
       );
     }
 
-    return doFetch(...args);
+    return doFetch;
+  }
+
+  private doFetch(...args: Parameters<typeof fetch>) {
+    const runFetch = this.getFetch();
+    return runFetch(...args);
   }
 
   /**
