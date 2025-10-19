@@ -1,402 +1,67 @@
 ---
 title: Search API
-description: Search through Quran content with advanced filtering and language options.
+description: Search Quran content with language support and pagination.
 ---
 
-The Search API enables powerful searching through Quranic content, supporting multiple languages, translation searches, and flexible filtering options.
-
-## Method Overview
-
-```ts
-client.search.search(query, options)  // Search Quran content
-```
+The Search API enables searching through Quranic content with multi-language support.
 
 ## Basic Search
 
-Search for terms across the Quran:
-
 ```ts
-// Basic text search
 const results = await client.search.search("light");
 
-// Arabic search
-const arabicResults = await client.search.search("نور");
+console.log(`Found ${results.totalResults} results`);
 
-// Search with specific language
-const englishResults = await client.search.search("guidance", {
-  language: Language.ENGLISH
+results.results.forEach((result) => {
+  console.log(`${result.verseKey}: ${result.highlightedText}`);
 });
 ```
 
-## Search Response Structure
+### SearchResult Type
 
-```ts
-interface SearchResponse {
-  search: {
-    query: string;               // Original search query
-    totalResults: number;        // Total number of matching results
-    currentPage: number;         // Current page number
-    totalPages: number;          // Total number of pages
-    perPage: number;            // Results per page
-    results: SearchResult[];     // Array of search results
-  };
-}
+<auto-type-table
+  path="../../../../packages/api/src/types/api/search-result.ts"
+  name="SearchResult"
+/>
 
-interface SearchResult {
-  verseKey: string;            // Verse identifier (e.g., "2:255")
-  verseId: number;             // Unique verse ID
-  text: string;                // Matched text content
-  highlightedText: string;     // Text with search terms highlighted
-  translations?: Translation[]; // Verse translations
-  words?: Word[];              // Word-by-word breakdown
-}
-```
-
-## Advanced Search Options
-
-### Pagination
-
-Control the number of results and pagination:
-
-```ts
-const results = await client.search.search("peace", {
-  size: 10,    // Number of results per page (default: 30)
-  page: 1,     // Page number (1-based)
-  language: Language.ENGLISH
-});
-
-console.log(`Page ${results.currentPage} of ${results.totalPages}`);
-console.log(`Total results: ${results.totalResults}`);
-```
-
-### Language-Specific Search
-
-Search within content of specific languages:
+### With Language
 
 ```ts
 import { Language } from "@quranjs/api";
 
-// Search English translations
-const englishResults = await client.search.search("mercy", {
-  language: Language.ENGLISH,
-  size: 20
-});
-
-// Search Arabic text
-const arabicResults = await client.search.search("رحمة", {
+const results = await client.search.search("نور", {
   language: Language.ARABIC,
-  size: 15
-});
-
-// Search Urdu translations
-const urduResults = await client.search.search("رحمت", {
-  language: Language.URDU
+  size: 10,
+  page: 1,
 });
 ```
 
-## Search Examples
+## Options
 
-### Simple Text Search
-
-```ts
-async function searchQuran(query: string) {
-  const results = await client.search.search(query, {
-    size: 20,
-    language: Language.ENGLISH
-  });
-
-  return results.results.map(result => ({
-    verse: result.verseKey,
-    text: result.text,
-    highlighted: result.highlightedText,
-    translations: result.translations
-  }));
-}
-
-// Usage
-const results = await searchQuran("forgiveness");
-```
-
-### Multi-Language Search
+### Pagination
 
 ```ts
-async function searchMultiLanguage(query: string) {
-  const [english, arabic, urdu] = await Promise.all([
-    client.search.search(query, { language: Language.ENGLISH, size: 10 }),
-    client.search.search(query, { language: Language.ARABIC, size: 10 }),
-    client.search.search(query, { language: Language.URDU, size: 10 })
-  ]);
-
-  return {
-    english: english.results,
-    arabic: arabic.results,
-    urdu: urdu.results,
-    totalResults: english.totalResults + arabic.totalResults + urdu.totalResults
-  };
-}
-```
-
-### Paginated Search
-
-```ts
-async function paginatedSearch(query: string, page = 1, size = 10) {
-  const results = await client.search.search(query, {
-    page,
-    size,
-    language: Language.ENGLISH
-  });
-
-  return {
-    results: results.results,
-    pagination: {
-      currentPage: results.currentPage,
-      totalPages: results.totalPages,
-      totalResults: results.totalResults,
-      hasNext: results.currentPage < results.totalPages,
-      hasPrev: results.currentPage > 1
-    }
-  };
-}
-
-// Usage
-const page1 = await paginatedSearch("prayer", 1, 15);
-const page2 = await paginatedSearch("prayer", 2, 15);
-```
-
-## Working with Search Results
-
-### Highlighting Matches
-
-Search results include highlighted text for better user experience:
-
-```ts
-const results = await client.search.search("light", {
-  language: Language.ENGLISH
+const results = await client.search.search("mercy", {
+  size: 10,    // Results per page (default: 30)
+  page: 1,     // Page number
+  language: Language.ENGLISH,
 });
 
-results.results.forEach(result => {
-  console.log(`Verse ${result.verseKey}:`);
-  console.log(`Original: ${result.text}`);
-  console.log(`Highlighted: ${result.highlightedText}`);
-  // highlightedText contains HTML tags around matched terms
-});
+console.log(`Page ${results.currentPage} of ${results.totalPages}`);
 ```
 
-### Extracting Context
+### Language-Specific
 
 ```ts
-async function getSearchWithContext(query: string) {
-  const results = await client.search.search(query, {
-    language: Language.ENGLISH,
-    size: 10
-  });
-
-  return Promise.all(
-    results.results.map(async (result) => {
-      // Get full verse for context
-      const verse = await client.verses.findByKey(result.verseKey, {
-        translations: [20] // English translation
-      });
-
-      return {
-        verseKey: result.verseKey,
-        matchedText: result.highlightedText,
-        fullVerse: verse.translations?.[0]?.text,
-        arabicText: verse.textUthmani,
-        chapterInfo: await client.chapters.findById(result.verseKey.split(':')[0])
-      };
-    })
-  );
-}
-```
-
-## Search Strategies
-
-### Phrase Search
-
-```ts
-// Search for exact phrases
-const exactPhrase = await client.search.search('"In the name of Allah"', {
-  language: Language.ENGLISH
+const english = await client.search.search("mercy", {
+  language: Language.ENGLISH,
 });
 
-// Search for word variations
-const variations = await client.search.search("pray prayer praying", {
-  language: Language.ENGLISH
-});
-```
-
-### Category-Based Search
-
-```ts
-async function searchByCategory(category: string) {
-  const queries = {
-    worship: ["prayer", "worship", "prostration", "bow"],
-    guidance: ["guidance", "right path", "straight path"],
-    mercy: ["mercy", "compassion", "forgiveness", "kind"],
-    knowledge: ["knowledge", "wisdom", "learn", "understand"]
-  };
-
-  const searchTerms = queries[category as keyof typeof queries] || [category];
-
-  const allResults = await Promise.all(
-    searchTerms.map(term =>
-      client.search.search(term, {
-        language: Language.ENGLISH,
-        size: 5
-      })
-    )
-  );
-
-  // Combine and deduplicate results
-  const combined = allResults.flatMap(r => r.results);
-  const unique = combined.filter((result, index, arr) =>
-    arr.findIndex(r => r.verseKey === result.verseKey) === index
-  );
-
-  return unique;
-}
-```
-
-## Error Handling
-
-```ts
-try {
-  const results = await client.search.search("", {
-    language: Language.ENGLISH
-  });
-} catch (error) {
-  console.error("Search error:", error.message);
-}
-
-// Handle empty results
-const results = await client.search.search("veryspecificterm", {
-  language: Language.ENGLISH
+const arabic = await client.search.search("رحمة", {
+  language: Language.ARABIC,
 });
 
-if (results.totalResults === 0) {
-  console.log("No results found. Try different search terms.");
-}
+const urdu = await client.search.search("رحمت", {
+  language: Language.URDU,
+});
 ```
-
-## Building a Search Interface
-
-### Search Component Example
-
-```ts
-interface SearchState {
-  query: string;
-  results: SearchResult[];
-  loading: boolean;
-  currentPage: number;
-  totalPages: number;
-  language: Language;
-}
-
-class QuranSearch {
-  private state: SearchState = {
-    query: "",
-    results: [],
-    loading: false,
-    currentPage: 1,
-    totalPages: 1,
-    language: Language.ENGLISH
-  };
-
-  async search(query: string, page = 1) {
-    this.state.loading = true;
-
-    try {
-      const response = await client.search.search(query, {
-        page,
-        size: 10,
-        language: this.state.language
-      });
-
-      this.state = {
-        ...this.state,
-        query,
-        results: response.results,
-        currentPage: response.currentPage,
-        totalPages: response.totalPages,
-        loading: false
-      };
-
-      return this.state;
-    } catch (error) {
-      this.state.loading = false;
-      throw error;
-    }
-  }
-
-  async nextPage() {
-    if (this.state.currentPage < this.state.totalPages) {
-      return this.search(this.state.query, this.state.currentPage + 1);
-    }
-  }
-
-  async prevPage() {
-    if (this.state.currentPage > 1) {
-      return this.search(this.state.query, this.state.currentPage - 1);
-    }
-  }
-
-  setLanguage(language: Language) {
-    this.state.language = language;
-    if (this.state.query) {
-      return this.search(this.state.query, 1);
-    }
-  }
-}
-```
-
-### Auto-Complete Search
-
-```ts
-async function getSearchSuggestions(partialQuery: string) {
-  if (partialQuery.length < 2) return [];
-
-  const results = await client.search.search(partialQuery, {
-    size: 5,
-    language: Language.ENGLISH
-  });
-
-  // Extract unique terms from results for suggestions
-  const suggestions = results.results
-    .map(result => result.text.toLowerCase())
-    .filter(text => text.includes(partialQuery.toLowerCase()))
-    .slice(0, 5);
-
-  return [...new Set(suggestions)];
-}
-```
-
-## Parameters Reference
-
-### SearchOptions
-
-```ts
-interface SearchOptions extends BaseApiParams {
-  size?: number;      // Results per page (default: 30)
-  page?: number;      // Page number (1-based)
-  language?: Language; // Search language
-}
-```
-
-### Supported Languages
-
-Search is available in multiple languages:
-
-- `Language.ENGLISH` - Search English translations
-- `Language.ARABIC` - Search original Arabic text
-- `Language.URDU` - Search Urdu translations
-- `Language.HINDI` - Search Hindi translations
-- And many more...
-
-## Best Practices
-
-1. **Use appropriate page sizes**: Balance between performance and user experience
-2. **Handle empty results gracefully**: Provide helpful suggestions
-3. **Implement debouncing**: Avoid excessive API calls during typing
-4. **Cache recent searches**: Improve user experience
-5. **Provide search hints**: Help users understand search capabilities
