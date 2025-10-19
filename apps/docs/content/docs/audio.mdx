@@ -1,0 +1,351 @@
+---
+title: Audio API
+description: Access Quran audio recitations for chapters and verses from different reciters.
+---
+
+The Audio API provides access to high-quality audio recitations of the Quran, including both complete chapter recitations and verse-by-verse audio with word-level timing.
+
+## Methods Overview
+
+```ts
+client.audio.findAllChapterRecitations(reciterId)              // Get all chapter recitations for a reciter
+client.audio.findChapterRecitationById(reciterId, chapterId)   // Get specific chapter recitation
+client.audio.findVerseRecitationsByChapter(chapterId, recitationId) // Get verse recitations by chapter
+client.audio.findVerseRecitationsByKey(verseKey, recitationId)      // Get verse recitations by key
+```
+
+## Chapter Recitations
+
+### Get All Chapter Recitations
+
+Retrieve all available chapter recitations for a specific reciter:
+
+```ts
+// Get all chapter recitations for reciter #2 (Mishary Alafasy)
+const recitations = await client.audio.findAllChapterRecitations("2");
+
+console.log(recitations[0]);
+// {
+//   id: 1,
+//   chapterId: 1,
+//   fileSize: 12345,
+//   format: "mp3",
+//   audioUrl: "https://audio.quran.com/...",
+//   duration: 120 // in seconds
+// }
+```
+
+### Get Specific Chapter Recitation
+
+Access audio for a particular chapter from a specific reciter:
+
+```ts
+// Get Al-Fatiha recitation by Mishary Alafasy
+const fatihaAudio = await client.audio.findChapterRecitationById("2", "1");
+
+// Get Al-Baqarah recitation
+const baqarahAudio = await client.audio.findChapterRecitationById("2", "2");
+
+console.log(fatihaAudio);
+// {
+//   id: 1,
+//   chapterId: 1,
+//   fileSize: 45678,
+//   format: "mp3",
+//   audioUrl: "https://audio.quran.com/2/001.mp3",
+//   duration: 156
+// }
+```
+
+## Verse Recitations
+
+### Get Verse Recitations by Chapter
+
+Retrieve verse-level audio for all verses in a chapter:
+
+```ts
+// Get verse recitations for Al-Fatiha
+const { audioFiles, pagination } = await client.audio.findVerseRecitationsByChapter(
+  "1",  // Chapter ID
+  "2"   // Recitation ID
+);
+
+console.log(audioFiles[0]);
+// {
+//   id: 1,
+//   verseKey: "1:1",
+//   url: "https://verses.quran.com/2/001001.mp3",
+//   duration: 8,
+//   format: "mp3",
+//   segments: [
+//     {
+//       startTime: 0,
+//       endTime: 2,
+//       segments: [...]  // Word-level timing
+//     }
+//   ]
+// }
+```
+
+### Get Verse Recitations by Key
+
+Access audio for a specific verse:
+
+```ts
+// Get audio for Ayah al-Kursi
+const { audioFiles } = await client.audio.findVerseRecitationsByKey(
+  "2:255", // Verse key
+  "2"      // Recitation ID
+);
+
+// Get audio for the first verse
+const { audioFiles: firstVerse } = await client.audio.findVerseRecitationsByKey(
+  "1:1",
+  "2"
+);
+```
+
+## Data Structures
+
+### ChapterRecitation
+
+```ts
+interface ChapterRecitation {
+  id: number;          // Recitation ID
+  chapterId: number;   // Chapter ID
+  fileSize: number;    // File size in bytes
+  format: string;      // Audio format (mp3, etc.)
+  audioUrl: string;    // Direct URL to audio file
+  duration?: number;   // Duration in seconds
+}
+```
+
+### VerseRecitation
+
+```ts
+interface VerseRecitation {
+  id: number;              // Verse recitation ID
+  verseKey: string;        // "chapter:verse" format
+  url: string;             // Audio URL
+  duration: number;        // Duration in seconds
+  format: string;          // Audio format
+  segments?: Segment[];    // Word-level timing data
+}
+```
+
+### Audio Segments
+
+For precise word-by-word playback:
+
+```ts
+interface Segment {
+  startTime: number;       // Start time in seconds
+  endTime: number;         // End time in seconds
+  segments?: Segment[];    // Nested word segments
+}
+```
+
+## Advanced Usage
+
+### Controlling Audio Fields
+
+Specify which verse recitation data to include:
+
+```ts
+const { audioFiles } = await client.audio.findVerseRecitationsByChapter("1", "2", {
+  fields: {
+    url: true,           // Include audio URL
+    duration: true,      // Include duration
+    segments: true,      // Include timing segments
+    format: false        // Skip format info
+  }
+});
+```
+
+### Language-Specific Options
+
+```ts
+import { Language } from "@quranjs/api";
+
+const { audioFiles } = await client.audio.findVerseRecitationsByKey("1:1", "2", {
+  language: Language.ARABIC
+});
+```
+
+## Working with Popular Reciters
+
+Common reciter IDs you can use:
+
+```ts
+// Popular reciters (examples - check resources API for complete list)
+const RECITERS = {
+  ALAFASY: "2",        // Mishary Alafasy
+  MINSHAWI: "1",       // Mohamed Siddiq Minshawi
+  HUSARY: "3",         // Mahmoud Khalil Husary
+  SUDAIS: "4",         // Abdurrahman Sudais
+  SHURAIM: "5"         // Saud Al-Shuraim
+} as const;
+
+// Get recitations from different reciters
+const alafasyRecitation = await client.audio.findChapterRecitationById(
+  RECITERS.ALAFASY,
+  "1"
+);
+
+const husaryVerses = await client.audio.findVerseRecitationsByChapter(
+  "1",
+  RECITERS.HUSARY
+);
+```
+
+## Error Handling
+
+```ts
+try {
+  // Invalid reciter ID
+  await client.audio.findAllChapterRecitations("999");
+} catch (error) {
+  console.error("Reciter not found:", error.message);
+}
+
+try {
+  // Invalid chapter ID
+  await client.audio.findChapterRecitationById("2", "115");
+} catch (error) {
+  console.error("Invalid chapter ID:", error.message);
+}
+
+try {
+  // Invalid verse key
+  await client.audio.findVerseRecitationsByKey("1:10", "2");
+} catch (error) {
+  console.error("Invalid verse key:", error.message);
+}
+```
+
+## Practical Examples
+
+### Audio Player Interface
+
+```ts
+interface AudioPlayerData {
+  audioUrl: string;
+  duration: number;
+  segments?: Segment[];
+  title: string;
+}
+
+async function getChapterAudio(chapterId: string, reciterId: string): Promise<AudioPlayerData> {
+  const [chapter, audio] = await Promise.all([
+    client.chapters.findById(chapterId),
+    client.audio.findChapterRecitationById(reciterId, chapterId)
+  ]);
+
+  return {
+    audioUrl: audio.audioUrl,
+    duration: audio.duration || 0,
+    title: `${chapter.nameSimple} - Chapter ${chapter.id}`
+  };
+}
+```
+
+### Verse-by-Verse Player
+
+```ts
+async function getVerseAudioPlaylist(chapterId: string, recitationId: string) {
+  const { audioFiles } = await client.audio.findVerseRecitationsByChapter(
+    chapterId,
+    recitationId,
+    {
+      fields: {
+        url: true,
+        duration: true,
+        segments: true
+      }
+    }
+  );
+
+  return audioFiles.map(audio => ({
+    verseKey: audio.verseKey,
+    url: audio.url,
+    duration: audio.duration,
+    wordTimings: audio.segments
+  }));
+}
+```
+
+### Word-by-Word Audio
+
+```ts
+async function getWordAudioData(verseKey: string, recitationId: string) {
+  const { audioFiles } = await client.audio.findVerseRecitationsByKey(
+    verseKey,
+    recitationId,
+    {
+      fields: {
+        segments: true
+      }
+    }
+  );
+
+  const verse = audioFiles[0];
+  if (!verse?.segments) return null;
+
+  return {
+    verseAudio: verse.url,
+    totalDuration: verse.duration,
+    wordTimings: verse.segments.flatMap(segment =>
+      segment.segments || [segment]
+    )
+  };
+}
+```
+
+### Download Manager
+
+```ts
+async function downloadChapterAudio(chapterId: string, reciterId: string) {
+  const audio = await client.audio.findChapterRecitationById(reciterId, chapterId);
+
+  // Use the audioUrl to download
+  const response = await fetch(audio.audioUrl);
+  const blob = await response.blob();
+
+  return {
+    blob,
+    filename: `chapter-${chapterId}-reciter-${reciterId}.mp3`,
+    size: audio.fileSize,
+    duration: audio.duration
+  };
+}
+```
+
+## Parameters Reference
+
+### GetChapterRecitationOptions
+
+```ts
+interface GetChapterRecitationOptions extends BaseApiParams {
+  language?: Language; // Language for any metadata
+}
+```
+
+### GetVerseRecitationOptions
+
+```ts
+interface GetVerseRecitationOptions extends BaseApiParams {
+  fields?: Partial<Record<VerseRecitationField, boolean>>;
+}
+```
+
+### VerseRecitationField
+
+Available fields for verse recitations:
+
+```ts
+type VerseRecitationField =
+  | "url"         // Audio URL
+  | "duration"    // Audio duration
+  | "format"      // File format
+  | "segments";   // Word timing data
+```

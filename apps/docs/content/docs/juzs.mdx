@@ -1,0 +1,384 @@
+---
+title: Juzs API
+description: Access information about Quran divisions called Juzs (also known as Para or Siparah).
+---
+
+The Juzs API provides access to information about the 30 Juzs (also known as Para or Siparah), which are traditional divisions of the Quran used for reading the complete Quran over 30 days.
+
+## Method Overview
+
+```ts
+client.juzs.findAll()  // Get information about all 30 Juzs
+```
+
+## Get All Juzs
+
+Retrieve information about all 30 Juzs of the Quran:
+
+```ts
+const juzs = await client.juzs.findAll();
+
+console.log(juzs[0]); // First Juz
+// {
+//   id: 1,
+//   juzNumber: 1,
+//   verseMapping: {
+//     "1:1": "1:7",   // Al-Fatiha verses 1-7
+//     "2:1": "2:141"  // Al-Baqarah verses 1-141
+//   },
+//   firstVerseId: 1,
+//   lastVerseId: 148,
+//   versesCount: 148
+// }
+
+console.log(juzs[29]); // Last Juz (30th)
+// {
+//   id: 30,
+//   juzNumber: 30,
+//   verseMapping: {
+//     "78:1": "78:40", // An-Naba verses 1-40
+//     "79:1": "79:46", // An-Naziat verses 1-46
+//     // ... continues through chapter 114
+//     "114:1": "114:6" // An-Nas verses 1-6
+//   },
+//   firstVerseId: 5673,
+//   lastVerseId: 6236,
+//   versesCount: 564
+// }
+```
+
+## Juz Data Structure
+
+```ts
+interface Juz {
+  id: number;                    // Juz ID (1-30)
+  juzNumber: number;            // Juz number (1-30)
+  verseMapping: Record<string, string>; // Chapter:verse ranges
+  firstVerseId: number;         // First verse ID in the Juz
+  lastVerseId: number;          // Last verse ID in the Juz
+  versesCount: number;          // Total verses in this Juz
+}
+```
+
+## Understanding Verse Mapping
+
+The `verseMapping` field shows which verses from which chapters are included in each Juz:
+
+```ts
+const juz1 = await client.juzs.findAll().then(juzs => juzs[0]);
+
+// Parse the verse mapping
+Object.entries(juz1.verseMapping).forEach(([startVerse, endVerse]) => {
+  const [startChapter, startVerse] = startVerse.split(':');
+  const [endChapter, endVerseNum] = endVerse.split(':');
+
+  console.log(`Chapter ${startChapter}, verses ${startVerse} to ${endVerseNum}`);
+});
+
+// Output:
+// Chapter 1, verses 1 to 7 (Al-Fatiha complete)
+// Chapter 2, verses 1 to 141 (First part of Al-Baqarah)
+```
+
+## Practical Usage Examples
+
+### Daily Reading Tracker
+
+```ts
+async function getDailyReading(day: number) {
+  if (day < 1 || day > 30) {
+    throw new Error("Day must be between 1 and 30");
+  }
+
+  const juzs = await client.juzs.findAll();
+  const todaysJuz = juzs[day - 1]; // Convert to 0-based index
+
+  return {
+    day,
+    juzNumber: todaysJuz.juzNumber,
+    versesCount: todaysJuz.versesCount,
+    chapters: Object.keys(todaysJuz.verseMapping),
+    verseRanges: todaysJuz.verseMapping
+  };
+}
+
+// Get today's reading (day 15)
+const todaysReading = await getDailyReading(15);
+console.log(`Day 15: Juz ${todaysReading.juzNumber}`);
+console.log(`Total verses: ${todaysReading.versesCount}`);
+```
+
+### Reading Progress Calculator
+
+```ts
+async function calculateReadingProgress(completedJuzs: number[]) {
+  const allJuzs = await client.juzs.findAll();
+
+  const completed = completedJuzs.map(juzNum =>
+    allJuzs.find(juz => juz.juzNumber === juzNum)
+  ).filter(Boolean);
+
+  const totalVerses = allJuzs.reduce((sum, juz) => sum + juz.versesCount, 0);
+  const completedVerses = completed.reduce((sum, juz) => sum + juz!.versesCount, 0);
+
+  return {
+    completedJuzs: completedJuzs.length,
+    totalJuzs: 30,
+    completedVerses,
+    totalVerses,
+    percentageComplete: (completedVerses / totalVerses) * 100,
+    remainingJuzs: 30 - completedJuzs.length
+  };
+}
+
+// Example: User has completed Juzs 1, 2, 3, 5, 7
+const progress = await calculateReadingProgress([1, 2, 3, 5, 7]);
+console.log(`Progress: ${progress.percentageComplete.toFixed(1)}% complete`);
+```
+
+### Get Verses for a Specific Juz
+
+```ts
+async function getJuzVerses(juzNumber: number) {
+  if (juzNumber < 1 || juzNumber > 30) {
+    throw new Error("Juz number must be between 1 and 30");
+  }
+
+  // Get verses using the verses API
+  const verses = await client.verses.findByJuz(juzNumber.toString());
+
+  return verses;
+}
+
+// Get all verses in Juz 1
+const juz1Verses = await getJuzVerses(1);
+console.log(`Juz 1 contains ${juz1Verses.length} verses`);
+```
+
+### Juz Chapter Breakdown
+
+```ts
+async function getJuzChapterBreakdown(juzNumber: number) {
+  const juzs = await client.juzs.findAll();
+  const juz = juzs.find(j => j.juzNumber === juzNumber);
+
+  if (!juz) {
+    throw new Error("Invalid Juz number");
+  }
+
+  const chapterBreakdown = await Promise.all(
+    Object.entries(juz.verseMapping).map(async ([startVerse, endVerse]) => {
+      const chapterId = startVerse.split(':')[0];
+      const chapter = await client.chapters.findById(chapterId);
+
+      const startVerseNum = parseInt(startVerse.split(':')[1]);
+      const endVerseNum = parseInt(endVerse.split(':')[1]);
+      const versesInJuz = endVerseNum - startVerseNum + 1;
+
+      return {
+        chapter: {
+          id: chapter.id,
+          name: chapter.nameSimple,
+          arabicName: chapter.nameArabic
+        },
+        verseRange: {
+          start: startVerseNum,
+          end: endVerseNum,
+          count: versesInJuz
+        },
+        isComplete: startVerseNum === 1 && endVerseNum === chapter.versesCount
+      };
+    })
+  );
+
+  return {
+    juzNumber,
+    totalVerses: juz.versesCount,
+    chapters: chapterBreakdown
+  };
+}
+
+// Get breakdown for Juz 1
+const juz1Breakdown = await getJuzChapterBreakdown(1);
+juz1Breakdown.chapters.forEach(({ chapter, verseRange, isComplete }) => {
+  console.log(`${chapter.name}: verses ${verseRange.start}-${verseRange.end} ${isComplete ? '(Complete)' : '(Partial)'}`);
+});
+```
+
+### Reading Schedule Generator
+
+```ts
+async function generateReadingSchedule(startDate: Date, language = Language.ENGLISH) {
+  const juzs = await client.juzs.findAll();
+
+  const schedule = juzs.map((juz, index) => {
+    const readingDate = new Date(startDate);
+    readingDate.setDate(startDate.getDate() + index);
+
+    const chapterIds = Object.keys(juz.verseMapping);
+
+    return {
+      day: index + 1,
+      date: readingDate.toISOString().split('T')[0],
+      juzNumber: juz.juzNumber,
+      versesCount: juz.versesCount,
+      estimatedReadingTime: Math.ceil(juz.versesCount * 0.5), // Rough estimate: 30 seconds per verse
+      chapters: chapterIds,
+      verseRanges: juz.verseMapping
+    };
+  });
+
+  return schedule;
+}
+
+// Generate 30-day reading schedule starting today
+const schedule = await generateReadingSchedule(new Date());
+console.log("30-Day Quran Reading Schedule:");
+schedule.slice(0, 5).forEach(day => {
+  console.log(`Day ${day.day} (${day.date}): Juz ${day.juzNumber} - ${day.versesCount} verses`);
+});
+```
+
+### Finding Which Juz Contains a Verse
+
+```ts
+async function findJuzForVerse(verseKey: string) {
+  const [chapterStr, verseStr] = verseKey.split(':');
+  const chapterNum = parseInt(chapterStr);
+  const verseNum = parseInt(verseStr);
+
+  const juzs = await client.juzs.findAll();
+
+  for (const juz of juzs) {
+    for (const [startVerse, endVerse] of Object.entries(juz.verseMapping)) {
+      const [startChapter, startVerseNum] = startVerse.split(':').map(Number);
+      const [endChapter, endVerseNum] = endVerse.split(':').map(Number);
+
+      // Check if verse falls within this range
+      if (
+        (chapterNum === startChapter && verseNum >= startVerseNum) &&
+        (chapterNum === endChapter && verseNum <= endVerseNum)
+      ) {
+        return {
+          juzNumber: juz.juzNumber,
+          verseKey,
+          juzInfo: juz
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+// Find which Juz contains Ayah al-Kursi
+const juzInfo = await findJuzForVerse("2:255");
+console.log(`Ayah al-Kursi (2:255) is in Juz ${juzInfo?.juzNumber}`);
+```
+
+## Error Handling
+
+```ts
+// The Juzs API is straightforward and typically doesn't fail
+// unless there are network issues
+try {
+  const juzs = await client.juzs.findAll();
+  console.log(`Successfully loaded ${juzs.length} Juzs`);
+} catch (error) {
+  console.error("Failed to load Juzs:", error.message);
+}
+
+// Validate Juz numbers in your application
+function validateJuzNumber(juzNumber: number): boolean {
+  return juzNumber >= 1 && juzNumber <= 30 && Number.isInteger(juzNumber);
+}
+
+if (!validateJuzNumber(31)) {
+  console.error("Invalid Juz number: must be between 1 and 30");
+}
+```
+
+## Integration with Other APIs
+
+### Combining with Verses API
+
+```ts
+async function getCompleteJuzData(juzNumber: number) {
+  const [juzs, verses] = await Promise.all([
+    client.juzs.findAll(),
+    client.verses.findByJuz(juzNumber.toString(), {
+      translations: [20], // English translation
+      words: false
+    })
+  ]);
+
+  const juzInfo = juzs.find(j => j.juzNumber === juzNumber);
+
+  return {
+    juzInfo,
+    verses,
+    summary: {
+      juzNumber,
+      versesCount: juzInfo?.versesCount,
+      actualVersesLoaded: verses.length,
+      chapterCount: Object.keys(juzInfo?.verseMapping || {}).length
+    }
+  };
+}
+```
+
+### Combining with Audio API
+
+```ts
+async function getJuzAudioPlaylist(juzNumber: number, reciterId: string) {
+  const verses = await client.verses.findByJuz(juzNumber.toString());
+
+  // Get audio for each verse (this would be expensive for large Juzs)
+  const audioPromises = verses.slice(0, 10).map(verse => // Limit for example
+    client.audio.findVerseRecitationsByKey(verse.verseKey, reciterId)
+  );
+
+  const audioData = await Promise.all(audioPromises);
+
+  return audioData.map((audio, index) => ({
+    verseKey: verses[index].verseKey,
+    audioUrl: audio.audioFiles[0]?.url,
+    duration: audio.audioFiles[0]?.duration
+  }));
+}
+```
+
+## Ramadan Reading Planner
+
+```ts
+async function createRamadanReadingPlan(ramadanStartDate: Date) {
+  const juzs = await client.juzs.findAll();
+
+  const plan = juzs.map((juz, index) => {
+    const iftar = new Date(ramadanStartDate);
+    iftar.setDate(ramadanStartDate.getDate() + index);
+
+    const suhur = new Date(iftar);
+    suhur.setDate(iftar.getDate() + 1);
+    suhur.setHours(3, 0, 0, 0); // 3 AM for Suhur
+
+    return {
+      day: index + 1,
+      hijriDate: `${index + 1} Ramadan`,
+      gregorianDate: iftar.toDateString(),
+      juzNumber: juz.juzNumber,
+      versesCount: juz.versesCount,
+      recommendation: {
+        afterIftar: `Read first half of Juz ${juz.juzNumber}`,
+        beforeSuhur: `Complete Juz ${juz.juzNumber}`,
+        estimatedTime: `${Math.ceil(juz.versesCount * 0.5)} minutes`
+      },
+      chapters: Object.keys(juz.verseMapping)
+    };
+  });
+
+  return plan;
+}
+
+const ramadanPlan = await createRamadanReadingPlan(new Date('2024-03-11')); // Example date
+```

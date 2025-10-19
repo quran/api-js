@@ -1,0 +1,227 @@
+---
+title: Common Types
+description: Shared interfaces and utility types used throughout the library.
+---
+
+# Common Types
+
+Shared interfaces and utility types used throughout the library for common data structures.
+
+## TranslatedName
+
+Localized name with language information:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/TranslatedName.ts"
+  name="TranslatedName"
+/>
+
+## Footnote
+
+Translation footnotes and annotations:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Footnote.ts"
+  name="Footnote"
+/>
+
+## Pagination
+
+Pagination metadata for API responses:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Pagination.ts"
+  name="Pagination"
+/>
+
+## Juz
+
+Juz (Para) information and verse mappings:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/Juz.ts"
+  name="Juz"
+/>
+
+## Usage Examples
+
+### Working with Translated Names
+
+```ts
+import type { TranslatedName } from "@quranjs/api";
+
+// Get chapter with translated names
+const chapter = await client.chapters.findById("1");
+
+// Access translated name
+const translatedName: TranslatedName = chapter.translatedName;
+console.log(`Chapter name: ${translatedName.name}`);
+console.log(`Language: ${translatedName.languageName}`);
+
+// Handle multiple language support
+function getLocalizedName(
+  translatedName: TranslatedName,
+  preferredLanguage: string
+) {
+  if (translatedName.languageName === preferredLanguage) {
+    return translatedName.name;
+  }
+
+  // Fallback to English or original name
+  return translatedName.name;
+}
+```
+
+### Working with Footnotes
+
+```ts
+import type { Footnote } from "@quranjs/api";
+
+// Get verse with translations and footnotes
+const verse = await client.verses.findByKey("2:255", {
+  translations: [20], // Sahih International
+  footnotes: true
+});
+
+// Process footnotes
+verse.translations?.forEach(translation => {
+  if (translation.footnotes) {
+    translation.footnotes.forEach((footnote: Footnote) => {
+      console.log(`Footnote ${footnote.id}: ${footnote.text}`);
+
+      if (footnote.languageId) {
+        console.log(`Language ID: ${footnote.languageId}`);
+      }
+    });
+  }
+});
+```
+
+### Working with Pagination
+
+```ts
+import type { Pagination } from "@quranjs/api";
+
+// Handle paginated responses
+async function getAllVerses(chapterId: string) {
+  const allVerses = [];
+  let currentPage = 1;
+  let hasMorePages = true;
+
+  while (hasMorePages) {
+    const response = await client.verses.findByChapter(chapterId, {
+      page: currentPage,
+      perPage: 50
+    });
+
+    // Access pagination info
+    const pagination: Pagination = response.pagination;
+
+    console.log(`Page ${pagination.currentPage} of ${pagination.totalPages}`);
+    console.log(`${pagination.totalRecords} total verses`);
+
+    allVerses.push(...response.verses);
+
+    // Check if there are more pages
+    hasMorePages = pagination.nextPage !== undefined;
+    currentPage = pagination.nextPage || currentPage + 1;
+  }
+
+  return allVerses;
+}
+```
+
+### Working with Juz Information
+
+```ts
+import type { Juz } from "@quranjs/api";
+
+// Get specific Juz
+const juz: Juz = await client.juzs.findById("1");
+
+console.log(`Juz ${juz.juzNumber}`);
+console.log(`First verse ID: ${juz.firstVerseId}`);
+console.log(`Last verse ID: ${juz.lastVerseId}`);
+console.log(`Total verses: ${juz.versesCount}`);
+
+// Process verse mappings
+Object.entries(juz.verseMapping).forEach(([chapter, verseRange]) => {
+  console.log(`Chapter ${chapter}: verses ${verseRange}`);
+});
+
+// Find which Juz a verse belongs to
+async function findJuzForVerse(verseKey: string) {
+  const [chapter, verse] = verseKey.split(':').map(Number);
+
+  // Get verse details
+  const verseDetails = await client.verses.findByKey(verseKey);
+  const juzNumber = verseDetails.juzNumber;
+
+  // Get full Juz information
+  const juz = await client.juzs.findById(juzNumber.toString());
+
+  return {
+    juzNumber: juz.juzNumber,
+    versePosition: `${verseDetails.id - juz.firstVerseId + 1} of ${juz.versesCount}`,
+    juzInfo: juz
+  };
+}
+```
+
+### Pagination Helper Functions
+
+```ts
+import type { Pagination } from "@quranjs/api";
+
+// Create pagination info object
+function createPaginationInfo(pagination: Pagination) {
+  return {
+    current: pagination.currentPage,
+    total: pagination.totalPages,
+    hasNext: pagination.nextPage !== undefined,
+    hasPrev: pagination.currentPage > 1,
+    itemsPerPage: pagination.perPage,
+    totalItems: pagination.totalRecords,
+
+    // Helper methods
+    getNextPage: () => pagination.nextPage,
+    getPrevPage: () => pagination.currentPage > 1 ? pagination.currentPage - 1 : undefined,
+    getPageRange: (size: number = 5) => {
+      const start = Math.max(1, pagination.currentPage - Math.floor(size / 2));
+      const end = Math.min(pagination.totalPages, start + size - 1);
+
+      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    }
+  };
+}
+
+// Usage in pagination component
+const paginationInfo = createPaginationInfo(response.pagination);
+console.log(`Showing page ${paginationInfo.current} of ${paginationInfo.total}`);
+console.log(`Page range: ${paginationInfo.getPageRange().join(', ')}`);
+```
+
+### Language-Aware Footnote Processing
+
+```ts
+import type { Footnote, TranslatedName } from "@quranjs/api";
+
+function processFootnotesWithLanguage(
+  footnotes: Footnote[],
+  preferredLanguageId: number
+) {
+  // Group footnotes by language
+  const footnotesByLanguage = footnotes.reduce((acc, footnote) => {
+    const langId = footnote.languageId || 0;
+    if (!acc[langId]) acc[langId] = [];
+    acc[langId].push(footnote);
+    return acc;
+  }, {} as Record<number, Footnote[]>);
+
+  // Prefer user's language, fallback to first available
+  return footnotesByLanguage[preferredLanguageId] ||
+         footnotesByLanguage[Object.keys(footnotesByLanguage)[0]] ||
+         [];
+}
+```
+

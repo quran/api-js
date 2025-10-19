@@ -1,0 +1,20 @@
+{
+  "title": "Types & Interfaces",
+  "description": "Complete TypeScript reference for all types, interfaces, and enums in the @quranjs/api library",
+  "icon": "Code",
+  "pages": [
+    "index",
+    "---Core Types---",
+    "core-data",
+    "---Data Organization---",
+    "audio",
+    "resources",
+    "search",
+    "common",
+    "---Identifiers---",
+    "primitives",
+    "---Request Configuration---",
+    "fields",
+    "configuration"
+  ]
+}

@@ -1,39 +1,67 @@
 ---
-title: Introduction
-description: A library for fetching quran data from the Quran.com API on both Node.js and the browser.
+title: Getting Started
+description: Install, configure, and make your first request with @quranjs/api.
 ---
-
-## What is QuranJS?
-
-QuranJS is a library for fetching quran data from the Quran.com API on both Node.js and the browser.
 
 ## Installation
 
 <Tabs items={["npm", "pnpm", "yarn", "bun"]}>
 
   <Tab>
-  ```bash 
-  npm install @quranjs/api 
+  ```bash
+  npm install @quranjs/api
   ```
   </Tab>
   <Tab>
-  ```bash 
-  pnpm install @quranjs/api 
+  ```bash
+  pnpm add @quranjs/api
   ```
   </Tab>
   <Tab>
-  ```bash 
-  yarn add @quranjs/api 
+  ```bash
+  yarn add @quranjs/api
   ```
   </Tab>
   <Tab>
-  ```bash 
-  bun add @quranjs/api 
+  ```bash
+  bun add @quranjs/api
   ```
   </Tab>
+  
 </Tabs>
 
-<AutoTypeTable
-  path="../../packages/api/src/types/quran-client.ts"
-  name="QuranClientConfig"
-/>
+## Quickstart
+
+```ts
+import { Language, QuranClient } from "@quranjs/api";
+
+const client = new QuranClient({
+  clientId: process.env.QURAN_CLIENT_ID,
+  clientSecret: process.env.QURAN_CLIENT_SECRET,
+  // Optional defaults for all requests
+  defaults: {
+    language: Language.ENGLISH,
+  },
+});
+
+// Fetch all chapters
+const chapters = await client.chapters.findAll();
+
+// Fetch a verse by key
+const ayah = await client.verses.findByKey("2:255");
+```
+
+## Runtime configuration
+
+```ts
+// Read current config
+const current = client.getConfig();
+
+// Update base URL or defaults at runtime
+client.updateConfig({
+  contentBaseUrl: "https://apis.quran.foundation",
+});
+
+// Clear cached OAuth token (force re-auth)
+client.clearCachedToken();
+```

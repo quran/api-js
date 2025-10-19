@@ -1,0 +1,189 @@
+---
+title: Search Types
+description: Interfaces for search functionality, results, and search responses.
+---
+
+# Search Types
+
+Interfaces for working with search functionality, individual results, and complete search responses.
+
+## SearchResult
+
+Individual search result with verse information and matches:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/search-result.ts"
+  name="SearchResult"
+/>
+
+## SearchResponse
+
+Complete search API response with pagination and results:
+
+<auto-type-table
+  path="../../../../../packages/api/src/types/api/ApiResponses.ts"
+  name="SearchResponse"
+/>
+
+## Usage Examples
+
+### Basic Search
+
+```ts
+import type { SearchResult, SearchResponse } from "@quranjs/api";
+
+// Perform a search
+const response: SearchResponse = await client.search.query("light", {
+  size: 20,
+  page: 1,
+  language: "en"
+});
+
+// Access search metadata
+console.log(`Query: ${response.search.query}`);
+console.log(`Total results: ${response.search.totalResults}`);
+console.log(`Page ${response.search.currentPage} of ${response.search.totalPages}`);
+
+// Process search results
+response.search.results?.forEach((result: SearchResult) => {
+  console.log(`${result.verseKey}: ${result.text}`);
+
+  // Show highlighted text if available
+  if (result.highlighted) {
+    console.log(`Highlighted: ${result.highlighted}`);
+  }
+});
+```
+
+### Advanced Search with Filters
+
+```ts
+// Search with translation and word data
+const searchResponse = await client.search.query("paradise", {
+  size: 10,
+  page: 1,
+  translations: [20, 131], // Multiple translations
+  words: true, // Include word-by-word data
+  audio: 7 // Include audio from reciter 7
+});
+
+searchResponse.search.results?.forEach(result => {
+  // Access verse translations
+  result.translations.forEach(translation => {
+    console.log(`Translation: ${translation.text}`);
+    console.log(`Resource: ${translation.resourceName}`);
+  });
+
+  // Access word data
+  result.words.forEach(word => {
+    console.log(`Word: ${word.textUthmani} - ${word.translation.text}`);
+  });
+});
+```
+
+### Search Result Processing
+
+```ts
+import type { SearchResult } from "@quranjs/api";
+
+function processSearchResults(results: SearchResult[]) {
+  return results.map(result => {
+    // Extract chapter and verse numbers
+    const [chapter, verse] = result.verseKey.split(':').map(Number);
+
+    // Get primary translation (first one)
+    const primaryTranslation = result.translations[0]?.text || result.text;
+
+    // Create excerpt with highlighting
+    const excerpt = result.highlighted || result.text;
+
+    return {
+      reference: result.verseKey,
+      chapter,
+      verse,
+      text: primaryTranslation,
+      excerpt,
+      verseId: result.verseId,
+      hasAudio: result.words.some(word => word.audioUrl),
+      wordCount: result.words.length
+    };
+  });
+}
+```
+
+### Pagination Handling
+
+```ts
+import type { SearchResponse } from "@quranjs/api";
+
+async function getAllSearchResults(query: string) {
+  const allResults: SearchResult[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
+  do {
+    const response: SearchResponse = await client.search.query(query, {
+      page: currentPage,
+      size: 50 // Max page size
+    });
+
+    if (response.search.results) {
+      allResults.push(...response.search.results);
+    }
+
+    totalPages = response.search.totalPages;
+    currentPage++;
+
+  } while (currentPage <= totalPages);
+
+  return allResults;
+}
+```
+
+### Search with Context
+
+```ts
+// Get verse context around search results
+async function getSearchWithContext(query: string) {
+  const response = await client.search.query(query, {
+    size: 10
+  });
+
+  const resultsWithContext = await Promise.all(
+    response.search.results?.map(async (result) => {
+      const [chapter, verse] = result.verseKey.split(':').map(Number);
+
+      // Get surrounding verses for context
+      const contextVerses = await client.verses.findByChapter(chapter.toString(), {
+        verseStart: Math.max(1, verse - 2),
+        verseEnd: verse + 2,
+        translations: [20] // English translation
+      });
+
+      return {
+        ...result,
+        context: contextVerses
+      };
+    }) || []
+  );
+
+  return resultsWithContext;
+}
+```
+
+### Search Suggestions
+
+```ts
+// Create search suggestions based on partial matches
+function createSearchSuggestions(partialQuery: string) {
+  const commonSearchTerms = [
+    "allah", "prophet", "prayer", "paradise", "hell", "faith",
+    "charity", "pilgrimage", "fasting", "light", "guidance"
+  ];
+
+  return commonSearchTerms.filter(term =>
+    term.toLowerCase().includes(partialQuery.toLowerCase())
+  );
+}
+```
+
