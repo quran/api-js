@@ -3,6 +3,11 @@ import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
 import { server } from "../mocks/server";
 
+if (typeof globalThis.btoa !== "function") {
+  globalThis.btoa = (value: string) =>
+    Buffer.from(value, "utf-8").toString("base64");
+}
+
 // Establish API mocking before all tests.
 beforeAll(() => {
   server.listen();
