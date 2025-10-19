@@ -23,7 +23,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - uses: ./.github/setup
-      - run: pnpm build --filter=./packages/*
+      - run: pnpm build --filter="./packages/*"
 
   lint:
     name: ✨ Lint
@@ -32,7 +32,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - uses: ./.github/setup
-      - run: pnpm lint --filter=./packages/* --quiet
+      - run: pnpm lint --quiet
 
   typecheck:
     name: 🔍 Typecheck
@@ -41,7 +41,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - uses: ./.github/setup
-      - run: pnpm typecheck --filter=./packages/*
+      - run: pnpm typecheck
 
   test:
     name: 🧪 Test
@@ -50,7 +50,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - uses: ./.github/setup
-      - run: pnpm test --filter=./packages/*
+      - run: pnpm test
 
   size:
     name: 📦 Size
