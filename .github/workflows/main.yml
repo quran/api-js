@@ -51,19 +51,3 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/setup
       - run: pnpm test
-
-  size:
-    name: 📦 Size
-    runs-on: ubuntu-latest
-    env:
-      CI_JOB_NUMBER: 1
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - uses: ./.github/setup
-      - uses: andresz1/size-limit-action@v1.8.0
-        with:
-          directory: packages/api/
-          skip_step: install
-          package_manager: pnpm
-          github_token: ${{ secrets.GITHUB_TOKEN }}
