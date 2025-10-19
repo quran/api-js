@@ -1,225 +1,64 @@
 ---
 title: Chapters API
-description: Access Quran chapter (surah) information, metadata, and details.
+description: Access Quran chapter (surah) information and metadata.
 ---
 
-The Chapters API provides access to information about the 114 chapters (surahs) of the Quran, including metadata, translated names, and detailed descriptions.
-
-## Methods Overview
-
-```ts
-client.chapters.findAll()           // Get all chapters
-client.chapters.findById(id)        // Get specific chapter
-client.chapters.findInfoById(id)    // Get chapter info with description
-```
+The Chapters API provides access to information about the 114 chapters (surahs) of the Quran.
 
 ## Get All Chapters
-
-Retrieve information about all 114 chapters:
 
 ```ts
 const chapters = await client.chapters.findAll();
 
-console.log(chapters[0]); // Al-Fatiha
-// {
-//   id: 1,
-//   revelationPlace: "makkah",
-//   revelationOrder: 5,
-//   bismillahPre: true,
-//   nameSimple: "Al-Fatihah",
-//   nameComplex: "Al-Fātiĥah",
-//   nameArabic: "الفاتحة",
-//   versesCount: 7,
-//   pages: [1, 1],
-//   translatedName: {
-//     languageName: "english",
-//     name: "The Opener"
-//   }
-// }
+chapters.forEach((chapter) => {
+  console.log(`${chapter.id}. ${chapter.nameSimple} (${chapter.nameArabic})`);
+  console.log(`   Verses: ${chapter.versesCount}`);
+  console.log(`   Revelation: ${chapter.revelationPlace}`);
+});
 ```
+
+### Chapter Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Chapter.ts"
+  name="Chapter"
+/>
 
 ### With Language Options
 
 ```ts
 import { Language } from "@quranjs/api";
 
-// Get chapters with Arabic translations
 const arabicChapters = await client.chapters.findAll({
-  language: Language.ARABIC
+  language: Language.ARABIC,
 });
 
-// Get chapters with Urdu translations
 const urduChapters = await client.chapters.findAll({
-  language: Language.URDU
+  language: Language.URDU,
 });
 ```
 
 ## Get Chapter by ID
 
-Retrieve a specific chapter by its ID (1-114):
-
 ```ts
-// Get Al-Fatiha (Chapter 1)
 const alFatiha = await client.chapters.findById("1");
-
-// Get Al-Baqarah (Chapter 2)
 const alBaqarah = await client.chapters.findById("2");
-
-// Get An-Nas (Chapter 114)
 const anNas = await client.chapters.findById("114");
-```
-
-### Chapter Properties
-
-```ts
-interface Chapter {
-  id: number;                    // Chapter number (1-114)
-  revelationPlace: string;       // "makkah" or "madinah"
-  revelationOrder: number;       // Order of revelation
-  bismillahPre: boolean;         // Has Bismillah at beginning
-  nameSimple: string;           // Simple English name
-  nameComplex: string;          // Complex English name with diacritics
-  nameArabic: string;           // Arabic name
-  versesCount: number;          // Number of verses
-  pages: [number, number];      // Start and end page numbers
-  translatedName: {
-    languageName: string;       // Language of translation
-    name: string;              // Translated name
-  };
-}
 ```
 
 ## Get Chapter Info
 
-Access detailed chapter information including descriptions and background:
-
 ```ts
-const chapterInfo = await client.chapters.findInfoById("1");
+const info = await client.chapters.findInfoById("1");
 
-console.log(chapterInfo);
-// {
-//   id: 1,
-//   chapterId: 1,
-//   languageName: "english",
-//   shortText: "This Meccan sura, which is seen as a precise...",
-//   source: "Translated by...",
-//   text: "Full detailed description..."
-// }
+console.log(info.shortText); // Brief description
+console.log(info.text); // Full description
+console.log(info.source); // Source attribution
 ```
 
-### Chapter Info Properties
+### ChapterInfo Type
 
-```ts
-interface ChapterInfo {
-  id: number;           // Info ID
-  chapterId: number;    // Chapter ID (1-114)
-  languageName: string; // Language of the description
-  shortText: string;    // Brief description
-  source: string;       // Source attribution
-  text: string;         // Full detailed description
-}
-```
-
-## Error Handling
-
-The API validates chapter IDs and throws errors for invalid inputs:
-
-```ts
-try {
-  // Invalid chapter ID (must be 1-114)
-  const chapter = await client.chapters.findById("115");
-} catch (error) {
-  console.error(error.message); // "Invalid chapter id"
-}
-
-try {
-  // Invalid format
-  const chapter = await client.chapters.findById("abc");
-} catch (error) {
-  console.error(error.message); // "Invalid chapter id"
-}
-```
-
-## Common Use Cases
-
-### Chapter Navigation
-
-```ts
-// Get all chapters for a table of contents
-const chapters = await client.chapters.findAll();
-
-const tableOfContents = chapters.map(chapter => ({
-  id: chapter.id,
-  name: chapter.nameSimple,
-  arabicName: chapter.nameArabic,
-  versesCount: chapter.versesCount,
-  revelationPlace: chapter.revelationPlace
-}));
-```
-
-### Chapter Details Page
-
-```ts
-async function getChapterDetails(chapterId: string) {
-  // Get basic chapter info and detailed description
-  const [chapter, chapterInfo] = await Promise.all([
-    client.chapters.findById(chapterId),
-    client.chapters.findInfoById(chapterId)
-  ]);
-
-  return {
-    ...chapter,
-    description: chapterInfo.text,
-    shortDescription: chapterInfo.shortText
-  };
-}
-```
-
-### Filtering by Revelation Place
-
-```ts
-const chapters = await client.chapters.findAll();
-
-// Meccan chapters
-const meccanChapters = chapters.filter(
-  chapter => chapter.revelationPlace === "makkah"
-);
-
-// Medinan chapters
-const medinanChapters = chapters.filter(
-  chapter => chapter.revelationPlace === "madinah"
-);
-
-console.log(`Meccan chapters: ${meccanChapters.length}`);
-console.log(`Medinan chapters: ${medinanChapters.length}`);
-```
-
-### Chapter Statistics
-
-```ts
-const chapters = await client.chapters.findAll();
-
-const stats = {
-  totalChapters: chapters.length,
-  totalVerses: chapters.reduce((sum, ch) => sum + ch.versesCount, 0),
-  averageVerses: chapters.reduce((sum, ch) => sum + ch.versesCount, 0) / chapters.length,
-  longestChapter: chapters.reduce((max, ch) =>
-    ch.versesCount > max.versesCount ? ch : max
-  ),
-  shortestChapter: chapters.reduce((min, ch) =>
-    ch.versesCount < min.versesCount ? ch : min
-  )
-};
-```
-
-## Parameters Reference
-
-### GetChapterOptions
-
-All chapter methods accept optional parameters:
-
-```ts
-interface GetChapterOptions extends BaseApiParams {
-  language?: Language; // Language for translated names and descriptions
-}
-```
+<auto-type-table
+  path="../../../../packages/api/src/types/api/ChapterInfo.ts"
+  name="ChapterInfo"
+/>

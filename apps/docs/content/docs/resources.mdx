@@ -1,482 +1,200 @@
 ---
 title: Resources API
-description: Access metadata about translations, tafsirs, reciters, and other Quran resources.
+description: Access metadata about translations, tafsirs, reciters, and languages.
 ---
 
-The Resources API provides access to metadata about various Quranic resources including translations, tafsirs (commentaries), audio reciters, languages, and other reference materials.
-
-## Methods Overview
-
-```ts
-client.resources.findAllRecitations()         // Get all available recitations
-client.resources.findAllTranslations()        // Get all translations
-client.resources.findAllTafsirs()            // Get all tafsirs (commentaries)
-client.resources.findAllLanguages()          // Get supported languages
-client.resources.findRecitationInfo(id)      // Get recitation details
-client.resources.findTranslationInfo(id)     // Get translation details
-client.resources.findTafsirInfo(id)         // Get tafsir details
-client.resources.findAllChapterInfos()       // Get chapter info resources
-client.resources.findAllChapterReciters()    // Get chapter reciters
-client.resources.findAllRecitationStyles()   // Get recitation styles
-client.resources.findVerseMedia()            // Get verse media info
-```
+The Resources API provides metadata about translations, tafsirs, reciters, and other Quranic resources.
 
 ## Recitations
 
 ### Get All Recitations
 
-Retrieve information about all available audio recitations:
-
 ```ts
 const recitations = await client.resources.findAllRecitations();
 
-console.log(recitations[0]);
-// {
-//   id: 1,
-//   reciterName: "Mishary Alafasy",
-//   style: "Murattal",
-//   translatedName: {
-//     name: "Mishary Alafasy",
-//     languageName: "english"
-//   }
-// }
+recitations.forEach((r) => {
+  console.log(`${r.id}. ${r.reciterName} (${r.style})`);
+});
 ```
+
+### RecitationResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationResource"
+/>
 
 ### Get Recitation Details
 
-Access detailed information about a specific recitation:
-
 ```ts
-const recitationInfo = await client.resources.findRecitationInfo("2");
+const info = await client.resources.findRecitationInfo("2");
 
-console.log(recitationInfo);
-// {
-//   id: 2,
-//   reciterName: "Mishary Alafasy",
-//   englishName: "Mishary Alafasy",
-//   style: "Murattal",
-//   bio: "Sheikh Mishary bin Rashid Alafasy...",
-//   photo: "https://static.quran.com/images/reciters/2.jpg",
-//   coverPhoto: "https://static.quran.com/images/reciters/2_cover.jpg"
-// }
+console.log(info.reciterName);
+console.log(info.bio);
+console.log(info.photo);
 ```
+
+### RecitationInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationInfoResource"
+/>
 
 ## Translations
 
 ### Get All Translations
 
-Find all available translations in different languages:
-
 ```ts
 const translations = await client.resources.findAllTranslations();
 
-// Filter by language
-const englishTranslations = translations.filter(t =>
-  t.languageName === "english"
-);
-
-const urduTranslations = translations.filter(t =>
-  t.languageName === "urdu"
-);
-
-console.log(englishTranslations[0]);
-// {
-//   id: 20,
-//   name: "Sahih International",
-//   authorName: "Sahih International",
-//   slug: "sahih",
-//   languageName: "english",
-//   translatedName: {
-//     name: "Sahih International",
-//     languageName: "english"
-//   }
-// }
+const english = translations.filter((t) => t.languageName === "english");
+const urdu = translations.filter((t) => t.languageName === "urdu");
 ```
+
+### TranslationResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TranslationResource"
+/>
 
 ### Get Translation Details
 
-Access comprehensive information about a specific translation:
-
 ```ts
-const translationInfo = await client.resources.findTranslationInfo("131");
+const info = await client.resources.findTranslationInfo("131");
 
-console.log(translationInfo);
-// {
-//   id: 131,
-//   name: "Dr. Tahir ul Qadri",
-//   authorName: "Dr. Muhammad Tahir-ul-Qadri",
-//   slug: "tahir",
-//   languageName: "urdu",
-//   bio: "Dr. Muhammad Tahir-ul-Qadri is a Pakistani scholar...",
-//   website: "https://www.minhaj.org",
-//   translatedName: {
-//     name: "ڈاکٹر طاہر القادری",
-//     languageName: "urdu"
-//   }
-// }
+console.log(info.name);
+console.log(info.authorName);
+console.log(info.languageName);
+console.log(info.bio);
 ```
 
-## Tafsirs (Commentaries)
+### TranslationInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TranslationInfoResource"
+/>
+
+## Tafsirs
 
 ### Get All Tafsirs
-
-Retrieve available Quranic commentaries:
 
 ```ts
 const tafsirs = await client.resources.findAllTafsirs();
 
-console.log(tafsirs[0]);
-// {
-//   id: 171,
-//   name: "Tafsir Ibn Kathir",
-//   authorName: "Ibn Kathir",
-//   slug: "ibn-kathir",
-//   languageName: "english",
-//   translatedName: {
-//     name: "Tafsir Ibn Kathir",
-//     languageName: "english"
-//   }
-// }
+tafsirs.forEach((t) => {
+  console.log(`${t.name} by ${t.authorName}`);
+});
 ```
+
+### TafsirResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TafsirResource"
+/>
 
 ### Get Tafsir Details
 
-Access detailed information about a specific tafsir:
-
 ```ts
-const tafsirInfo = await client.resources.findTafsirInfo("171");
+const info = await client.resources.findTafsirInfo("171");
 
-console.log(tafsirInfo);
-// {
-//   id: 171,
-//   name: "Tafsir Ibn Kathir",
-//   authorName: "Ibn Kathir",
-//   slug: "ibn-kathir",
-//   languageName: "english",
-//   bio: "Ibn Kathir was a highly influential historian...",
-//   translatedName: {
-//     name: "Tafsir Ibn Kathir",
-//     languageName: "english"
-//   }
-// }
+console.log(info.name);       // "Tafsir Ibn Kathir"
+console.log(info.authorName); // "Ibn Kathir"
+console.log(info.bio);
 ```
 
+### TafsirInfoResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="TafsirInfoResource"
+/>
+
 ## Languages
-
-### Get Supported Languages
-
-Find all languages supported by the API:
 
 ```ts
 const languages = await client.resources.findAllLanguages();
 
-console.log(languages);
-// [
-//   {
-//     id: 38,
-//     name: "English",
-//     iso: "en",
-//     nativeName: "English",
-//     direction: "ltr",
-//     translationsCount: 45,
-//     translatedName: {
-//       name: "English",
-//       languageName: "english"
-//     }
-//   },
-//   {
-//     id: 174,
-//     name: "Arabic",
-//     iso: "ar",
-//     nativeName: "العربية",
-//     direction: "rtl",
-//     translationsCount: 12,
-//     translatedName: {
-//       name: "Arabic",
-//       languageName: "english"
-//     }
-//   }
-//   // ... more languages
-// ]
+languages.forEach((lang) => {
+  console.log(`${lang.name} (${lang.iso}): ${lang.translationsCount} translations`);
+});
 ```
+
+### LanguageResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="LanguageResource"
+/>
 
 ## Chapter Resources
 
-### Get Chapter Information Resources
-
-Access available chapter information resources:
+### Chapter Information
 
 ```ts
 const chapterInfos = await client.resources.findAllChapterInfos();
 
-console.log(chapterInfos[0]);
-// {
-//   id: 1,
-//   languageName: "english",
-//   name: "English",
-//   authorName: "Quran.com",
-//   slug: "en"
-// }
+chapterInfos.forEach((info) => {
+  console.log(`${info.name} - ${info.languageName}`);
+});
 ```
 
-### Get Chapter Reciters
+### ChapterInfoResource Type
 
-Find reciters who have recorded complete chapters:
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ChapterInfoResource"
+/>
+
+### Chapter Reciters
 
 ```ts
-const chapterReciters = await client.resources.findAllChapterReciters();
+const reciters = await client.resources.findAllChapterReciters();
 
-console.log(chapterReciters[0]);
-// {
-//   id: 1,
-//   name: "AbdulBaset AbdulSamad",
-//   arabicName: "عبدالباسط عبدالصمد",
-//   relativePath: "/audio/abdul_basit_murattal/"
-// }
+reciters.forEach((r) => {
+  console.log(`${r.name} (${r.arabicName})`);
+});
 ```
+
+### ChapterReciterResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ChapterReciterResource"
+/>
 
 ## Recitation Styles
 
-### Get Recitation Styles
-
-Access different recitation style categories:
-
 ```ts
-const recitationStyles = await client.resources.findAllRecitationStyles();
+const styles = await client.resources.findAllRecitationStyles();
 
-console.log(recitationStyles);
-// {
-//   mujawwad: [
-//     {
-//       id: 1,
-//       name: "AbdulBaset AbdulSamad (Mujawwad)",
-//       style: "mujawwad"
-//     }
-//   ],
-//   murattal: [
-//     {
-//       id: 2,
-//       name: "Mishary Alafasy",
-//       style: "murattal"
-//     }
-//   ]
-// }
+console.log(styles.murattal);  // Murattal reciters
+console.log(styles.mujawwad);  // Mujawwad reciters
 ```
+
+### RecitationStylesResource Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="RecitationStylesResource"
+/>
 
 ## Verse Media
 
-### Get Verse Media Information
-
-Access metadata about verse media resources:
-
 ```ts
-const verseMedia = await client.resources.findVerseMedia();
+const media = await client.resources.findVerseMedia();
 
-console.log(verseMedia);
-// {
-//   unicode: "https://static.quran.com/fonts/UthmanicHafs.ttf",
-//   image: "https://static.quran.com/images/",
-//   audio: "https://everyayah.com/data/"
-// }
+console.log(media.unicode); // Font URL
+console.log(media.image);   // Images base URL
+console.log(media.audio);   // Audio base URL
 ```
 
-## Practical Usage Examples
+### VerseMediaResource Type
 
-### Building Resource Selectors
-
-```ts
-async function getResourceSelectors() {
-  const [translations, reciters, tafsirs, languages] = await Promise.all([
-    client.resources.findAllTranslations(),
-    client.resources.findAllChapterReciters(),
-    client.resources.findAllTafsirs(),
-    client.resources.findAllLanguages()
-  ]);
-
-  return {
-    translationOptions: translations.map(t => ({
-      id: t.id,
-      name: t.name,
-      language: t.languageName,
-      author: t.authorName
-    })),
-
-    reciterOptions: reciters.map(r => ({
-      id: r.id,
-      name: r.name,
-      arabicName: r.arabicName
-    })),
-
-    tafsirOptions: tafsirs.map(t => ({
-      id: t.id,
-      name: t.name,
-      author: t.authorName,
-      language: t.languageName
-    })),
-
-    languageOptions: languages.map(l => ({
-      id: l.id,
-      name: l.name,
-      nativeName: l.nativeName,
-      iso: l.iso,
-      direction: l.direction
-    }))
-  };
-}
-```
-
-### Popular Resources Helper
-
-```ts
-async function getPopularResources() {
-  const [translations, reciters] = await Promise.all([
-    client.resources.findAllTranslations(),
-    client.resources.findAllChapterReciters()
-  ]);
-
-  // Popular English translations
-  const popularEnglishTranslations = translations
-    .filter(t => t.languageName === "english")
-    .filter(t => ["sahih", "pickthall", "yusuf-ali"].includes(t.slug));
-
-  // Popular Arabic reciters
-  const popularReciters = reciters
-    .filter(r => [1, 2, 3, 4, 5].includes(r.id)); // Top 5 reciters
-
-  return {
-    translations: popularEnglishTranslations,
-    reciters: popularReciters
-  };
-}
-```
-
-### Resource Information Display
-
-```ts
-async function getDetailedResourceInfo(type: string, id: string) {
-  switch (type) {
-    case "translation":
-      return await client.resources.findTranslationInfo(id);
-    case "recitation":
-      return await client.resources.findRecitationInfo(id);
-    case "tafsir":
-      return await client.resources.findTafsirInfo(id);
-    default:
-      throw new Error("Invalid resource type");
-  }
-}
-
-// Usage
-const translationDetails = await getDetailedResourceInfo("translation", "20");
-const reciterDetails = await getDetailedResourceInfo("recitation", "2");
-```
-
-### Language-Specific Resources
-
-```ts
-async function getResourcesByLanguage(languageIso: string) {
-  const [translations, tafsirs, languages] = await Promise.all([
-    client.resources.findAllTranslations(),
-    client.resources.findAllTafsirs(),
-    client.resources.findAllLanguages()
-  ]);
-
-  const language = languages.find(l => l.iso === languageIso);
-
-  return {
-    language,
-    translations: translations.filter(t => t.languageName === language?.name.toLowerCase()),
-    tafsirs: tafsirs.filter(t => t.languageName === language?.name.toLowerCase()),
-    count: {
-      translations: translations.filter(t => t.languageName === language?.name.toLowerCase()).length,
-      tafsirs: tafsirs.filter(t => t.languageName === language?.name.toLowerCase()).length
-    }
-  };
-}
-
-// Get Arabic resources
-const arabicResources = await getResourcesByLanguage("ar");
-
-// Get English resources
-const englishResources = await getResourcesByLanguage("en");
-```
-
-## Data Structure Reference
-
-### RecitationResource
-
-```ts
-interface RecitationResource {
-  id: number;
-  reciterName: string;
-  style: string;
-  translatedName: TranslatedName;
-}
-```
-
-### TranslationResource
-
-```ts
-interface TranslationResource {
-  id: number;
-  name: string;
-  authorName: string;
-  slug: string;
-  languageName: string;
-  translatedName: TranslatedName;
-}
-```
-
-### TafsirResource
-
-```ts
-interface TafsirResource {
-  id: number;
-  name: string;
-  authorName: string;
-  slug: string;
-  languageName: string;
-  translatedName: TranslatedName;
-}
-```
-
-### LanguageResource
-
-```ts
-interface LanguageResource {
-  id: number;
-  name: string;
-  iso: string;
-  nativeName: string;
-  direction: "ltr" | "rtl";
-  translationsCount: number;
-  translatedName: TranslatedName;
-}
-```
-
-## Error Handling
-
-```ts
-try {
-  // Invalid resource ID
-  const info = await client.resources.findTranslationInfo("999");
-} catch (error) {
-  console.error("Resource not found:", error.message);
-}
-
-// Check if resources are available
-const translations = await client.resources.findAllTranslations();
-if (translations.length === 0) {
-  console.log("No translations available");
-}
-```
-
-## Parameters Reference
-
-### GetResourceOptions
-
-```ts
-interface GetResourceOptions extends BaseApiParams {
-  language?: Language; // Language for translated names
-}
-```
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="VerseMediaResource"
+/>

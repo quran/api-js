@@ -6,12 +6,9 @@
   "pages": [
     "---Introduction---",
     "index",
-    "configuration",
     "---API---",
     "...",
     "---Migration from v1---",
-    "v1-migration-guide",
-    "---Reference---",
-    "types/"
+    "v1-migration-guide"
   ]
 }
