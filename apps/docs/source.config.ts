@@ -19,7 +19,13 @@ export const docs = defineDocs({
   },
 });
 
-const generator = createGenerator();
+const generator = createGenerator({
+  tsconfigPath: "./tsconfig.json",
+  // where to resolve relative paths (normally cwd)
+  basePath: "./",
+  // disable file system cache
+  cache: false,
+});
 
 export default defineConfig({
   lastModifiedTime: "git",
