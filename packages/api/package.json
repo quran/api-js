@@ -11,7 +11,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.7.1",
+  "version": "2.0.0",
   "main": "dist/index.min.js",
   "module": "dist/index.min.mjs",
   "browser": "dist/index.umd.min.js",
