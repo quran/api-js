@@ -38,6 +38,11 @@
         ".cache/.eslintcache"
       ]
     },
+    "test": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
     "typecheck": {
       "dependsOn": [
         "^topo",

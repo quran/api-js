@@ -8,13 +8,13 @@ describe("Custom fetcher", () => {
     // @ts-expect-error - we are testing this
     globalThis.fetch = undefined;
 
-    const client = new QuranClient({
-      clientId: "test",
-      clientSecret: "test",
-    });
-    await expect(client.chapters.findAll()).rejects.toThrowError(
-      /No fetch function available/,
-    );
+    expect(
+      () =>
+        new QuranClient({
+          clientId: "test",
+          clientSecret: "test",
+        }),
+    ).toThrowError(/No fetch function available/);
   });
 
   it("should not fail if you pass a fetchFn", async () => {
@@ -27,10 +27,7 @@ describe("Custom fetcher", () => {
     const client = new QuranClient({
       clientId: "test",
       clientSecret: "test",
-      fetch: async (url, options) => {
-        // Use the original mocked fetch
-        return await originalFetch(url, options);
-      },
+      fetch: originalFetch,
     });
 
     await expect(client.chapters.findById("1")).resolves.not.toThrow();

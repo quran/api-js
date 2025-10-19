@@ -1,4 +1,4 @@
-import { versesMapping } from "@/utils/verses-mapping";
+import type { versesMapping } from "@/utils/verses-mapping";
 
 import type { Increment, NumberRange } from "../utils";
 
