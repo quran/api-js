@@ -7,7 +7,7 @@ export const removeBeginningSlash = (url: string) => {
   return url.startsWith("/") ? url.slice(1) : url;
 };
 
-const fieldsKey = ["wordFields", "translationFields", "fields"];
+const fieldsKey = ["word_fields", "translation_fields", "fields"];
 
 export const paramsToString = (params?: ApiParams): string => {
   if (!params) return "";
