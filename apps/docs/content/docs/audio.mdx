@@ -18,8 +18,7 @@ console.log(recitations[0]);
 //   chapterId: 1,
 //   fileSize: 12345,
 //   format: "mp3",
-//   audioUrl: "https://audio.quran.com/...",
-//   duration: 120
+//   audioUrl: "https://audio.quran.com/..."
 // }
 ```
 
@@ -36,7 +35,7 @@ console.log(recitations[0]);
 const audio = await client.audio.findChapterRecitationById("2", "1");
 
 console.log(`URL: ${audio.audioUrl}`);
-console.log(`Duration: ${audio.duration}s`);
+console.log(`Format: ${audio.format}`);
 ```
 
 ## Verse Recitations
@@ -71,7 +70,7 @@ const { audioFiles } = await client.audio.findVerseRecitationsByKey(
 
 const audio = audioFiles[0];
 console.log(`URL: ${audio.url}`);
-console.log(`Duration: ${audio.duration}s`);
+console.log(`Format: ${audio.format ?? "stream"}`);
 ```
 
 ## Field Selection
@@ -79,10 +78,12 @@ console.log(`Duration: ${audio.duration}s`);
 ```ts
 const { audioFiles } = await client.audio.findVerseRecitationsByChapter("1", "2", {
   fields: {
-    url: true,
-    duration: true,
     segments: true,
-    format: false,
+    format: true,
+    id: true,
+    chapterId: false,
   },
 });
+
+// Available verse fields: id, chapterId, segments, format
 ```

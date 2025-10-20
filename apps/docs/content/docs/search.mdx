@@ -12,8 +12,8 @@ const results = await client.search.search("light");
 
 console.log(`Found ${results.totalResults} results`);
 
-results.results.forEach((result) => {
-  console.log(`${result.verseKey}: ${result.highlightedText}`);
+(results.results ?? []).forEach((result) => {
+  console.log(`${result.verseKey}: ${result.highlighted ?? result.text}`);
 });
 ```
 
