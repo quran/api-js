@@ -1,19 +1,15 @@
-import type { Translation } from "./Translation";
-import type { Word } from "./Word";
+import type { SearchResult } from "./search-result";
 
 export interface SearchResponse {
-  search: {
-    query: string;
-    totalResults: number;
+  pagination: {
     currentPage: number;
+    nextPage: number | null;
+    perPage: number;
     totalPages: number;
-    results?: {
-      verseKey: string;
-      verse_id: number;
-      text: string;
-      highlighted: string;
-      words: Word[];
-      translations: Translation[];
-    }[];
+    totalRecords: number;
+  };
+  result?: {
+    navigation: SearchResult[];
+    verses: SearchResult[];
   };
 }
