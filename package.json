@@ -19,11 +19,11 @@
     "postinstall": "pnpm lint:ws",
     "typecheck": "turbo run typecheck --filter=\"./packages/*\"",
     "changeset": "changeset",
-    "version-packages": "changeset version",
+    "version": "changeset version && pnpm install --no-frozen-lockfile",
     "release": "changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^2.29.8",
     "@quranjs/prettier-config": "workspace:*",
     "prettier": "catalog:",
     "turbo": "^2.5.5",
