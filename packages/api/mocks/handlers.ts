@@ -101,17 +101,34 @@ export const handlers = [
     },
   ),
 
-  http.get(
-    "https://apis.quran.foundation/content/api/v4/search",
-    ({ request }) => {
-      try {
-        validateAuth(request);
-        return HttpResponse.json({});
-      } catch {
-        return HttpResponse.text("Unauthorized", { status: 401 });
-      }
-    },
-  ),
+  http.get("https://apis.quran.foundation/v1/search", ({ request }) => {
+    try {
+      validateAuth(request);
+      return HttpResponse.json({
+        result: {
+          navigation: [
+            {
+              result_type: "surah",
+              key: "1",
+              name: "Al-Fatihah",
+              arabic: "الفاتحة",
+              isArabic: true,
+            },
+          ],
+          verses: [],
+        },
+        pagination: {
+          current_page: 1,
+          next_page: null,
+          per_page: 30,
+          total_pages: 1,
+          total_records: 1,
+        },
+      });
+    } catch {
+      return HttpResponse.text("Unauthorized", { status: 401 });
+    }
+  }),
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/resources/recitations",
