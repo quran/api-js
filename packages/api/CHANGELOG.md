@@ -1,5 +1,12 @@
 # @quranjs/api
 
+## 2.0.1
+
+### Patch Changes
+
+- d28efab: Remove UMD from package.json
+- 26bcaaa: Update search APIs
+
 ## 2.0.0
 
 ### Major Changes
