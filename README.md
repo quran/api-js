@@ -29,8 +29,8 @@ you can visit the [docs][docs] for more details.
 
 <!-- Links -->
 
-[qdc-api]: https://api-docs.quran.com/docs/category/content-apis
-[docs]: https://quranjs.com/
+[qdc-api]: https://api-docs.quran.foundation/docs/category/content-apis
+[docs]: https://api-docs.quran.foundation/docs/sdk/javascript
 [build-badge]: https://github.com/quran/api-js/workflows/CI/badge.svg
 [build]: https://github.com/quran/api-js/actions?query=workflow%3ACI
 [license-badge]: https://badgen.net/github/license/quranjs/api
