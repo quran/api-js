@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
+import { describe, expect, it } from "vitest";
 
-import { SearchMode } from "../src";
 import { server } from "../mocks/server";
+import { SearchMode } from "../src";
 import { testClient } from "./test-client";
 
 const SEARCH_URL = "https://apis.quran.foundation/v1/search";
@@ -68,10 +68,10 @@ describe("Search API", () => {
     await testClient.search.search("test", { mode: SearchMode.Quick });
 
     expect(requestUrl).not.toBeNull();
-    const params = requestUrl?.searchParams;
-    expect(params?.get("query")).toBe("test");
-    expect(params?.get("mode")).toBe("quick");
-    expect(params?.get("size")).toBe("30");
+    const params = requestUrl!.searchParams;
+    expect(params.get("query")).toBe("test");
+    expect(params.get("mode")).toBe("quick");
+    expect(params.get("size")).toBe("30");
   });
 
   it("serializes advanced search params", async () => {
@@ -92,12 +92,12 @@ describe("Search API", () => {
       size: 12,
     });
 
-    const params = requestUrl?.searchParams;
-    expect(params?.get("exact_matches_only")).toBe("1");
-    expect(params?.get("get_text")).toBe("1");
-    expect(params?.get("highlight")).toBe("0");
-    expect(params?.get("page")).toBe("2");
-    expect(params?.get("size")).toBe("12");
+    const params = requestUrl!.searchParams;
+    expect(params.get("exact_matches_only")).toBe("1");
+    expect(params.get("get_text")).toBe("1");
+    expect(params.get("highlight")).toBe("0");
+    expect(params.get("page")).toBe("2");
+    expect(params.get("size")).toBe("12");
   });
 
   it("preserves quick search result keys without decamelizing", async () => {
@@ -115,11 +115,11 @@ describe("Search API", () => {
       versesResultsNumber: 9,
     });
 
-    const params = requestUrl?.searchParams;
-    expect(params?.get("navigationalResultsNumber")).toBe("7");
-    expect(params?.get("versesResultsNumber")).toBe("9");
-    expect(params?.has("navigational_results_number")).toBe(false);
-    expect(params?.has("verses_results_number")).toBe(false);
+    const params = requestUrl!.searchParams;
+    expect(params.get("navigationalResultsNumber")).toBe("7");
+    expect(params.get("versesResultsNumber")).toBe("9");
+    expect(params.has("navigational_results_number")).toBe(false);
+    expect(params.has("verses_results_number")).toBe(false);
   });
 
   it("serializes arrays, booleans, and field selections", async () => {
@@ -151,22 +151,22 @@ describe("Search API", () => {
       },
     });
 
-    const params = requestUrl?.searchParams;
-    expect(params?.get("translation_ids")).toBe("131,20");
-    expect(params?.get("filter_translations")).toBe("en,ar");
-    expect(params?.get("indexes")).toBe("verses,chapters");
-    expect(params?.get("words")).toBe("true");
+    const params = requestUrl!.searchParams;
+    expect(params.get("translation_ids")).toBe("131,20");
+    expect(params.get("filter_translations")).toBe("en,ar");
+    expect(params.get("indexes")).toBe("verses,chapters");
+    expect(params.get("words")).toBe("true");
 
-    const fields = params?.get("fields")?.split(",") ?? [];
+    const fields = params.get("fields")?.split(",") ?? [];
     expect(fields).toContain("text_uthmani");
     expect(fields).not.toContain("code_v2");
 
-    const wordFields = params?.get("word_fields")?.split(",") ?? [];
+    const wordFields = params.get("word_fields")?.split(",") ?? [];
     expect(wordFields).toContain("verse_key");
     expect(wordFields).toContain("location");
 
     const translationFields =
-      params?.get("translation_fields")?.split(",") ?? [];
+      params.get("translation_fields")?.split(",") ?? [];
     expect(translationFields).toContain("resource_name");
     expect(translationFields).toContain("language_name");
   });
