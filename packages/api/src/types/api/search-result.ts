@@ -1,12 +1,20 @@
-import type { VerseKey } from "../common/verse-key";
-import type { Translation } from "./Translation";
-import type { Word } from "./Word";
+export enum SearchNavigationType {
+  SURAH = "surah",
+  JUZ = "juz",
+  HIZB = "hizb",
+  AYAH = "ayah",
+  RUB_EL_HIZB = "rub_el_hizb",
+  SEARCH_PAGE = "search_page",
+  PAGE = "page",
+  RANGE = "range",
+  QURAN_RANGE = "quran_range",
+}
 
 export interface SearchResult {
-  verseKey: VerseKey;
-  verseId: number;
-  text: string;
-  highlighted?: string;
-  words: Word[];
-  translations: Translation[];
+  resultType: SearchNavigationType;
+  key: number | string;
+  name: string;
+  arabic?: string;
+  isArabic?: boolean;
+  isTransliteration?: boolean;
 }
