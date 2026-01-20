@@ -1,6 +1,6 @@
 {
   "name": "@quranjs/api",
-  "description": "A library for fetching quran data from the quran.com API.",
+  "description": "Official library for fetching authentic, scholarly verified Quran data from Quran.com.",
   "author": "Ahmed Riad <me@ar1.dev> (https://ar1.dev)",
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/index.min.js",
   "module": "dist/index.min.mjs",
   "types": "dist/index.d.ts",
