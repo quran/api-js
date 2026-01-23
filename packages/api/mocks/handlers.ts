@@ -154,21 +154,21 @@ export const handlers = [
     },
   ),
 
-  // Audio endpoints for recitations
+  // Audio endpoints for chapter recitations
   http.get(
-    "https://apis.quran.foundation/content/api/v4/recitations/:reciterId",
+    "https://apis.quran.foundation/content/api/v4/chapter_recitations/:id",
     ({ request, params }) => {
       try {
         validateAuth(request);
         return HttpResponse.json({
-          audioFiles: [
+          audio_files: [
             {
               id: 1,
               chapter_id: 1,
               file_size: 123456,
               format: "mp3",
               total_files: 114,
-              recitation_id: params.reciterId,
+              recitation_id: params.id,
             },
           ],
         });
@@ -179,17 +179,17 @@ export const handlers = [
   ),
 
   http.get(
-    "https://apis.quran.foundation/content/api/v4/recitations/:reciterId/:chapterId",
+    "https://apis.quran.foundation/content/api/v4/chapter_recitations/:id/:chapter_number",
     ({ request, params }) => {
       try {
         validateAuth(request);
         return HttpResponse.json({
-          audioFile: {
+          audio_file: {
             id: 1,
-            chapter_id: params.chapterId,
+            chapter_id: params.chapter_number,
             file_size: 123456,
             format: "mp3",
-            recitation_id: params.reciterId,
+            recitation_id: params.id,
           },
         });
       } catch {
@@ -401,23 +401,6 @@ export const handlers = [
     () => {
       return HttpResponse.json({
         verses: [{ id: 1, verse_key: "1:1", code_v2: " ﱂ ﱃ ﱄ ﱅ", v2_page: 1 }],
-      });
-    },
-  ),
-
-  http.get(
-    "https://apis.quran.foundation/chapter_recitations/:id/:chapter_number",
-    () => {
-      return HttpResponse.json({
-        audio_file: {
-          id: 43,
-          chapter_id: 22,
-          file_size: 19779712,
-          format: "mp3",
-          total_files: 1,
-          audio_url:
-            "https://download.quranicaudio.com/quran/abdullaah_3awwaad_al-juhaynee/022.mp3",
-        },
       });
     },
   ),
@@ -1485,31 +1468,6 @@ export const handlers = [
       });
     },
   ),
-
-  http.get("https://apis.quran.foundation/chapter_recitations/:id", () => {
-    return HttpResponse.json({
-      audio_files: [
-        {
-          id: 43,
-          chapter_id: 22,
-          file_size: 19779712,
-          format: "mp3",
-          total_files: 1,
-          audio_url:
-            "https://download.quranicaudio.com/quran/abdullaah_3awwaad_al-juhaynee//022.mp3",
-        },
-        {
-          id: 87,
-          chapter_id: 44,
-          file_size: 6453376,
-          format: "mp3",
-          total_files: 1,
-          audio_url:
-            "https://download.quranicaudio.com/quran/abdullaah_3awwaad_al-juhaynee//044.mp3",
-        },
-      ],
-    });
-  }),
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/recitations/:recitation_id/by_chapter/:chapter_number",
