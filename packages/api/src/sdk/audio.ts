@@ -36,7 +36,7 @@ export class QuranAudio {
   ): Promise<ChapterRecitation[]> {
     const { audioFiles } = await this.fetcher.fetch<{
       audioFiles: ChapterRecitation[];
-    }>(`/content/api/v4/recitations/${reciterId}`, options);
+    }>(`/content/api/v4/chapter_recitations/${reciterId}`, options);
 
     return audioFiles;
   }
@@ -58,7 +58,7 @@ export class QuranAudio {
 
     const { audioFile } = await this.fetcher.fetch<{
       audioFile: ChapterRecitation;
-    }>(`/content/api/v4/recitations/${reciterId}/${chapterId}`, options);
+    }>(`/content/api/v4/chapter_recitations/${reciterId}/${chapterId}`, options);
 
     return audioFile;
   }

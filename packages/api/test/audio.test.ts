@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { testClient } from "./test-client";
 
@@ -16,6 +16,26 @@ describe("Audio API", () => {
       expect(response).toBeInstanceOf(Array);
       expect(response).toBeDefined();
     });
+
+    it("should call chapter_recitations endpoint", async () => {
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+      try {
+        await testClient.audio.findAllChapterRecitations(VALID_RECITATION_ID);
+        const contentCall = fetchSpy.mock.calls
+          .map((call) => call[0])
+          .find(
+            (url) =>
+              typeof url === "string" && url.includes("/content/api/v4/"),
+          );
+        expect(contentCall).toBeDefined();
+        const contentUrl = new URL(contentCall as string);
+        expect(contentUrl.pathname).toBe(
+          `/content/api/v4/chapter_recitations/${VALID_RECITATION_ID}`,
+        );
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
   });
 
   describe("findChapterRecitationById()", () => {
@@ -25,6 +45,29 @@ describe("Audio API", () => {
         VALID_CHAPTER_ID,
       );
       expect(response).toBeDefined();
+    });
+
+    it("should call chapter_recitations endpoint with chapter id", async () => {
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+      try {
+        await testClient.audio.findChapterRecitationById(
+          VALID_RECITATION_ID,
+          VALID_CHAPTER_ID,
+        );
+        const contentCall = fetchSpy.mock.calls
+          .map((call) => call[0])
+          .find(
+            (url) =>
+              typeof url === "string" && url.includes("/content/api/v4/"),
+          );
+        expect(contentCall).toBeDefined();
+        const contentUrl = new URL(contentCall as string);
+        expect(contentUrl.pathname).toBe(
+          `/content/api/v4/chapter_recitations/${VALID_RECITATION_ID}/${VALID_CHAPTER_ID}`,
+        );
+      } finally {
+        fetchSpy.mockRestore();
+      }
     });
 
     it("should throw error for invalid chapter ID", async () => {
