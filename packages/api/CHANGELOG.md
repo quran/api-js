@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 2.1.0
+
+### Minor Changes
+
+- 3007985: Fix chapter recitation endpoints
+
 ## 2.0.1
 
 ### Patch Changes
