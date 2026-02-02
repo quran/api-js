@@ -60,6 +60,31 @@ describe("Verses API", () => {
     });
   });
 
+  describe("findByRange()", () => {
+    it("should return verses for valid range", async () => {
+      const response = await testClient.verses.findByRange(
+        VALID_VERSE_KEY,
+        VALID_VERSE_KEY,
+      );
+      expect(response).toBeInstanceOf(Array);
+      expect(response).toBeDefined();
+    });
+
+    it("should throw error when 'from' key is invalid", async () => {
+      await expect(
+        // @ts-expect-error - testing invalid verse key
+        testClient.verses.findByRange(INVALID_VERSE_KEY, VALID_VERSE_KEY),
+      ).rejects.toThrowError();
+    });
+
+    it("should throw error when 'to' key is invalid", async () => {
+      await expect(
+        // @ts-expect-error - testing invalid verse key
+        testClient.verses.findByRange(VALID_VERSE_KEY, INVALID_VERSE_KEY),
+      ).rejects.toThrowError();
+    });
+  });
+
   describe("findByPage()", () => {
     it("should return an array of verses for valid page", async () => {
       const response = await testClient.verses.findByPage(VALID_PAGE_NUMBER);

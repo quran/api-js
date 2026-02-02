@@ -46,6 +46,27 @@ export const handlers = [
   ),
 
   http.get(
+    "https://apis.quran.foundation/content/api/v4/verses/by_range",
+    ({ request }) => {
+      return HttpResponse.json({
+        verses: [
+          {
+            id: 1,
+            verse_number: 1,
+            page_number: 1,
+            verse_key: "1:1",
+            juz_number: 1,
+            hizb_number: 1,
+            rub_number: 1,
+            sajdah_type: null,
+            sajdah_number: null,
+          },
+        ],
+      });
+    },
+  ),
+
+  http.get(
     "https://apis.quran.foundation/content/api/v4/chapters",
     ({ request }) => {
       try {
