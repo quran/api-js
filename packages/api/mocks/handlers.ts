@@ -209,6 +209,7 @@ export const handlers = [
               id: 1,
               chapter_id: params.chapterId,
               verse_key: "1:1",
+              url: "AbdulBaset/Murattal/mp3/001001.mp3",
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,
@@ -238,6 +239,7 @@ export const handlers = [
             {
               id: 1,
               verse_key: params.key,
+              url: "AbdulBaset/Murattal/mp3/002255.mp3",
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,

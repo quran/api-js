@@ -88,6 +88,21 @@ describe("Audio API", () => {
         VALID_RECITATION_ID,
       );
       expect(response).toBeDefined();
+      expect(response.audioFiles).toBeInstanceOf(Array);
+    });
+
+    it("should normalize relative URLs to absolute audioUrl", async () => {
+      const response = await testClient.audio.findVerseRecitationsByChapter(
+        VALID_CHAPTER_ID,
+        VALID_RECITATION_ID,
+      );
+      expect(response.audioFiles[0]).toBeDefined();
+      // The relative URL from the mock
+      expect(response.audioFiles[0].url).toBe("AbdulBaset/Murattal/mp3/001001.mp3");
+      // The normalized absolute URL
+      expect(response.audioFiles[0].audioUrl).toBe(
+        "https://verses.quran.com/AbdulBaset/Murattal/mp3/001001.mp3",
+      );
     });
 
     it("should throw error for invalid chapter ID", async () => {
@@ -108,6 +123,21 @@ describe("Audio API", () => {
         VALID_RECITATION_ID,
       );
       expect(response).toBeDefined();
+      expect(response.audioFiles).toBeInstanceOf(Array);
+    });
+
+    it("should normalize relative URLs to absolute audioUrl", async () => {
+      const response = await testClient.audio.findVerseRecitationsByKey(
+        VALID_VERSE_KEY,
+        VALID_RECITATION_ID,
+      );
+      expect(response.audioFiles[0]).toBeDefined();
+      // The relative URL from the mock (002255.mp3 for verse 2:255)
+      expect(response.audioFiles[0].url).toBe("AbdulBaset/Murattal/mp3/002255.mp3");
+      // The normalized absolute URL
+      expect(response.audioFiles[0].audioUrl).toBe(
+        "https://verses.quran.com/AbdulBaset/Murattal/mp3/002255.mp3",
+      );
     });
 
     it("should throw error for invalid verse key", async () => {

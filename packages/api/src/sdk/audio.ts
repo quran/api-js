@@ -18,6 +18,33 @@ type GetVerseRecitationOptions = BaseApiParams & {
 };
 
 /**
+ * Base URL for verse audio files from Quran.com
+ * Used to convert relative paths to absolute URLs
+ */
+const AUDIO_BASE_URL = "https://verses.quran.com";
+
+/**
+ * Normalize verse recitation data by adding absolute audioUrl
+ * The API returns relative paths in the 'url' field, but we want
+ * to provide absolute URLs for consistency with chapter recitations
+ */
+function normalizeVerseRecitations(
+  audioFiles: VerseRecitation[],
+): VerseRecitation[] {
+  return audioFiles.map((file) => {
+    // If url is already absolute, use it; otherwise prepend the base URL
+    const absoluteUrl = file.url.startsWith("http")
+      ? file.url
+      : `${AUDIO_BASE_URL}/${file.url}`;
+
+    return {
+      ...file,
+      audioUrl: absoluteUrl,
+    };
+  });
+}
+
+/**
  * Audio API methods
  */
 export class QuranAudio {
@@ -86,7 +113,10 @@ export class QuranAudio {
       options,
     );
 
-    return data;
+    return {
+      ...data,
+      audioFiles: normalizeVerseRecitations(data.audioFiles),
+    };
   }
 
   /**
@@ -109,6 +139,9 @@ export class QuranAudio {
       pagination: Pagination;
     }>(`/content/api/v4/recitations/${recitationId}/by_ayah/${key}`, options);
 
-    return data;
+    return {
+      ...data,
+      audioFiles: normalizeVerseRecitations(data.audioFiles),
+    };
   }
 }
