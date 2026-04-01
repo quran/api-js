@@ -104,14 +104,7 @@ client.updateConfig({
 
 ## Backward Compatibility
 
-The old `quran.v4` API is still available for backward compatibility but is deprecated:
-
-```javascript
-import { quran } from "@quranjs/api";
-
-// Still works but deprecated
-const chapters = await quran.v4.chapters.findAll();
-```
+The legacy `quran.v4` namespace that was exported in v1 has been removed in v2. Upgrading projects must create a `QuranClient` instance (as shown above) and supply a client ID and secret. Any code that still imports `quran.v4` will throw at runtime after upgrading, so plan your migration before bumping to v2.
 
 ## Error Handling
 
