@@ -53,7 +53,7 @@ describe("Search API", () => {
 
     expect(response.pagination.currentPage).toBe(1);
     expect(response.pagination.nextPage).toBeNull();
-    expect(response.result?.navigation[0].resultType).toBe("surah");
+    expect(response.result?.navigation[0]?.resultType).toBe("surah");
   });
 
   it("sends query, mode, and default size", async () => {
