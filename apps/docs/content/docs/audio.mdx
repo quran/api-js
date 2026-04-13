@@ -3,7 +3,15 @@ title: Audio API
 description: Access Quran audio recitations from different reciters.
 ---
 
-The Audio API provides access to audio recitations including chapter audio and verse-by-verse audio with timing.
+The Audio API provides access to recitation audio from the authenticated Content API, including chapter audio and verse-by-verse audio with optional timing data.
+
+## Choose the Right Audio Source
+
+| Use case | Fetch from | Returned shape | Notes |
+| --- | --- | --- | --- |
+| Single-word pronunciation | `word.audioUrl` from the [Verses API](./verses) | Relative `wbw/...` asset path | Resolve it against `https://audio.qurancdn.com/` before playing it in the browser. |
+| Chapter playback | `client.audio.findAllChapterRecitations()` or `client.audio.findChapterRecitationById()` | Full chapter `audioUrl` | Use this for continuous chapter playback. |
+| Ayah playback with timing | `client.audio.findVerseRecitationsByChapter()` or `client.audio.findVerseRecitationsByKey()` | Verse recitation `url` plus optional `segments` | Use this for ayah recitations and highlighting. This is distinct from `word.audioUrl`. |
 
 ## Chapter Recitations
 
@@ -60,6 +68,8 @@ audioFiles.forEach((audio) => {
   path="../../../../packages/api/src/types/api/AudioData.ts"
   name="VerseRecitation"
 />
+
+`segments` provide word-level timing inside the recitation for highlighting and seek. They do not change how `word.audioUrl` works.
 
 ### By Verse Key
 

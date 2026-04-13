@@ -187,9 +187,9 @@ console.log(styles.mujawwad);  // Mujawwad reciters
 ```ts
 const media = await client.resources.findVerseMedia();
 
-console.log(media.unicode); // Font URL
-console.log(media.image);   // Images base URL
-console.log(media.audio);   // Audio base URL
+console.log(media.name);         // Resource name
+console.log(media.authorName);   // Author or curator
+console.log(media.languageName); // Associated language
 ```
 
 ### VerseMediaResource Type

@@ -13,7 +13,7 @@ export enum CharType {
 export interface Word {
   id?: number;
   position: number;
-  audioUrl: string;
+  audioUrl: string; // Relative word-by-word audio path, e.g. wbw/001_001_001.mp3
   charTypeName: CharType;
   codeV1?: string;
   codeV2?: string;

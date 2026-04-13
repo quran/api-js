@@ -43,6 +43,30 @@ const verse = await client.verses.findByKey("1:1", {
 });
 ```
 
+Requesting `words: true` can include `word.audioUrl` for each word. That value is a relative word-by-word asset path such as `wbw/001_001_001.mp3`, not a `/content/api/v4/...` endpoint.
+
+### Word Audio Paths
+
+```ts
+const verse = await client.verses.findByKey("1:1", {
+  words: true,
+  wordFields: {
+    audio: true,
+    location: true,
+  },
+});
+
+const firstWord = verse.words?.[0];
+const wordAudioUrl = firstWord
+  ? new URL(
+      firstWord.audioUrl.replace(/^\/+/, ""),
+      "https://audio.qurancdn.com/",
+    ).toString()
+  : null;
+```
+
+Use `word.audioUrl` for single-word pronunciation playback. For chapter or ayah recitations, and for timing `segments`, use the [Audio API](./audio) instead.
+
 ### With Tafsir
 
 ```ts
@@ -104,10 +128,11 @@ const random = await client.verses.findRandom({
 const verse = await client.verses.findByKey("1:1", {
   words: true,
   wordFields: {
+    audio: true,
     textUthmani: true,
     transliteration: true,
     translation: true,
-    audio: true,
+    location: true,
   },
 });
 ```
