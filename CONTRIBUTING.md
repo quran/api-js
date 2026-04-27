@@ -20,6 +20,7 @@ If you have been assigned to fix an issue or develop a new feature, please follo
 - Install dependencies by running `$ yarn`
 - Link `quran/api-js` locally by running `$ yarn link`
 - Auto-build files as you edit by running `$ yarn start`
+- For SDK-local smoke commands and local docs workflow, use `packages/api/README.md#local-development`
 - Implement your changes and tests to files in the `src/` directory and corresponding test files
 - To run examples, follow their individual directions. Usually this is just `$ yarn && yarn start`.
 - To run examples using your local build, link to the local `@quranjs/api` by running `$ yarn link @quranjs/api` from the example's directory

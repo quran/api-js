@@ -1,0 +1,375 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/v1/search": {
+      "get": {
+        "operationId": "SearchController_search",
+        "summary": "Search Quran content",
+        "description": "\nSearch for verses, chapters, juz, pages, and other Quran content. This is the primary search API used by Quran.com.\n\n## Use Cases\n\n### 1. Command Bar / Search-as-you-type (Quick Mode)\nUsed in Quran.com's command bar for instant navigation. Returns both navigational results (chapters, juz, pages) and verse matches.\n\n```\nGET /v1/search?mode=quick&query=fatiha&navigationalResultsNumber=5&versesResultsNumber=10\n```\n\n### 2. Search Results Page (Advanced Mode)\nUsed for the full search results page with pagination and detailed verse results.\n\n```\nGET /v1/search?mode=advanced&query=mercy&page=1&size=20&translation_ids=131,20\n```\n\n### 3. Search with Exact Matching\nFor precise search queries, use exact_matches_only in advanced mode.\n\n```\nGET /v1/search?mode=advanced&query=الرحمن&exact_matches_only=1\n```\n\n## Response Structure\n- **navigation**: Quick links to chapters, juz, pages matching the query\n- **verses**: Individual verse matches with optional highlighting\n- **pagination**: Standard pagination info for result sets\n    ",
+        "parameters": [
+          {
+            "name": "mode",
+            "required": true,
+            "in": "query",
+            "description": "Search mode - quick for navigation/autocomplete, advanced for detailed results",
+            "example": "quick",
+            "schema": {
+              "enum": [
+                "advanced",
+                "quick"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "description": "Search query string",
+            "example": "mercy",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter_translations",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated translation IDs to filter by",
+            "example": "131,20",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exact_matches_only",
+            "required": false,
+            "in": "query",
+            "description": "Return only exact matches (advanced mode only)",
+            "schema": {
+              "default": "0",
+              "enum": [
+                "0",
+                "1"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "get_text",
+            "required": false,
+            "in": "query",
+            "description": "Include full verse text in results",
+            "schema": {
+              "default": "0",
+              "enum": [
+                "0",
+                "1"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "highlight",
+            "required": false,
+            "in": "query",
+            "description": "Highlight matching text in results",
+            "schema": {
+              "default": "1",
+              "enum": [
+                "0",
+                "1"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "navigationalResultsNumber",
+            "required": false,
+            "in": "query",
+            "description": "Number of navigational results to return (quick mode only)",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "versesResultsNumber",
+            "required": false,
+            "in": "query",
+            "description": "Number of verse results to return (quick mode only)",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "indexes",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated list of indexes to search (quick mode only)",
+            "example": "quran,translations",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "translation_ids",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated translation IDs",
+            "example": "131,20,85",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid search parameters - check required fields mode and query"
+          },
+          "401": {
+            "description": "Unauthorized - missing or invalid x-auth-token header"
+          },
+          "403": {
+            "description": "Forbidden - token does not have the required \"search\" scope"
+          }
+        },
+        "tags": [
+          "Search"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Quran.Foundation Search API",
+    "description": "Quran.Foundation Search API provides programmatic access to search Quran content including verses, chapters, juz, pages, and translations. This is distinct from user-specific data like notes and bookmarks provided by [User-related APIs](/docs/category/user-related-apis).\n\n## How to get access\n\nWe are using OAuth2 flows to authenticate and authorize requests. To get started, you need to [get an access token](/docs/tutorials/oidc/getting-started-with-oauth2#obtaining-oauth-20-client-credentials) to make requests to our APIs. Then follow the steps mentioned [here](/docs/tutorials/oidc/getting-started-with-oauth2). The required scope is [`search`](/docs/user_related_apis_versioned/scopes#search).",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Search",
+      "description": "Endpoints for searching Quran content"
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://apis-prelive.quran.foundation/search",
+      "description": "Pre-production Server"
+    },
+    {
+      "url": "https://apis.quran.foundation/search",
+      "description": "Production Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "x-auth-token": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-auth-token",
+        "description": "The JWT access token required for accessing the endpoints."
+      },
+      "x-client-id": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-client-id",
+        "description": "Your client id"
+      }
+    },
+    "schemas": {
+      "SearchPaginationDto": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "number",
+            "example": 1,
+            "description": "Current page number"
+          },
+          "next_page": {
+            "type": "number",
+            "example": 2,
+            "nullable": true,
+            "description": "Next page number, null if on last page"
+          },
+          "per_page": {
+            "type": "number",
+            "example": 20,
+            "description": "Results per page"
+          },
+          "total_pages": {
+            "type": "number",
+            "example": 5,
+            "description": "Total number of pages"
+          },
+          "total_records": {
+            "type": "number",
+            "example": 100,
+            "description": "Total number of matching records"
+          }
+        },
+        "required": [
+          "current_page",
+          "per_page",
+          "total_pages",
+          "total_records"
+        ]
+      },
+      "SearchNavigationResultDto": {
+        "type": "object",
+        "properties": {
+          "result_type": {
+            "type": "string",
+            "enum": [
+              "surah",
+              "juz",
+              "hizb",
+              "ayah",
+              "rub_el_hizb",
+              "search_page",
+              "page",
+              "range",
+              "quran_range"
+            ],
+            "example": "surah",
+            "description": "Type of result - determines how to navigate/display"
+          },
+          "key": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "example": 1,
+            "description": "Key for navigation (chapter number, verse key like \"1:1\", juz number, etc.)"
+          },
+          "name": {
+            "type": "string",
+            "example": "Al-Fatihah",
+            "description": "Display name of the result (chapter name, verse text preview, etc.)"
+          },
+          "arabic": {
+            "type": "string",
+            "example": "الفاتحة",
+            "description": "Original Arabic text of the result"
+          },
+          "isArabic": {
+            "type": "boolean",
+            "example": true,
+            "description": "True if the name contains Arabic text"
+          },
+          "isTransliteration": {
+            "type": "boolean",
+            "example": false,
+            "description": "True if the result is from transliteration matching"
+          }
+        },
+        "required": [
+          "result_type",
+          "key",
+          "name"
+        ]
+      },
+      "SearchResultsDto": {
+        "type": "object",
+        "properties": {
+          "navigation": {
+            "description": "Quick navigation results (chapters, juz, pages, etc.)",
+            "example": [
+              {
+                "result_type": "surah",
+                "key": 1,
+                "name": "Al-Fatihah",
+                "isArabic": false
+              },
+              {
+                "result_type": "surah",
+                "key": 36,
+                "name": "Ya-Sin",
+                "isArabic": false
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchNavigationResultDto"
+            }
+          },
+          "verses": {
+            "description": "Verse results matching the search query",
+            "example": [
+              {
+                "result_type": "ayah",
+                "key": "1:1",
+                "name": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                "isArabic": true
+              },
+              {
+                "result_type": "ayah",
+                "key": "2:163",
+                "name": "وَإِلَٰهُكُمْ إِلَٰهٌ وَاحِدٌ ۖ لَّا إِلَٰهَ إِلَّا هُوَ الرَّحْمَٰنُ الرَّحِيمُ",
+                "isArabic": true
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchNavigationResultDto"
+            }
+          }
+        },
+        "required": [
+          "navigation",
+          "verses"
+        ]
+      },
+      "SearchResponseDto": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "description": "Pagination metadata for the results",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SearchPaginationDto"
+              }
+            ]
+          },
+          "result": {
+            "description": "Search results containing navigation links and verse matches",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SearchResultsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "pagination",
+          "result"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "x-auth-token": [],
+      "x-client-id": []
+    }
+  ]
+}

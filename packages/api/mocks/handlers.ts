@@ -47,7 +47,7 @@ export const handlers = [
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/verses/by_range",
-    ({ request }) => {
+    () => {
       return HttpResponse.json({
         verses: [
           {

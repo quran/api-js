@@ -1,0 +1,539 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "OAuth2 APIs",
+    "version": "1.0.0",
+    "description": "Quran.Foundation OAuth2 APIs are a set of APIs that allow you to integrate your app with Quran.Foundation's OAuth2 capabilities. This includes endpoints for OpenID Connect Userinfo, OAuth2 Token Exchange, and OAuth2 Authorize. The APIs are designed to be simple and easy to use, with a focus on security and privacy. Integrating with Quran.Foundation's OAuth2 APIs is required to access Quran.Foundation's APIs."
+  },
+  "servers": [
+    {
+      "url": "https://oauth2.quran.foundation",
+      "description": "Production Server"
+    },
+    {
+      "url": "https://staging-oauth2.quran.foundation",
+      "description": "Staging Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Bearer token authentication"
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic authentication for client credentials"
+      }
+    },
+    "schemas": {
+      "oidcUserInfo": {
+        "description": "OpenID Connect Userinfo",
+        "properties": {
+          "email": {
+            "example": "john.doe@example.com",
+            "description": "End-User's preferred e-mail address. Its value MUST conform to the RFC 5322 [RFC5322] addr-spec syntax. The RP MUST NOT rely upon this value being unique, as discussed in Section 5.7.",
+            "type": "string"
+          },
+          "first_name": {
+            "example": "John",
+            "description": "Given name(s) or first name(s) of the End-User. Note that in some cultures, people can have multiple given names; all can be present, with the names being separated by space characters.",
+            "type": "string"
+          },
+          "last_name": {
+            "example": "Doe",
+            "description": "Surname(s) or last name(s) of the End-User. Note that in some cultures, people can have multiple family names or no family name; all can be present, with the names being separated by space characters.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "introspectedOAuth2Token": {
+        "description": "Introspection contains an access token's session data as specified by\n[IETF RFC 7662](https://tools.ietf.org/html/rfc7662)",
+        "example": {
+          "active": true,
+          "scope": "openid offline_access collection bookmark reading_session preference user",
+          "client_id": "quran-demo",
+          "sub": "a4f5a01a-a641-4b23-ba05-d002b704bfaa",
+          "exp": 1675239767,
+          "iat": 1675236166,
+          "nbf": 1675236166,
+          "aud": [],
+          "iss": "https://oauth2.quran.foundation/",
+          "token_type": "Bearer",
+          "token_use": "access_token"
+        },
+        "properties": {
+          "active": {
+            "description": "Active is a boolean indicator of whether or not the presented token\nis currently active.  The specifics of a token's \"active\" state\nwill vary depending on the implementation of the authorization\nserver and the information it keeps about its tokens, but a \"true\"\nvalue return for the \"active\" property will generally indicate\nthat a given token has been issued by this authorization server,\nhas not been revoked by the resource owner, and is within its\ngiven time window of validity (e.g., after its issuance time and\nbefore its expiration time).",
+            "type": "boolean"
+          },
+          "aud": {
+            "description": "Audience contains a list of the token's intended audiences.",
+            "items": { "type": "string" },
+            "type": "array"
+          },
+          "client_id": {
+            "description": "ID is aclient identifier for the OAuth 2.0 client that\nrequested this token.",
+            "type": "string"
+          },
+          "exp": {
+            "description": "Expires at is an integer timestamp, measured in the number of seconds\nsince January 1 1970 UTC, indicating when this token will expire.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "ext": {
+            "additionalProperties": {},
+            "description": "Extra is arbitrary data set by the session.",
+            "type": "object"
+          },
+          "iat": {
+            "description": "Issued at is an integer timestamp, measured in the number of seconds\nsince January 1 1970 UTC, indicating when this token was\noriginally issued.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "iss": {
+            "description": "IssuerURL is a string representing the issuer of this token",
+            "type": "string"
+          },
+          "nbf": {
+            "description": "NotBefore is an integer timestamp, measured in the number of seconds\nsince January 1 1970 UTC, indicating when this token is not to be\nused before.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "obfuscated_subject": {
+            "description": "ObfuscatedSubject is set when the subject identifier algorithm was set to \"pairwise\" during authorization.\nIt is the `sub` value of the ID Token that was issued.",
+            "type": "string"
+          },
+          "scope": {
+            "description": "Scope is a JSON string containing a space-separated list of\nscopes associated with this token.",
+            "type": "string"
+          },
+          "sub": {
+            "description": "Subject of the token, as defined in JWT [RFC7519].\nUsually a machine-readable identifier of the resource owner who\nauthorized this token.",
+            "type": "string"
+          },
+          "token_type": {
+            "description": "TokenType is the introspected token's type, typically `Bearer`.",
+            "type": "string"
+          },
+          "token_use": {
+            "description": "TokenUse is the introspected token's use, for example `access_token` or `refresh_token`.",
+            "type": "string"
+          },
+          "username": {
+            "description": "Username is a human-readable identifier for the resource owner who\nauthorized this token.",
+            "type": "string"
+          }
+        },
+        "required": ["active"],
+        "type": "object"
+      },
+      "oAuth2TokenExchange": {
+        "description": "OAuth2 Token Exchange Result",
+        "example": {
+          "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzpoeWRyYS5qd3QuYWNjZXNzLX2VuIiwidHlwIjoiSldUIn0.eyJhdWQiOltdLCJjbGnRfaWQiOiJxdXJhbi1kZW1vIiwiZXhwIjoxNjc1MjM4MzkzLCJleHQiOnt9LCJpYXQiOjE2NzUyMzQ3OTIsImlzcyI6Imh0dHBzOi8vb2F1dGgyLnF1cmFuLmNvbS8iLCJqdGkiOiI3ODYzZTQ5OC01MTMwLTRjN2QtYjkyMi1iZDY4M2QwZDVjZWMiLCJuYmYiOjE2NzUyMzQ3OTIsInNjcCI6WyJjb2xsZWN0aW9uIiwiYm9va21hcmsiLCJyZWFkaW5nX3Nlc3Npb24iLCJwcmVmZXJlbmNlIiwidXNlciIsIm9wZW5pZCIsIm9mZmxpbmUiXSwic3ViIjoiYTRmNWEwMWEtYTY0MS00YjIzLWJhMDUtZDAwMmI3MDRiZmFhIn0.hlYYxzWxM0Tx2q__7ZPobFA62kjDOquyOqZFyMLF72aGCrhZq4Ov_4fEhPRe67lDdm3auFOoVT-WQW72f9nrbpxems9IdModHkXkOfZiz504qGh68GX13fpddVv1InA4FSncQ1c_NAhDlazNIuF242mQD5q8A2jQkJBAAYDn4bgHBttdHuqegw-UgnVMX1sCZ2qG_z46_2OtKPGJiPuXm4C7LbyGo4dd8P4ImYmOZg5zDV-Cc3fJbFuuYGSenOPHK3BYcv5luf0ilXRFP9NiB1QKpLwa6l-gT61WmxW55Ec2UeYAR_nNbLk5mP78rQ8lq-pG11fTkcfIhMGthh8QcDgbcTE2NIGpBDbqrzjWDxTSiGXtGKNw-kJPoYpLFC5JcCaYrrsSWUXj_38p9SebTraYfr6eEuFvphCZff9I6jt65IVDXLFZKg6kCqtA8DAgrYH9BVn4C3BkQwXOPVVq5omxAL8-hmJZDSwT_FiT2CGkgCk8msy8YNwqmI9kcnTKT-egvQyUN4PpkZA8a-vFfInAxlMsvxmEEGUi1Xsj7V2i6OUrxUZURKtVNixYPJy7-UmBWGhWe0k1aagpspIa-PAqn3mi_untqCQ_wByDpSaqY75R-lu8spnj2TuIB4uZ_Z0JaqbAyL8faF_Bavi4A08W8QIqggwE5d04k9LzCRU",
+          "expires_in": 3600,
+          "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzpoeWRyYS5vcGVuaWQuaWQtdW4iLCJ0eXAiOiJKV1QifQ.eyJhdF9oYXNoIjoiU2xUUGbnktSkRzdm1nMjNqTDVHZysImF1ZCI6WyJxdXJhbi1kZW1vIl0sImF1dGhfdGltZSI6MTY3NTIzNDc4OCwiZW1haWwiOiJtdWhhamlyZnJhbWVAZ21haWwuY29tIiwiZXhwIjoxNjc1MjM4MzkzLCJmaXJzdF9uYW1lIjoiTXVoYW1tYWQiLCJpYXQiOjE2NzUyMzQ3OTMsImlzcyI6Imh0dHBzOi8vb2F1dGgyLnF1cmFuLmNvbS8iLCJqdGkiOiIxMzUzYWIyYi0zZjRlLTQwZDQtYjlmNi0zYjllOWRhYmIxOWUiLCJsYXN0X25hbWUiOiJNdWhhamlyIiwicmF0IjoxNjc1MjM0Nzg2LCJzaWQiOiJjZTJhZTIxYi04N2VkLTQwZmItYjRjOC05MzI0ZGM4OThkZjciLCJzdWIiOiJhNGY1YTAxYS1hNjQxLTRiMjMtYmEwNS1kMDAyYjcwNGJmYWEifQ.dJuUdVszxahMmIEN5_bYfUgrdqK94ZPU9PbLm0fpnmDDd21kHl6jd62p4KROW3vCVJY9-tbBtdul9f90qUap7G0v-396s4TuBq5pl6Dx1XSxr8buW04RPxNkpBcdxzEtggpFYCRj9vuilcBekgHSg305YWyL1DW8tRiNyqU_3AJze786t6LPjHPoTKdUCxKW-bS3hDEB1vznKmtHpOUXhUECy-kFV_YLBVOJiKsR2peyCa65wrKZDn5L1qrVQLuTSOBawJRCxu3M9Sr_p3kud26AvRKNjlxWRcspxLOlRy2QuOaz1q0l0R7WHrvQkqhX1ZYLf4ukBTtbG0HeXIi6grXMK4ZSw04N-uBW_zDNwpaQOr7hU7yJc2_wopeDrshElEgvszMzUfyg4RXE_XmHym1ZfaVli_gJcsTcBguZgKw8UvmqL0_QZgKAEqNfQZE_GazFIvtSRBQ_Zl9pqZCyMgAN4dz_cBJc-3GqR-nsMaj6Zz5fqQxkqrUwMAwX3bulnp5KQBg42YOeNAGoP_SpKrjaZrZJsVbM7UNFHiGT6QvkLAbcgq1ysWuUDEqNinGKLGcOzFMoX1tCwvc_1fEwkw9VYbSjE2Ep_UcY6PI468iGQacpmyxBzUhTBajNT1DZZejTYNYbxEnlitlGF6lE4AYFwBlHk_RLd3zOZWjp5kA",
+          "refresh_token": "WVHJVqgSIf8Vsqf0k71vGCbkjPaoP_w5BMu_ektC36c.UI9w16x-XFQueGJOWp-c1BUyd1tBbjXnsvza_YxhxBE",
+          "scope": "collection bookmark reading_session preference user openid offline_access",
+          "token_type": "bearer",
+          "expires_at": "2023-02-01T07:59:53.167Z"
+        },
+        "properties": {
+          "access_token": {
+            "description": "The access token issued by the authorization server.",
+            "type": "string"
+          },
+          "expires_in": {
+            "description": "The lifetime in seconds of the access token. For\nexample, the value \"3600\" denotes that the access token will\nexpire in one hour from the time the response was generated.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "id_token": {
+            "description": "To retrieve a refresh token request the id_token scope.",
+            "type": "string"
+          },
+          "refresh_token": {
+            "description": "The refresh token, which can be used to obtain new\naccess tokens. To retrieve it add the scope \"offline_access\" to your access token request.",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the access token",
+            "type": "string"
+          },
+          "token_type": {
+            "description": "The type of the token issued",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "The date and time when the access token expires, in ISO 8601 format",
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "errorOAuth2": {
+        "description": "Error",
+        "properties": {
+          "error": {
+            "description": "Error code",
+            "type": "string",
+            "example": "invalid_client"
+          },
+          "error_debug": {
+            "description": "Error Debug Information\n\nOnly available in dev mode.",
+            "type": "string"
+          },
+          "error_description": {
+            "description": "Human-readable ASCII text providing additional information about the error",
+            "type": "string",
+            "example": "Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method). The requested OAuth 2.0 Client does not exist."
+          },
+          "error_hint": {
+            "description": "Error Hint\n\nHelps the user identify the error cause.",
+            "example": "The redirect URL is not allowed.",
+            "type": "string"
+          },
+          "status_code": {
+            "description": "HTTP Status Code",
+            "example": 401,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "responses": {
+      "emptyResponse": {
+        "description": "Empty responses are sent when, for example, resources are deleted. The HTTP status code for empty responses is\ntypically 201."
+      }
+    }
+  },
+  "paths": {
+    "/oauth2/token": {
+      "post": {
+        "summary": "The OAuth 2.0 Token Endpoint",
+        "description": "This endpoint is used by your application to obtain an access token or a refresh token. It is used by all flows except for the Implicit Flow because in that case an access token is issued directly. \n\n1. In the Client Credentials Flow, the application authenticates using a set of credentials and then gets an access token.\n2. In the Authorization Code Flow, the application exchanges an authorization code for an access token.\n3. In the Refresh Token Flow, the application uses a refresh token to obtain a new access token.",
+        "operationId": "oauth2TokenExchange",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "client_id": {
+                    "type": "string",
+                    "description": "The client identifier issued to the client during the registration process",
+                    "example": "quran-demo"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "The authorization code received from the authorization server",
+                    "example": "180ezHATHWKTe-NoCx"
+                  },
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "client_credentials",
+                      "authorization_code",
+                      "refresh_token"
+                    ],
+                    "description": "The grant type of the token request"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "description": "The redirect URI used in the initial authorization request",
+                    "example": "https://oauth2-client-prelive.quran.foundation/callback"
+                  },
+                  "refresh_token": {
+                    "type": "string",
+                    "description": "The refresh token issued to the client",
+                    "example": "ptDH6OdENVk3zY4LVxts90whTFgi6dVn9_wVekNyPmc.RZQ6JuoTlw8Zz38sJZvvJumqdNXuDxj6l3MzcK0"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "The scope of the access request",
+                    "example": "openid offline_access collection bookmark reading_session preference user"
+                  }
+                },
+                "required": ["grant_type"],
+                "type": "object"
+              },
+              "examples": {
+                "authorizationCode": {
+                  "summary": "Authorization Code Grant",
+                  "value": {
+                    "grant_type": "authorization_code",
+                    "code": "180ezHATHWKTe-NoCx",
+                    "client_id": "quran-demo",
+                    "redirect_uri": "https://oauth2-client-prelive.quran.foundation/callback",
+                    "scope": "openid offline_access collection bookmark reading_session preference user"
+                  }
+                },
+                "refreshToken": {
+                  "summary": "Refresh Token Grant",
+                  "value": {
+                    "grant_type": "refresh_token",
+                    "refresh_token": "ptDH6OdENVk3zY4LVxts90whTFgi6dVn9_wVekNyPmc.RZQ6JuoTlw8Zz38sJZvvJumqdNXuDxj6l3MzcK0",
+                    "client_id": "quran-demo",
+                    "scope": "openid offline_access collection bookmark reading_session preference user"
+                  }
+                },
+                "clientCredentials": {
+                  "summary": "Client Credentials Grant",
+                  "value": {
+                    "grant_type": "client_credentials",
+                    "scope": "collection bookmark reading_session preference user"
+                  },
+                  "description": "For client credentials, use Basic Authentication with client_id as username and client_secret as password"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful token exchange",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/oAuth2TokenExchange" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or invalid grant",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid client credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          }
+        },
+        "security": [{ "basicAuth": [] }],
+        "tags": ["OAuth2"]
+      }
+    },
+    "/oauth2/introspect": {
+      "post": {
+        "summary": "Introspect OAuth2 Access and Refresh Tokens",
+        "description": "The introspection endpoint allows to check if a token (both refresh and access) is active or not. An active token\nis neither expired nor revoked. If a token is active, additional information on the token will be included. You can\nset additional data for a token by setting `session.access_token` during the consent flow.",
+        "operationId": "introspectOAuth2Token",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "token": {
+                    "description": "The string value of the token. For access tokens, this\nis the \"access_token\" value returned from the token endpoint\ndefined in OAuth 2.0. For refresh tokens, this is the \"refresh_token\"\nvalue returned.",
+                    "type": "string"
+                  },
+                  "scope": {
+                    "description": "An optional, space separated list of required scopes. If the access token was not granted one of the\nscopes, the result of active will be false.",
+                    "type": "string"
+                  }
+                },
+                "required": ["token"],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful token introspection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/introspectedOAuth2Token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid client credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          }
+        },
+        "security": [{ "basicAuth": [] }],
+        "tags": ["OAuth2"]
+      }
+    },
+    "/oauth2/auth": {
+      "get": {
+        "summary": "OAuth 2.0 Authorize Endpoint",
+        "description": "This endpoint is used to start the authorization process. The client redirects the user to this endpoint to request authorization. The user will be prompted to log in and grant permission to the client application.\n\nUse open source libraries to perform OAuth 2.0 and OpenID Connect available for any programming language. You can find a list of libraries at https://oauth.net/code/\n\nFor now, you can only use grant_type `authorization_code` and `refresh_token` in the [`/oauth2/token`](/docs/oauth2_apis_versioned/oauth-2-token-exchange) endpoint",
+        "operationId": "oAuth2Authorize",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "response_type",
+            "description": "The type of response expected from the OAuth2 server",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["code", "token", "id_token", "code token"],
+              "example": "code"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client_id",
+            "description": "The client id that you already created",
+            "required": true,
+            "schema": { "type": "string", "example": "quran-demo" }
+          },
+          {
+            "in": "query",
+            "name": "redirect_uri",
+            "description": "Where to redirect after the oauth2 process completed",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "https://oauth2-client-prelive.quran.foundation/callback"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "description": "The scopes that you want to request, separated by spaces",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "bookmark.read reading_session preference"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "description": "An opaque value used by the client to maintain state between the request and callback. The authorization server includes this value when redirecting the user-agent back to the client.",
+            "schema": {
+              "type": "string",
+              "example": "veimvfgqexjicockrwsgcb333o3a"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the client's redirect URI",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "The URL to redirect the user to, including the authorization code or error information"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          }
+        },
+        "security": [],
+        "tags": ["OAuth2"]
+      }
+    },
+    "/userinfo": {
+      "get": {
+        "summary": "OpenID Connect Userinfo",
+        "description": "This endpoint returns the payload of the ID Token, including `session.id_token` values, of\nthe provided OAuth 2.0 Access Token's consent request.\n\nIn the case of authentication error, a WWW-Authenticate header might be set in the response\nwith more information about the error. See [the spec](https://datatracker.ietf.org/doc/html/rfc6750#section-3)\nfor more details about header format.",
+        "operationId": "getOidcUserInfo",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of user information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/oidcUserInfo" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or expired access token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/errorOAuth2" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerToken": [] }],
+        "tags": ["OIDC"]
+      }
+    },
+    "/oauth2/sessions/logout": {
+      "get": {
+        "summary": "OpenID Connect Logout",
+        "description": "This endpoint handles the user logout process in Quran.Foundation's OAuth2 & OpenID Connect system. When called, it:\n\n1. Ends the user's current session\n2. Revokes associated access and refresh tokens\n\nTo redirect users back to your app after logout, include `post_logout_redirect_uri`. The redirect URI must be pre-registered in your OAuth2 client configuration. Post-logout redirect: If you pass `post_logout_redirect_uri`, you must also include `id_token_hint` (the ID token from the login response). Requests with `post_logout_redirect_uri` but without `id_token_hint` will be rejected.\n\nThe logout process follows the OpenID Connect specifications:\n- [RP-Initiated Logout](https://openid.net/specs/openid-connect-rpinitiated-1_0.html)\n- [Front-Channel Logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html)\n- [Back-Channel Logout](https://openid.net/specs/openid-connect-backchannel-1_0.html)",
+        "operationId": "revokeOidcSession",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id_token_hint",
+            "description": "The ID token received during authentication. Required when `post_logout_redirect_uri` is provided; otherwise optional but recommended for identifying the user session.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
+          },
+          {
+            "in": "query",
+            "name": "post_logout_redirect_uri",
+            "description": "Where to redirect the user after logout. Must be pre-registered in your OAuth2 client's `post_logout_redirect_uris`. Requires `id_token_hint` (the ID token from the login response); requests with this parameter but without `id_token_hint` will be rejected.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "https://your-app.com/"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "description": "Opaque value passed back to the `post_logout_redirect_uri` for CSRF protection.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "af0ifjsldkj"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "$ref": "#/components/responses/emptyResponse",
+            "description": "Successful logout. The user will be redirected to complete the logout process."
+          }
+        },
+        "tags": ["OIDC"]
+      }
+    }
+  }
+}

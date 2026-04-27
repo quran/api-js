@@ -6,21 +6,22 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "build": "turbo run build",
+    "build": "./scripts/run-with-project-node.sh pnpm exec turbo run build",
     "clean": "git clean -xdf node_modules",
-    "clean:workspaces": "turbo run clean",
-    "dev": "turbo watch dev --continue",
-    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
-    "lint": "turbo run lint --continue --filter=\"./packages/*\" -- --cache --cache-location .cache/.eslintcache",
-    "test": "turbo run test --continue --filter=\"./packages/*\"",
-    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "clean:workspaces": "./scripts/run-with-project-node.sh pnpm exec turbo run clean",
+    "dev": "./scripts/run-with-project-node.sh pnpm exec turbo watch dev --continue",
+    "format": "./scripts/run-with-project-node.sh pnpm exec turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "./scripts/run-with-project-node.sh pnpm exec turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "lint": "./scripts/run-with-project-node.sh pnpm exec turbo run lint --continue --filter=\"./packages/*\" -- --cache --cache-location .cache/.eslintcache",
+    "test": "./scripts/run-with-project-node.sh pnpm exec turbo run test --continue --filter=\"./packages/*\"",
+    "lint:fix": "./scripts/run-with-project-node.sh pnpm exec turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
     "postinstall": "pnpm lint:ws",
-    "typecheck": "turbo run typecheck --filter=\"./packages/*\"",
+    "typecheck": "./scripts/run-with-project-node.sh pnpm exec turbo run typecheck --filter=\"./packages/*\"",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --no-frozen-lockfile",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "sync:sdk-docs": "node ./scripts/sync-sdk-docs.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
