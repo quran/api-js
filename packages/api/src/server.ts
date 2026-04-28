@@ -1,4 +1,5 @@
-import { Language, type ServerClientConfig } from "@/types";
+import { Language } from "@/types";
+import type { ServerClientConfig } from "@/types";
 
 import { createRuntimeClient } from "./runtime/create-client";
 
