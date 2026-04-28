@@ -24,7 +24,7 @@ const DEFAULT_BASE_URLS = {
   content: "https://apis.quran.foundation/content",
   oauth2: "https://oauth2.quran.foundation",
   quranReflect: "https://apis.quran.foundation/quran-reflect",
-  search: "https://apis.quran.foundation",
+  search: "https://apis.quran.foundation/search",
 } as const;
 
 const DIRECT_PATH_PREFIX = {

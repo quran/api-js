@@ -5,7 +5,7 @@ import { server } from "../mocks/server";
 import { SearchMode } from "../src";
 import { testClient } from "./test-client";
 
-const SEARCH_URL = "https://apis.quran.foundation/v1/search";
+const SEARCH_URL = "https://apis.quran.foundation/search/v1/search";
 
 const baseResponse = {
   result: {
