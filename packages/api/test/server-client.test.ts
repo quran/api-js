@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
 import { server } from "../mocks/server";
-import { SearchMode } from "../src";
+import { Language, SearchMode } from "../src";
 import { createServerClient } from "../src/server";
 
 interface DataListResponse {
@@ -66,10 +66,43 @@ describe("createServerClient", () => {
     });
 
     expect(tokenHostUrl).toBe("http://localhost:5444/oauth2/token");
-    expect(chaptersUrl).toContain("http://localhost:3020/api/v4/chapters");
+    expect(chaptersUrl).toBe(
+      "http://localhost:3020/api/v4/chapters?language=ar",
+    );
     expect(searchUrl).toContain("http://localhost:3002/v1/search");
+    expect(searchUrl).toContain("language=ar");
     expect(chapters[0]?.id).toBe(1);
     expect(search.pagination.currentPage).toBe(1);
+  });
+
+  it("lets server client defaults override the Arabic language default", async () => {
+    let chaptersUrl: string | null = null;
+
+    server.use(
+      http.get("http://localhost:3020/api/v4/chapters", ({ request }) => {
+        chaptersUrl = request.url;
+        return HttpResponse.json({
+          chapters: [{ id: 1, name_simple: "Al-Fatihah" }],
+        });
+      }),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      defaults: {
+        language: Language.ENGLISH,
+      },
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+      },
+    });
+
+    await client.content.v4.chapters.list();
+
+    expect(chaptersUrl).toBe(
+      "http://localhost:3020/api/v4/chapters?language=en",
+    );
   });
 
   it("stores a complete user session after code exchange and refresh", async () => {
