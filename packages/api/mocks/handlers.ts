@@ -47,7 +47,7 @@ export const handlers = [
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/verses/by_range",
-    ({ request }) => {
+    () => {
       return HttpResponse.json({
         verses: [
           {
@@ -230,6 +230,7 @@ export const handlers = [
               id: 1,
               chapter_id: params.chapterId,
               verse_key: "1:1",
+              url: "AbdulBaset/Murattal/mp3/001001.mp3",
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,
@@ -254,11 +255,25 @@ export const handlers = [
     ({ request, params }) => {
       try {
         validateAuth(request);
+        const verseKey = String(params.key);
+        const [chapter, verse] = verseKey.split(":");
+        const relativeUrl = `AbdulBaset/Murattal/mp3/${chapter.padStart(3, "0")}${verse.padStart(3, "0")}.mp3`;
+        const absoluteUrl = `https://verses.quran.com/${relativeUrl}`;
+
         return HttpResponse.json({
           audioFiles: [
             {
               id: 1,
-              verse_key: params.key,
+              verse_key: verseKey,
+              url: relativeUrl,
+              file_size: 123456,
+              format: "mp3",
+              recitation_id: params.recitationId,
+            },
+            {
+              id: 2,
+              verse_key: verseKey,
+              url: absoluteUrl,
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,
@@ -269,7 +284,7 @@ export const handlers = [
             current_page: 1,
             next_page: null,
             total_pages: 1,
-            total_records: 1,
+            total_records: 2,
           },
         });
       } catch {
