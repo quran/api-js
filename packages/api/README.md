@@ -49,6 +49,21 @@ const results = await client.search.v1.query({
 
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
+Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
+
+```typescript
+import { QuranClient } from "@quranjs/api";
+
+const client = new QuranClient({
+  clientId: process.env.CLIENT_ID!,
+  clientSecret: process.env.CLIENT_SECRET!,
+});
+
+const chapters = await client.chapters.findAll();
+```
+
+For new apps, prefer the runtime-specific `@quranjs/api/server` and `@quranjs/api/public` entrypoints.
+
 ## Documentation
 
 For complete documentation, guides, and API reference, visit:

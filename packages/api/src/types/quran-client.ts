@@ -24,6 +24,21 @@ export interface ServiceEnvironmentConfig {
   quranReflectBaseUrl?: string;
 }
 
+export interface QuranClientConfig {
+  /** Client ID for authentication */
+  clientId: string;
+  /** Client secret for authentication */
+  clientSecret: string;
+  /** Legacy gateway base URL for content/search APIs */
+  contentBaseUrl?: string;
+  /** Legacy OAuth2 token host URL */
+  authBaseUrl?: string;
+  /** Custom fetch implementation */
+  fetch?: CustomFetcher;
+  /** Default parameters for all API calls */
+  defaults?: Partial<BaseApiParams>;
+}
+
 export interface UserSession {
   accessToken: string;
   refreshToken?: string;
