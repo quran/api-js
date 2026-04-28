@@ -2,6 +2,7 @@ import type {
   BaseApiParams,
   ChapterId,
   ChapterRecitation,
+  NormalizedVerseRecitation,
   Pagination,
   VerseKey,
   VerseRecitation,
@@ -32,7 +33,7 @@ const AUDIO_BASE_URL = "https://verses.quran.com";
  */
 function normalizeVerseRecitations(
   audioFiles: RawVerseRecitation[],
-): VerseRecitation[] {
+): NormalizedVerseRecitation[] {
   return audioFiles.map((file) => {
     // If url is already absolute, use it; otherwise prepend the base URL
     const absoluteUrl =
@@ -108,7 +109,10 @@ export class QuranAudio {
     chapterId: ChapterId,
     recitationId: string,
     options?: GetVerseRecitationOptions,
-  ): Promise<{ audioFiles: VerseRecitation[]; pagination: Pagination }> {
+  ): Promise<{
+    audioFiles: NormalizedVerseRecitation[];
+    pagination: Pagination;
+  }> {
     if (!isValidChapterId(chapterId)) throw new Error("Invalid chapter id");
 
     const data = await this.fetcher.fetch<{
@@ -137,7 +141,10 @@ export class QuranAudio {
     key: VerseKey,
     recitationId: string,
     options?: GetVerseRecitationOptions,
-  ): Promise<{ audioFiles: VerseRecitation[]; pagination: Pagination }> {
+  ): Promise<{
+    audioFiles: NormalizedVerseRecitation[];
+    pagination: Pagination;
+  }> {
     if (!isValidVerseKey(key)) throw new Error("Invalid verse key");
 
     const data = await this.fetcher.fetch<{
