@@ -63,6 +63,38 @@ export class QuranVerses {
   }
 
   /**
+   * Get verses by range.
+   * @param {VerseKey} from start verse key (e.g., "1:1")
+   * @param {VerseKey} to end verse key (e.g., "1:7")
+   * @param {GetVerseOptions} options
+   * @example
+   * client.verses.findByRange('1:1', '1:7')
+   */
+  async findByRange(
+    from: VerseKey,
+    to: VerseKey,
+    options?: GetVerseOptions,
+  ): Promise<Verse[]> {
+    // We could validate keys here, but the API will also valid it.
+    // simpler to just pass through for now, or use isValidVerseKey if desired.
+    if (!isValidVerseKey(from) || !isValidVerseKey(to)) {
+      throw new Error("Invalid verse key");
+    }
+
+    const { verses } = await this.fetcher.fetch<{ verses: Verse[] }>(
+      "/content/api/v4/verses/by_range",
+      {
+        words: false, // verses-specific default
+        ...options,
+        from,
+        to,
+      },
+    );
+
+    return verses;
+  }
+
+  /**
    * Get verses by chapter.
    * @param {ChapterId} id chapter id, minimum 1, maximum 114
    * @param {GetVerseOptions} options

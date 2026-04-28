@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 2.2.0
+
+### Minor Changes
+
+- 99d13c5: Add by_range API support
+
 ## 2.1.0
 
 ### Minor Changes
