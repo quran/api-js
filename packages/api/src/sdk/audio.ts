@@ -17,6 +17,8 @@ type GetVerseRecitationOptions = BaseApiParams & {
   fields?: Partial<Record<VerseRecitationField, boolean>>;
 };
 
+type RawVerseRecitation = Omit<VerseRecitation, "audioUrl">;
+
 /**
  * Base URL for verse audio files from Quran.com
  * Used to convert relative paths to absolute URLs
@@ -29,13 +31,14 @@ const AUDIO_BASE_URL = "https://verses.quran.com";
  * to provide absolute URLs for consistency with chapter recitations
  */
 function normalizeVerseRecitations(
-  audioFiles: VerseRecitation[],
+  audioFiles: RawVerseRecitation[],
 ): VerseRecitation[] {
   return audioFiles.map((file) => {
     // If url is already absolute, use it; otherwise prepend the base URL
-    const absoluteUrl = file.url.startsWith("http")
-      ? file.url
-      : `${AUDIO_BASE_URL}/${file.url}`;
+    const absoluteUrl =
+      file.url.startsWith("http://") || file.url.startsWith("https://")
+        ? file.url
+        : `${AUDIO_BASE_URL}/${file.url.replace(/^\/+/, "")}`;
 
     return {
       ...file,
@@ -85,7 +88,10 @@ export class QuranAudio {
 
     const { audioFile } = await this.fetcher.fetch<{
       audioFile: ChapterRecitation;
-    }>(`/content/api/v4/chapter_recitations/${reciterId}/${chapterId}`, options);
+    }>(
+      `/content/api/v4/chapter_recitations/${reciterId}/${chapterId}`,
+      options,
+    );
 
     return audioFile;
   }
@@ -106,7 +112,7 @@ export class QuranAudio {
     if (!isValidChapterId(chapterId)) throw new Error("Invalid chapter id");
 
     const data = await this.fetcher.fetch<{
-      audioFiles: VerseRecitation[];
+      audioFiles: RawVerseRecitation[];
       pagination: Pagination;
     }>(
       `/content/api/v4/recitations/${recitationId}/by_chapter/${chapterId}`,
@@ -135,7 +141,7 @@ export class QuranAudio {
     if (!isValidVerseKey(key)) throw new Error("Invalid verse key");
 
     const data = await this.fetcher.fetch<{
-      audioFiles: VerseRecitation[];
+      audioFiles: RawVerseRecitation[];
       pagination: Pagination;
     }>(`/content/api/v4/recitations/${recitationId}/by_ayah/${key}`, options);
 

@@ -244,13 +244,21 @@ export const handlers = [
               format: "mp3",
               recitation_id: params.recitationId,
             },
+            {
+              id: 2,
+              verse_key: params.key,
+              url: "https://verses.quran.com/AbdulBaset/Murattal/mp3/002255.mp3",
+              file_size: 123456,
+              format: "mp3",
+              recitation_id: params.recitationId,
+            },
           ],
           pagination: {
             per_page: 50,
             current_page: 1,
             next_page: null,
             total_pages: 1,
-            total_records: 1,
+            total_records: 2,
           },
         });
       } catch {

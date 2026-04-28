@@ -13,7 +13,7 @@ export interface VerseRecitation {
   verseKey: VerseKey;
   /** Relative URL path (e.g., "AbdulBaset/Murattal/mp3/002255.mp3") */
   url: string;
-  /** Absolute URL (e.g., "https://download.quranicaudio.com/qdc/AbdulBaset/Murattal/mp3/002255.mp3") */
+  /** Absolute URL (e.g., "https://verses.quran.com/AbdulBaset/Murattal/mp3/002255.mp3") */
   audioUrl: string;
 
   id?: number;
