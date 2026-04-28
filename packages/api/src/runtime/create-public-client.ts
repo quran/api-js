@@ -317,7 +317,7 @@ const toUserSession = (
     refreshToken?: string;
     tokenType?: string;
   },
-  currentSession?: UserSession | null,
+  currentSession?: Partial<UserSession> | null,
 ): UserSession => {
   const expiresIn = token.expiresIn ?? token.expires_in;
   const accessToken = token.accessToken ?? token.access_token;
@@ -362,9 +362,14 @@ const createOAuth2Facade = (
 
     body.set("client_id", config.clientId);
 
-    const currentSession = options.requiresRefreshToken
+    const requestRefreshToken = body.get("refresh_token") ?? undefined;
+    const storedSession = options.requiresRefreshToken
       ? await fetcher.getUserSession()
       : null;
+    const currentSession =
+      options.requiresRefreshToken && requestRefreshToken
+        ? { ...(storedSession ?? {}), refreshToken: requestRefreshToken }
+        : storedSession;
 
     const token = await fetcher.request<TokenResponse>(
       "oauth2",

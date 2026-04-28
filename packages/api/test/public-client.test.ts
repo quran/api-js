@@ -135,6 +135,50 @@ describe("createPublicClient", () => {
     });
   });
 
+  it("preserves an explicit refresh token when the public token response omits one", async () => {
+    let storedSession: Record<string, unknown> | null = null;
+    let refreshBody = "";
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
+        refreshBody = await request.text();
+
+        return HttpResponse.json({
+          access_token: "public-access-token-2",
+          expires_in: 3600,
+          id_token: "public-id-token-2",
+          scope: "openid offline_access user",
+          token_type: "bearer",
+        });
+      }),
+    );
+
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "public",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+      storage: {
+        getSession: () => storedSession as never,
+        setSession: (session) => {
+          storedSession = session as Record<string, unknown> | null;
+        },
+      },
+    });
+
+    await client.oauth2.v1.refresh("explicit-public-refresh-token");
+
+    expect(refreshBody).toContain(
+      "refresh_token=explicit-public-refresh-token",
+    );
+    expect(storedSession).toMatchObject({
+      accessToken: "public-access-token-2",
+      idToken: "public-id-token-2",
+      refreshToken: "explicit-public-refresh-token",
+    });
+  });
+
   it("keeps exchanged public sessions in memory when storage is absent", async () => {
     server.use(
       http.post("http://localhost:5444/oauth2/token", () =>

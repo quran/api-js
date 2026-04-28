@@ -138,6 +138,48 @@ describe("createServerClient", () => {
     });
   });
 
+  it("preserves an explicit refresh token when the token response omits one", async () => {
+    let storedSession: Record<string, unknown> | null = null;
+    let refreshBody = "";
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
+        refreshBody = await request.text();
+
+        return HttpResponse.json({
+          access_token: "access-token-2",
+          expires_in: 3600,
+          id_token: "id-token-2",
+          scope: "openid offline_access user",
+          token_type: "bearer",
+        });
+      }),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+      storage: {
+        getSession: () => storedSession as never,
+        setSession: (session) => {
+          storedSession = session as Record<string, unknown> | null;
+        },
+      },
+    });
+
+    await client.oauth2.v1.refresh("explicit-refresh-token");
+
+    expect(refreshBody).toContain("refresh_token=explicit-refresh-token");
+    expect(storedSession).toMatchObject({
+      accessToken: "access-token-2",
+      idToken: "id-token-2",
+      refreshToken: "explicit-refresh-token",
+    });
+  });
+
   it("keeps exchanged user sessions in memory when storage is absent", async () => {
     server.use(
       http.post("http://localhost:5444/oauth2/token", () =>
