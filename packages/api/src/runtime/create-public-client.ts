@@ -15,6 +15,16 @@ import { replacePathParams } from "@/lib/url";
 import { PublicQuranFetcher } from "@/sdk/public-fetcher";
 
 type RawOperation = (request?: OperationRequest) => Promise<unknown>;
+type GeneratedGroup = Record<string, RawOperation>;
+type GeneratedGroups = Record<string, GeneratedGroup>;
+type QuranReflectFacade = {
+  comments: GeneratedGroup;
+  posts: GeneratedGroup;
+  raw: Record<string, RawOperation>;
+  rooms: GeneratedGroup;
+  tags: GeneratedGroup;
+  users: GeneratedGroup;
+};
 
 const SERVER_ONLY_MESSAGE =
   "This API requires @quranjs/api/server or a backend. Content and search are server-side for confidential clients.";
@@ -125,8 +135,8 @@ const createRawClient = (
 const createGeneratedGroups = (
   section: ServiceOperationCatalog,
   rawOperations: Record<string, RawOperation>,
-): Record<string, Record<string, RawOperation>> => {
-  const groups: Record<string, Record<string, RawOperation>> = {};
+): GeneratedGroups => {
+  const groups: GeneratedGroups = {};
 
   for (const [operationName, operation] of Object.entries(section.operations)) {
     const literals = getResourceSegments(operation.path).filter(
@@ -296,7 +306,9 @@ const createAuthFacade = (fetcher: PublicQuranFetcher) => {
   };
 };
 
-const createQuranReflectFacade = (fetcher: PublicQuranFetcher) => {
+const createQuranReflectFacade = (
+  fetcher: PublicQuranFetcher,
+): QuranReflectFacade => {
   const raw = createRawClient(fetcher, publicOperationCatalog.quranReflect.v1);
   const generatedGroups = createGeneratedGroups(
     publicOperationCatalog.quranReflect.v1,
@@ -304,8 +316,12 @@ const createQuranReflectFacade = (fetcher: PublicQuranFetcher) => {
   );
 
   return {
-    ...generatedGroups,
+    comments: generatedGroups.comments ?? {},
+    posts: generatedGroups.posts ?? {},
     raw,
+    rooms: generatedGroups.rooms ?? {},
+    tags: generatedGroups.tags ?? {},
+    users: generatedGroups.users ?? {},
   };
 };
 

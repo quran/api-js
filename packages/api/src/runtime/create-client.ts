@@ -31,6 +31,16 @@ import { QuranVerses } from "@/sdk/verses";
 type RuntimeClientConfig = PublicClientConfig | ServerClientConfig;
 type RuntimeMode = "public" | "server";
 type RawOperation = (request?: OperationRequest) => Promise<unknown>;
+type GeneratedGroup = Record<string, RawOperation>;
+type GeneratedGroups = Record<string, GeneratedGroup>;
+type QuranReflectFacade = {
+  comments: GeneratedGroup;
+  posts: GeneratedGroup;
+  raw: Record<string, RawOperation>;
+  rooms: GeneratedGroup;
+  tags: GeneratedGroup;
+  users: GeneratedGroup;
+};
 
 const HTTP_METHOD_TO_MUTATION_NAME: Record<HttpMethod, string> = {
   delete: "remove",
@@ -138,8 +148,8 @@ const createRawClient = (
 const createGeneratedGroups = (
   section: ServiceOperationCatalog,
   rawOperations: Record<string, RawOperation>,
-): Record<string, Record<string, RawOperation>> => {
-  const groups: Record<string, Record<string, RawOperation>> = {};
+): GeneratedGroups => {
+  const groups: GeneratedGroups = {};
 
   for (const [operationName, operation] of Object.entries(section.operations)) {
     const literals = getResourceSegments(operation.path).filter(
@@ -306,7 +316,7 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
   };
 };
 
-const createQuranReflectFacade = (fetcher: QuranFetcher) => {
+const createQuranReflectFacade = (fetcher: QuranFetcher): QuranReflectFacade => {
   const raw = createRawClient(fetcher, operationCatalog.quranReflect.v1);
   const generatedGroups = createGeneratedGroups(
     operationCatalog.quranReflect.v1,
@@ -314,8 +324,12 @@ const createQuranReflectFacade = (fetcher: QuranFetcher) => {
   );
 
   return {
-    ...generatedGroups,
+    comments: generatedGroups.comments ?? {},
+    posts: generatedGroups.posts ?? {},
     raw,
+    rooms: generatedGroups.rooms ?? {},
+    tags: generatedGroups.tags ?? {},
+    users: generatedGroups.users ?? {},
   };
 };
 
