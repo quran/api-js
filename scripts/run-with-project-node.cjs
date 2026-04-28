@@ -28,4 +28,9 @@ if (result.error) {
   process.exit(1);
 }
 
-process.exit(result.status ?? 0);
+if (result.signal) {
+  process.stderr.write(`Command terminated by signal: ${result.signal}\n`);
+  process.exit(1);
+}
+
+process.exit(result.status ?? 1);
