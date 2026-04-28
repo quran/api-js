@@ -234,20 +234,25 @@ export const handlers = [
     ({ request, params }) => {
       try {
         validateAuth(request);
+        const verseKey = String(params.key);
+        const [chapter, verse] = verseKey.split(":");
+        const relativeUrl = `AbdulBaset/Murattal/mp3/${chapter.padStart(3, "0")}${verse.padStart(3, "0")}.mp3`;
+        const absoluteUrl = `https://verses.quran.com/${relativeUrl}`;
+
         return HttpResponse.json({
           audioFiles: [
             {
               id: 1,
-              verse_key: params.key,
-              url: "AbdulBaset/Murattal/mp3/002255.mp3",
+              verse_key: verseKey,
+              url: relativeUrl,
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,
             },
             {
               id: 2,
-              verse_key: params.key,
-              url: "https://verses.quran.com/AbdulBaset/Murattal/mp3/002255.mp3",
+              verse_key: verseKey,
+              url: absoluteUrl,
               file_size: 123456,
               format: "mp3",
               recitation_id: params.recitationId,
