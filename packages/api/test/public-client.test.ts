@@ -58,6 +58,38 @@ describe("createPublicClient", () => {
     expect(response.data[0]?.id).toBe("collection-1");
   });
 
+  it("normalizes public user-service paths when routed through the gateway", async () => {
+    let collectionsUrl: string | null = null;
+
+    server.use(
+      http.get("http://localhost:3001/auth/v1/collections", ({ request }) => {
+        collectionsUrl = request.url;
+        expect(request.headers.get("x-auth-token")).toBe("user-access-token");
+        expect(request.headers.get("x-client-id")).toBe("client-id");
+
+        return HttpResponse.json({
+          success: true,
+          data: [{ id: "collection-1", name: "Favorites" }],
+        });
+      }),
+    );
+
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      services: {
+        gatewayUrl: "http://localhost:3001",
+      },
+      userSession: {
+        accessToken: "user-access-token",
+      },
+    });
+
+    await client.auth.v1.collections.list();
+
+    expect(collectionsUrl).toBe("http://localhost:3001/auth/v1/collections");
+  });
+
   it("stores a complete user session for public authorization-code exchange", async () => {
     let storedSession: Record<string, unknown> | null = null;
 

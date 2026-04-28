@@ -31,6 +31,12 @@ const GATEWAY_PATH_PREFIX = {
   quranReflect: "/quran-reflect/v1",
 } as const;
 
+const LEGACY_PREFIXES: Record<PublicApiService, readonly string[]> = {
+  auth: ["/auth/v1", "/v1"],
+  oauth2: [],
+  quranReflect: ["/quran-reflect/v1", "/v1"],
+};
+
 const ensureLeadingSlash = (value: string): string =>
   value.startsWith("/") ? value : `/${value}`;
 
@@ -276,7 +282,16 @@ export class PublicQuranFetcher {
     path: string,
     usesGateway: boolean,
   ): string {
-    const normalizedPath = ensureLeadingSlash(path);
+    let normalizedPath = ensureLeadingSlash(path);
+    for (const legacyPrefix of LEGACY_PREFIXES[service]) {
+      if (normalizedPath.startsWith(legacyPrefix)) {
+        normalizedPath = ensureLeadingSlash(
+          normalizedPath.slice(legacyPrefix.length),
+        );
+        break;
+      }
+    }
+
     const prefix = usesGateway
       ? GATEWAY_PATH_PREFIX[service]
       : DIRECT_PATH_PREFIX[service];
