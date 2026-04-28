@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 2.2.1
+
+### Patch Changes
+
+- 0ba15c9: Add absolute audioUrl values to verse recitation responses.
+
 ## 2.2.0
 
 ### Minor Changes
