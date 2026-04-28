@@ -119,6 +119,9 @@ export class PublicQuranFetcher {
           request?.auth === "auto" || !request?.auth
             ? operation.auth
             : request.auth,
+        method:
+          request?.method ??
+          (operation.method.toUpperCase() as OperationRequest["method"]),
         path: undefined,
       },
     );

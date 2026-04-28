@@ -58,6 +58,45 @@ describe("raw operation requests", () => {
     );
   });
 
+  it("uses server raw operation method when request method is absent", async () => {
+    let requestMethod: string | null = null;
+
+    server.use(
+      http.post(
+        "http://localhost:3020/api/v4/raw-action",
+        async ({ request }) => {
+          requestMethod = request.method;
+          expect(await request.json()).toEqual({ name: "value" });
+
+          return HttpResponse.json({ ok: true });
+        },
+      ),
+    );
+
+    const fetcher = new QuranFetcher("server", {
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+      },
+    });
+    const operation: OperationDefinition = {
+      auth: "none",
+      method: "post",
+      operationName: "createRawAction",
+      path: "/raw-action",
+      service: "content",
+      tags: [],
+      version: "v4",
+    };
+
+    await fetcher.requestOperation(operation, {
+      body: { name: "value" },
+    });
+
+    expect(requestMethod).toBe("POST");
+  });
+
   it("replaces public raw operation path params before fetching", async () => {
     let noteUrl: string | null = null;
 
@@ -98,5 +137,43 @@ describe("raw operation requests", () => {
     });
 
     expect(noteUrl).toBe("http://localhost:3001/v1/notes/note-1?first=5");
+  });
+
+  it("uses public raw operation method when request method is absent", async () => {
+    let requestMethod: string | null = null;
+
+    server.use(
+      http.delete("http://localhost:3001/v1/notes/note-1", ({ request }) => {
+        requestMethod = request.method;
+
+        return HttpResponse.json({ ok: true });
+      }),
+    );
+
+    const fetcher = new PublicQuranFetcher({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      services: {
+        authBaseUrl: "http://localhost:3001",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+    const operation: PublicOperationDefinition = {
+      auth: "user",
+      method: "delete",
+      operationName: "deleteNote",
+      path: "/v1/notes/{noteId}",
+      service: "auth",
+      tags: [],
+      version: "v1",
+    };
+
+    await fetcher.requestOperation(operation, {
+      path: { noteId: "note-1" },
+    });
+
+    expect(requestMethod).toBe("DELETE");
   });
 });

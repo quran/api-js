@@ -7,7 +7,8 @@ if [ "$#" -eq 0 ]; then
   exit 1
 fi
 
-PROJECT_NODE_VERSION="22.22.1"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_NODE_VERSION="$(tr -d '[:space:]' <"${SCRIPT_DIR}/../.nvmrc")"
 
 if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
   # shellcheck disable=SC1090
