@@ -135,6 +135,41 @@ describe("createPublicClient", () => {
     });
   });
 
+  it("keeps exchanged public sessions in memory when storage is absent", async () => {
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "public-access-token",
+          expires_in: 3600,
+          id_token: "public-id-token",
+          refresh_token: "public-refresh-token",
+          scope: "openid offline_access user",
+          token_type: "bearer",
+        }),
+      ),
+    );
+
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "public",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+    });
+
+    await client.oauth2.v1.exchangeCode({
+      code: "auth-code",
+      codeVerifier: "verifier",
+      redirectUri: "http://localhost:3000/callback",
+    });
+
+    await expect(client.getUserSession()).resolves.toMatchObject({
+      accessToken: "public-access-token",
+      idToken: "public-id-token",
+      refreshToken: "public-refresh-token",
+    });
+  });
+
   it("does not auto-refresh confidential browser sessions on 401 responses", async () => {
     let tokenRequests = 0;
 

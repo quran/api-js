@@ -34,7 +34,11 @@ export interface UserSession {
 }
 
 export interface TokenStorage {
-  getSession?: () => UserSession | null | Promise<UserSession | null>;
+  getSession?: () =>
+    | UserSession
+    | null
+    | undefined
+    | Promise<UserSession | null | undefined>;
   setSession?: (session: UserSession | null) => void | Promise<void>;
   clearSession?: () => void | Promise<void>;
 }

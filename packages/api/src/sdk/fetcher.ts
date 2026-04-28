@@ -84,12 +84,15 @@ const encodeBasicAuth = (username: string, password: string): string => {
 
 export class QuranFetcher {
   private appTokens = new Map<string, CachedToken>();
+  private userSession: UserSession | null | undefined;
   private userSessionRefreshPromise: Promise<UserSession> | null = null;
 
   constructor(
     private readonly mode: RuntimeMode,
     private readonly config: RuntimeClientConfig,
-  ) {}
+  ) {
+    this.userSession = config.userSession;
+  }
 
   public getFetch(): CustomFetcher {
     const doFetch = this.config.fetch ?? globalThis.fetch;
@@ -109,10 +112,16 @@ export class QuranFetcher {
 
   public async getUserSession(): Promise<UserSession | null> {
     const storedSession = await this.config.storage?.getSession?.();
-    return storedSession ?? this.config.userSession ?? null;
+    if (storedSession !== undefined) {
+      return storedSession;
+    }
+
+    return this.userSession ?? null;
   }
 
   public async setUserSession(session: UserSession | null): Promise<void> {
+    this.userSession = session;
+
     if (!this.config.storage) {
       return;
     }

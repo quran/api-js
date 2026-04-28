@@ -138,6 +138,59 @@ describe("createServerClient", () => {
     });
   });
 
+  it("keeps exchanged user sessions in memory when storage is absent", async () => {
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "access-token-1",
+          expires_in: 3600,
+          id_token: "id-token-1",
+          refresh_token: "refresh-token-1",
+          scope: "openid offline_access user",
+          token_type: "bearer",
+        }),
+      ),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+    });
+
+    await client.oauth2.v1.exchangeCode({
+      code: "auth-code",
+      codeVerifier: "verifier",
+      redirectUri: "http://localhost:3000/callback",
+    });
+
+    await expect(client.getUserSession()).resolves.toMatchObject({
+      accessToken: "access-token-1",
+      idToken: "id-token-1",
+      refreshToken: "refresh-token-1",
+    });
+  });
+
+  it("treats null storage sessions as logged out instead of falling back", async () => {
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      storage: {
+        getSession: () => null,
+      },
+      userSession: {
+        accessToken: "bootstrap-token",
+      },
+    });
+
+    await expect(client.getUserSession()).resolves.toBeNull();
+    await expect(client.auth.v1.notes.list()).rejects.toThrowError(
+      /requires a user session/i,
+    );
+  });
+
   it("refreshes a near-expiry user session before user-authenticated requests", async () => {
     let refreshRequests = 0;
     let notesToken: string | null = null;

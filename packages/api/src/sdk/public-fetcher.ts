@@ -44,7 +44,11 @@ const removeTrailingSlash = (value: string): string =>
   value.endsWith("/") ? value.slice(0, -1) : value;
 
 export class PublicQuranFetcher {
-  constructor(private readonly config: PublicClientConfig) {}
+  private userSession: UserSession | null | undefined;
+
+  constructor(private readonly config: PublicClientConfig) {
+    this.userSession = config.userSession;
+  }
 
   public clearCachedTokens(): void {
     return;
@@ -64,10 +68,16 @@ export class PublicQuranFetcher {
 
   public async getUserSession(): Promise<UserSession | null> {
     const storedSession = await this.config.storage?.getSession?.();
-    return storedSession ?? this.config.userSession ?? null;
+    if (storedSession !== undefined) {
+      return storedSession;
+    }
+
+    return this.userSession ?? null;
   }
 
   public async setUserSession(session: UserSession | null): Promise<void> {
+    this.userSession = session;
+
     if (!this.config.storage) {
       return;
     }
