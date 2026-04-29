@@ -614,6 +614,45 @@ describe("createServerClient", () => {
     expect(storedSession).toBeNull();
   });
 
+  it("keeps the stored session when automatic refresh has a transient failure", async () => {
+    let storedSession: Record<string, unknown> | null = {
+      accessToken: "expired-access-token",
+      expiresAt: Date.now() + 1_000,
+      refreshToken: "refresh-token-1",
+      scope: "openid offline_access user note",
+      tokenType: "bearer",
+    };
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({ error: "server_error" }, { status: 500 }),
+      ),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        authBaseUrl: "http://localhost:3001",
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+      storage: {
+        getSession: () => storedSession as never,
+        setSession: (session) => {
+          storedSession = session as Record<string, unknown> | null;
+        },
+      },
+    });
+
+    await expect(client.auth.v1.notes.list()).rejects.toThrowError(
+      /token refresh failed: 500/i,
+    );
+    expect(storedSession).toMatchObject({
+      accessToken: "expired-access-token",
+      refreshToken: "refresh-token-1",
+    });
+  });
+
   it("keeps content app-authenticated calls independent from user-session refresh", async () => {
     const tokenGrantTypes: string[] = [];
     let storedSession: Record<string, unknown> | null = {

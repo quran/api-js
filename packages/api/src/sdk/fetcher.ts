@@ -61,6 +61,7 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
 };
 
 const USER_SESSION_EXPIRED_MESSAGE = "User session expired. Sign in again.";
+const REFRESH_TOKEN_REJECTION_ERROR = "invalid_grant";
 const USER_SESSION_REFRESH_WINDOW_MS = 60_000;
 
 const ensureLeadingSlash = (value: string): string =>
@@ -68,6 +69,39 @@ const ensureLeadingSlash = (value: string): string =>
 
 const removeTrailingSlash = (value: string): string =>
   value.endsWith("/") ? value.slice(0, -1) : value;
+
+const readResponseBody = async (response: Response): Promise<string> => {
+  try {
+    return await response.text();
+  } catch {
+    return "";
+  }
+};
+
+const isRefreshTokenRejection = (
+  response: Response,
+  responseBody: string,
+): boolean => {
+  if (
+    response.status < 400 ||
+    response.status >= 500 ||
+    response.status === 429
+  ) {
+    return false;
+  }
+
+  return responseBody.toLowerCase().includes(REFRESH_TOKEN_REJECTION_ERROR);
+};
+
+const formatRefreshFailureMessage = (
+  response: Response,
+  responseBody: string,
+): string => {
+  const body = responseBody.trim();
+  const details = body ? `: ${body}` : "";
+
+  return `Token refresh failed: ${response.status} ${response.statusText}${details}`;
+};
 
 const encodeBasicAuth = (username: string, password: string): string => {
   const raw = `${username}:${password}`;
@@ -513,8 +547,13 @@ export class QuranFetcher {
     );
 
     if (!response.ok) {
-      await this.setUserSession(null);
-      throw new Error(USER_SESSION_EXPIRED_MESSAGE);
+      const responseBody = await readResponseBody(response);
+      if (isRefreshTokenRejection(response, responseBody)) {
+        await this.setUserSession(null);
+        throw new Error(USER_SESSION_EXPIRED_MESSAGE);
+      }
+
+      throw new Error(formatRefreshFailureMessage(response, responseBody));
     }
 
     const token = (await response.json()) as TokenResponse;
