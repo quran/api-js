@@ -12,10 +12,27 @@ if (process.argv.length < 3) {
 const useShell = process.platform === "win32";
 const [command, ...args] = process.argv.slice(2);
 
-spawnSync("corepack", ["enable"], {
-  shell: useShell,
-  stdio: "ignore",
-});
+const commandExists = (target) => {
+  const lookup = process.platform === "win32" ? "where" : "command";
+  const lookupArgs = process.platform === "win32" ? [target] : ["-v", target];
+  const result = spawnSync(lookup, lookupArgs, {
+    shell: process.platform !== "win32",
+    stdio: "ignore",
+  });
+
+  return result.status === 0;
+};
+
+if (
+  !process.env.SKIP_PROJECT_NODE_WRAPPER &&
+  !commandExists(command) &&
+  commandExists("corepack")
+) {
+  spawnSync("corepack", ["enable"], {
+    shell: useShell,
+    stdio: "ignore",
+  });
+}
 
 const result = spawnSync(command, args, {
   env: process.env,

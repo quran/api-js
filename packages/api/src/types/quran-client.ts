@@ -7,6 +7,10 @@ export type CustomFetcher = typeof fetch;
 
 export type RuntimeMode = "server" | "public";
 
+export interface QuranFetchClient {
+  fetch<T = unknown>(url: string, params?: ApiParams): Promise<T>;
+}
+
 export type ApiService =
   | "content"
   | "search"

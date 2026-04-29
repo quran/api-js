@@ -6,7 +6,11 @@ import type {
   PublicClientConfig,
   UserSession,
 } from "@/types";
-import { paramsToString, replacePathParams } from "@/lib/url";
+import {
+  normalizePathTemplate,
+  paramsToString,
+  replacePathParams,
+} from "@/lib/url";
 import humps from "humps";
 
 const { camelizeKeys } = humps;
@@ -76,23 +80,25 @@ export class PublicQuranFetcher {
   }
 
   public async setUserSession(session: UserSession | null): Promise<void> {
-    this.userSession = session;
-
     if (!this.config.storage) {
+      this.userSession = session;
       return;
     }
 
     if (!session) {
       if (this.config.storage.clearSession) {
         await this.config.storage.clearSession();
+        this.userSession = null;
         return;
       }
 
       await this.config.storage.setSession?.(null);
+      this.userSession = null;
       return;
     }
 
     await this.config.storage.setSession?.(session);
+    this.userSession = session;
   }
 
   public buildServiceUrl(
@@ -295,7 +301,7 @@ export class PublicQuranFetcher {
     path: string,
     usesGateway: boolean,
   ): string {
-    let normalizedPath = ensureLeadingSlash(path);
+    let normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
     for (const legacyPrefix of LEGACY_PREFIXES[service]) {
       if (normalizedPath.startsWith(legacyPrefix)) {
         normalizedPath = ensureLeadingSlash(

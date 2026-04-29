@@ -12,7 +12,11 @@ import type {
   UserSession,
 } from "@/types";
 import { retry } from "@/lib/retry";
-import { paramsToString, replacePathParams } from "@/lib/url";
+import {
+  normalizePathTemplate,
+  paramsToString,
+  replacePathParams,
+} from "@/lib/url";
 import humps from "humps";
 
 const { camelizeKeys } = humps;
@@ -58,9 +62,6 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
 
 const USER_SESSION_EXPIRED_MESSAGE = "User session expired. Sign in again.";
 const USER_SESSION_REFRESH_WINDOW_MS = 60_000;
-
-const normalizePathTemplate = (path: string): string =>
-  path.replace(/:([A-Za-z0-9_]+)/g, "{$1}");
 
 const ensureLeadingSlash = (value: string): string =>
   value.startsWith("/") ? value : `/${value}`;
@@ -120,23 +121,25 @@ export class QuranFetcher {
   }
 
   public async setUserSession(session: UserSession | null): Promise<void> {
-    this.userSession = session;
-
     if (!this.config.storage) {
+      this.userSession = session;
       return;
     }
 
     if (!session) {
       if (this.config.storage.clearSession) {
         await this.config.storage.clearSession();
+        this.userSession = null;
         return;
       }
 
       await this.config.storage.setSession?.(null);
+      this.userSession = null;
       return;
     }
 
     await this.config.storage.setSession?.(session);
+    this.userSession = session;
   }
 
   public buildServiceUrl(

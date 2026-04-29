@@ -248,6 +248,45 @@ describe("createServerClient", () => {
     });
   });
 
+  it("keeps the previous in-memory user session when storage writes fail", async () => {
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "access-token-1",
+          expires_in: 3600,
+          refresh_token: "refresh-token-1",
+          token_type: "bearer",
+        }),
+      ),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+      storage: {
+        setSession: () => {
+          throw new Error("storage write failed");
+        },
+      },
+      userSession: {
+        accessToken: "bootstrap-token",
+      },
+    });
+
+    await expect(
+      client.oauth2.v1.exchangeCode({
+        code: "auth-code",
+        redirectUri: "http://localhost:3000/callback",
+      }),
+    ).rejects.toThrowError(/storage write failed/i);
+    await expect(client.getUserSession()).resolves.toMatchObject({
+      accessToken: "bootstrap-token",
+    });
+  });
+
   it("treats null storage sessions as logged out instead of falling back", async () => {
     const client = createServerClient({
       clientId: "client-id",

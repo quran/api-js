@@ -3,13 +3,12 @@ import type {
   ChapterId,
   ChapterRecitation,
   Pagination,
+  QuranFetchClient,
   VerseKey,
   VerseRecitation,
   VerseRecitationField,
 } from "@/types";
 import { isValidChapterId, isValidVerseKey } from "@/utils";
-
-import type { QuranFetcher } from "./fetcher";
 
 type GetChapterRecitationOptions = BaseApiParams;
 
@@ -21,7 +20,7 @@ type GetVerseRecitationOptions = BaseApiParams & {
  * Audio API methods
  */
 export class QuranAudio {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get all chapter recitations for specific reciter

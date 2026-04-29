@@ -21,6 +21,9 @@ export const replacePathParams = (
   });
 };
 
+export const normalizePathTemplate = (path: string): string =>
+  path.replace(/:([A-Za-z0-9_]+)/g, "{$1}");
+
 const fieldsKey = ["wordFields", "translationFields", "fields"] as const;
 const fieldsKeySet = new Set<string>([
   ...fieldsKey,

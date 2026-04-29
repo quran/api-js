@@ -12,7 +12,6 @@ import humps from "humps";
 
 import { QuranAudio } from "./audio";
 import { QuranChapters } from "./chapters";
-import type { QuranFetcher } from "./fetcher";
 import { QuranJuzs } from "./juzs";
 import { QuranResources } from "./resources";
 import { QuranSearch } from "./search";
@@ -64,7 +63,7 @@ class LegacyQuranFetcher {
     this.cachedToken = null;
   }
 
-  public async fetch<T extends object>(
+  public async fetch<T = unknown>(
     url: string,
     params?: ApiParams,
   ): Promise<T> {
@@ -164,13 +163,12 @@ export class QuranClient {
     this.fetcher = new LegacyQuranFetcher(this.config);
     this.fetcher.getFetch();
 
-    const fetcher = this.fetcher as unknown as QuranFetcher;
-    this.chapters = new QuranChapters(fetcher);
-    this.verses = new QuranVerses(fetcher);
-    this.juzs = new QuranJuzs(fetcher);
-    this.audio = new QuranAudio(fetcher);
-    this.resources = new QuranResources(fetcher);
-    this.search = new QuranSearch(fetcher);
+    this.chapters = new QuranChapters(this.fetcher);
+    this.verses = new QuranVerses(this.fetcher);
+    this.juzs = new QuranJuzs(this.fetcher);
+    this.audio = new QuranAudio(this.fetcher);
+    this.resources = new QuranResources(this.fetcher);
+    this.search = new QuranSearch(this.fetcher);
   }
 
   public getConfig(): QuranClientConfig {

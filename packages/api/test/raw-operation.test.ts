@@ -139,6 +139,20 @@ describe("raw operation requests", () => {
     expect(noteUrl).toBe("http://localhost:3001/v1/notes/note-1?first=5");
   });
 
+  it("normalizes public colon path templates like server paths", () => {
+    const fetcher = new PublicQuranFetcher({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      services: {
+        authBaseUrl: "http://localhost:3001",
+      },
+    });
+
+    expect(fetcher.buildServiceUrl("auth", "/v1/notes/:noteId")).toBe(
+      "http://localhost:3001/v1/notes/{noteId}",
+    );
+  });
+
   it("uses public raw operation method when request method is absent", async () => {
     let requestMethod: string | null = null;
 

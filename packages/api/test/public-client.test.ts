@@ -214,6 +214,45 @@ describe("createPublicClient", () => {
     });
   });
 
+  it("keeps the previous in-memory public session when storage writes fail", async () => {
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "public-access-token",
+          expires_in: 3600,
+          refresh_token: "public-refresh-token",
+          token_type: "bearer",
+        }),
+      ),
+    );
+
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "public",
+      services: {
+        oauth2BaseUrl: "http://localhost:5444",
+      },
+      storage: {
+        setSession: () => {
+          throw new Error("storage write failed");
+        },
+      },
+      userSession: {
+        accessToken: "bootstrap-token",
+      },
+    });
+
+    await expect(
+      client.oauth2.v1.exchangeCode({
+        code: "auth-code",
+        redirectUri: "http://localhost:3000/callback",
+      }),
+    ).rejects.toThrowError(/storage write failed/i);
+    await expect(client.getUserSession()).resolves.toMatchObject({
+      accessToken: "bootstrap-token",
+    });
+  });
+
   it("does not auto-refresh confidential browser sessions on 401 responses", async () => {
     let tokenRequests = 0;
 

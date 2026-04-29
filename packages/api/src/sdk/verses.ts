@@ -5,6 +5,7 @@ import type {
   JuzNumber,
   PageNumber,
   PaginationParams,
+  QuranFetchClient,
   RubNumber,
   TranslationField,
   Verse,
@@ -21,8 +22,6 @@ import {
   isValidVerseKey,
 } from "@/utils";
 
-import type { QuranFetcher } from "./fetcher";
-
 type GetVerseOptions = BaseApiParams &
   PaginationParams & {
     reciter?: string | number;
@@ -38,7 +37,7 @@ type GetVerseOptions = BaseApiParams &
  * Verses API methods
  */
 export class QuranVerses {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get a specific verse by its key.
