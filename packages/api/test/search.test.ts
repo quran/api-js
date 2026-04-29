@@ -5,7 +5,7 @@ import { server } from "../mocks/server";
 import { SearchMode } from "../src";
 import { testClient } from "./test-client";
 
-const SEARCH_URL = "https://apis.quran.foundation/v1/search";
+const SEARCH_URL = "https://apis.quran.foundation/search/v1/search";
 
 const baseResponse = {
   result: {
@@ -53,7 +53,7 @@ describe("Search API", () => {
 
     expect(response.pagination.currentPage).toBe(1);
     expect(response.pagination.nextPage).toBeNull();
-    expect(response.result?.navigation[0].resultType).toBe("surah");
+    expect(response.result.navigation[0]?.resultType).toBe("surah");
   });
 
   it("sends query, mode, and default size", async () => {

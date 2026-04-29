@@ -1,7 +1,11 @@
-import type { BaseApiParams, Chapter, ChapterId, ChapterInfo } from "@/types";
+import type {
+  BaseApiParams,
+  Chapter,
+  ChapterId,
+  ChapterInfo,
+  QuranFetchClient,
+} from "@/types";
 import { isValidChapterId } from "@/utils";
-
-import type { QuranFetcher } from "./fetcher";
 
 type GetChapterOptions = BaseApiParams;
 
@@ -9,7 +13,7 @@ type GetChapterOptions = BaseApiParams;
  * Chapters API methods
  */
 export class QuranChapters {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get all chapters.

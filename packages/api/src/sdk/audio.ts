@@ -4,13 +4,12 @@ import type {
   ChapterRecitation,
   NormalizedVerseRecitation,
   Pagination,
+  QuranFetchClient,
   VerseKey,
   VerseRecitation,
   VerseRecitationField,
 } from "@/types";
 import { isValidChapterId, isValidVerseKey } from "@/utils";
-
-import type { QuranFetcher } from "./fetcher";
 
 type GetChapterRecitationOptions = BaseApiParams;
 
@@ -52,7 +51,7 @@ function normalizeVerseRecitations(
  * Audio API methods
  */
 export class QuranAudio {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get all chapter recitations for specific reciter

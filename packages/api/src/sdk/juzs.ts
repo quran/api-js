@@ -1,12 +1,10 @@
-import type { Juz } from "@/types";
-
-import type { QuranFetcher } from "./fetcher";
+import type { Juz, QuranFetchClient } from "@/types";
 
 /**
  * Juzs API methods
  */
 export class QuranJuzs {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get All Juzs

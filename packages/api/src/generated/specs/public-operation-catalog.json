@@ -1,0 +1,962 @@
+{
+  "auth": {
+    "v1": {
+      "operations": {
+        "postV1Collections": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1Collections",
+          "path": "/v1/collections",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1Collections": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1Collections",
+          "path": "/v1/collections",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1CollectionsBycollectionIdByBookmarks": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1CollectionsBycollectionIdByBookmarks",
+          "path": "/v1/collections/{collectionId}/bookmarks",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "deleteV1CollectionsBycollectionIdBy": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "deleteV1CollectionsBycollectionIdBy",
+          "path": "/v1/collections/{collectionId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1CollectionsBycollectionIdBy": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1CollectionsBycollectionIdBy",
+          "path": "/v1/collections/{collectionId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1CollectionsBycollectionIdBy": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1CollectionsBycollectionIdBy",
+          "path": "/v1/collections/{collectionId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "deleteV1CollectionsBycollectionIdByBookmarksBybookmarkIdBy": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "deleteV1CollectionsBycollectionIdByBookmarksBybookmarkIdBy",
+          "path": "/v1/collections/{collectionId}/bookmarks/{bookmarkId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1CollectionsAll": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1CollectionsAll",
+          "path": "/v1/collections/all",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1Bookmarks": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1Bookmarks",
+          "path": "/v1/bookmarks",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1Bookmarks": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1Bookmarks",
+          "path": "/v1/bookmarks",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "deleteV1BookmarksBybookmarkIdBy": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "deleteV1BookmarksBybookmarkIdBy",
+          "path": "/v1/bookmarks/{bookmarkId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1BookmarksAyahsRange": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1BookmarksAyahsRange",
+          "path": "/v1/bookmarks/ayahs-range",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1BookmarksBookmark": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1BookmarksBookmark",
+          "path": "/v1/bookmarks/bookmark",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1BookmarksCollections": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1BookmarksCollections",
+          "path": "/v1/bookmarks/collections",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1Preferences": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1Preferences",
+          "path": "/v1/preferences",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1Preferences": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1Preferences",
+          "path": "/v1/preferences",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1PreferencesBulk": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1PreferencesBulk",
+          "path": "/v1/preferences/bulk",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1ReadingSessions": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1ReadingSessions",
+          "path": "/v1/reading-sessions",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1ReadingSessions": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1ReadingSessions",
+          "path": "/v1/reading-sessions",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1GoalsGetTodaysPlan": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1GoalsGetTodaysPlan",
+          "path": "/v1/goals/get-todays-plan",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "putV1GoalsByidBy": {
+          "auth": "user",
+          "method": "put",
+          "operationName": "putV1GoalsByidBy",
+          "path": "/v1/goals/{id}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "deleteV1GoalsByidBy": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "deleteV1GoalsByidBy",
+          "path": "/v1/goals/{id}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1Goals": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1Goals",
+          "path": "/v1/goals",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1GoalsEstimate": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1GoalsEstimate",
+          "path": "/v1/goals/estimate",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1Streaks": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1Streaks",
+          "path": "/v1/streaks",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1StreaksCurrentStreakDays": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1StreaksCurrentStreakDays",
+          "path": "/v1/streaks/current-streak-days",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1ActivityDays": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1ActivityDays",
+          "path": "/v1/activity-days",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1ActivityDays": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1ActivityDays",
+          "path": "/v1/activity-days",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1ActivityDaysEstimateReadingTime": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1ActivityDaysEstimateReadingTime",
+          "path": "/v1/activity-days/estimate-reading-time",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1Notes": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1Notes",
+          "path": "/v1/notes",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1Notes": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1Notes",
+          "path": "/v1/notes",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1NotesByVerseByverseKeyBy": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1NotesByVerseByverseKeyBy",
+          "path": "/v1/notes/by-verse/{verseKey}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1NotesByAttachedEntity": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1NotesByAttachedEntity",
+          "path": "/v1/notes/by-attached-entity",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1NotesCountWithinRange": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1NotesCountWithinRange",
+          "path": "/v1/notes/count-within-range",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1NotesByRange": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1NotesByRange",
+          "path": "/v1/notes/by-range",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "getV1NotesBynoteIdBy": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getV1NotesBynoteIdBy",
+          "path": "/v1/notes/{noteId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "patchV1NotesBynoteIdBy": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "patchV1NotesBynoteIdBy",
+          "path": "/v1/notes/{noteId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "deleteV1NotesBynoteIdBy": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "deleteV1NotesBynoteIdBy",
+          "path": "/v1/notes/{noteId}",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        },
+        "postV1NotesBynoteIdByPublish": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postV1NotesBynoteIdByPublish",
+          "path": "/v1/notes/{noteId}/publish",
+          "service": "auth",
+          "tags": [],
+          "version": "v1"
+        }
+      },
+      "service": "auth",
+      "version": "v1"
+    }
+  },
+  "oauth2": {
+    "v1": {
+      "operations": {
+        "oauth2TokenExchange": {
+          "auth": "none",
+          "method": "post",
+          "operationName": "oauth2TokenExchange",
+          "path": "/oauth2/token",
+          "service": "oauth2",
+          "tags": [],
+          "version": "v1"
+        },
+        "introspectOauth2Token": {
+          "auth": "none",
+          "method": "post",
+          "operationName": "introspectOauth2Token",
+          "path": "/oauth2/introspect",
+          "service": "oauth2",
+          "tags": [],
+          "version": "v1"
+        },
+        "oAuth2Authorize": {
+          "auth": "none",
+          "method": "get",
+          "operationName": "oAuth2Authorize",
+          "path": "/oauth2/auth",
+          "service": "oauth2",
+          "tags": [],
+          "version": "v1"
+        },
+        "getOidcUserInfo": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "getOidcUserInfo",
+          "path": "/userinfo",
+          "service": "oauth2",
+          "tags": [],
+          "version": "v1"
+        },
+        "revokeOidcSession": {
+          "auth": "none",
+          "method": "get",
+          "operationName": "revokeOidcSession",
+          "path": "/oauth2/sessions/logout",
+          "service": "oauth2",
+          "tags": [],
+          "version": "v1"
+        }
+      },
+      "service": "oauth2",
+      "version": "v1"
+    }
+  },
+  "quranReflect": {
+    "v1": {
+      "operations": {
+        "usersControllerEditProfile": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "usersControllerEditProfile",
+          "path": "/v1/users/profile",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerProfile": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerProfile",
+          "path": "/v1/users/profile",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerUpdateProfile": {
+          "auth": "user",
+          "method": "put",
+          "operationName": "usersControllerUpdateProfile",
+          "path": "/v1/users/profile",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerRooms": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerRooms",
+          "path": "/v1/users/my-rooms",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerSearch": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerSearch",
+          "path": "/v1/users/search",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerToggleFollow": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "usersControllerToggleFollow",
+          "path": "/v1/users/{followeeId}/toggle-follow",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerRemoveFollower": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "usersControllerRemoveFollower",
+          "path": "/v1/users/{followerId}/remove-follower",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerGetFeaturedUsers": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerGetFeaturedUsers",
+          "path": "/v1/users/featured",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerFollowFeaturedUsers": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "usersControllerFollowFeaturedUsers",
+          "path": "/v1/users/featured/follow-all",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerGetUserProfile": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerGetUserProfile",
+          "path": "/v1/users/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerGetUserProfile2": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerGetUserProfile2",
+          "path": "/v1/users/{username}/profile",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerGetUserFollowers": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerGetUserFollowers",
+          "path": "/v1/users/{id}/followers",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerGetUserFollowing": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "usersControllerGetUserFollowing",
+          "path": "/v1/users/{id}/following",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "usersControllerDeleteAccount": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "usersControllerDeleteAccount",
+          "path": "/v1/users",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerAdminsAccess": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerAdminsAccess",
+          "path": "/v1/rooms/admins-access",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerUpdateGroup": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "roomsControllerUpdateGroup",
+          "path": "/v1/rooms/groups",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerCreateNewGroup": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerCreateNewGroup",
+          "path": "/v1/rooms/groups",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerUpdatePage": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "roomsControllerUpdatePage",
+          "path": "/v1/rooms/pages",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerCreateNewPage": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerCreateNewPage",
+          "path": "/v1/rooms/pages",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRoomMembers": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRoomMembers",
+          "path": "/v1/rooms/{id}/members",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerInviteUserToRoom": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerInviteUserToRoom",
+          "path": "/v1/rooms/{id}/invite",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerAcceptInvite": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerAcceptInvite",
+          "path": "/v1/rooms/{id}/accept-invite",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerRejectInvite": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerRejectInvite",
+          "path": "/v1/rooms/{id}/reject-invite",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerRemoveMember": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "roomsControllerRemoveMember",
+          "path": "/v1/rooms/{id}/members/{userId}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRooms": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRooms",
+          "path": "/v1/rooms/joined-rooms",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRooms2": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRooms2",
+          "path": "/v1/rooms/managed-rooms",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerSearchRooms": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerSearchRooms",
+          "path": "/v1/rooms/search",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRoomProfile": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRoomProfile",
+          "path": "/v1/rooms/group/{url}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRoomProfile2": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRoomProfile2",
+          "path": "/v1/rooms/page/{subdomain}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerAcceptByPrivateToken": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerAcceptByPrivateToken",
+          "path": "/v1/rooms/group/{url}/accept/{token}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerAcceptByPrivateToken2": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerAcceptByPrivateToken2",
+          "path": "/v1/rooms/page/{subdomain}/accept/{token}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRoomProfileById": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRoomProfileById",
+          "path": "/v1/rooms/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerGetRoomPosts": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "roomsControllerGetRoomPosts",
+          "path": "/v1/rooms/{id}/posts",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerJoinRoom": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerJoinRoom",
+          "path": "/v1/rooms/{groupId}/join",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerLeaveGroup": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerLeaveGroup",
+          "path": "/v1/rooms/{groupId}/leave",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerFollowPage": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerFollowPage",
+          "path": "/v1/rooms/{pageId}/follow",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerUnfollowPage": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "roomsControllerUnfollowPage",
+          "path": "/v1/rooms/{pageId}/unfollow",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "roomsControllerUpdatePostPrivacy": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "roomsControllerUpdatePostPrivacy",
+          "path": "/v1/rooms/{roomId}/posts/{postId}/privacy",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerFeed": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerFeed",
+          "path": "/v1/posts/feed",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetRelatedPosts": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetRelatedPosts",
+          "path": "/v1/posts/{postId}/related",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetLoggedinUserPosts": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetLoggedinUserPosts",
+          "path": "/v1/posts/my-posts",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerFindOne": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerFindOne",
+          "path": "/v1/posts/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerDelete": {
+          "auth": "user",
+          "method": "delete",
+          "operationName": "postsControllerDelete",
+          "path": "/v1/posts/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerEdit": {
+          "auth": "user",
+          "method": "patch",
+          "operationName": "postsControllerEdit",
+          "path": "/v1/posts/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerViewTracking": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerViewTracking",
+          "path": "/v1/posts/viewed/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerCreate": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postsControllerCreate",
+          "path": "/v1/posts",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerReportAbuse": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postsControllerReportAbuse",
+          "path": "/v1/posts/{id}/report",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetUserPost": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetUserPost",
+          "path": "/v1/posts/user-posts/{id}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerToggleLike": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postsControllerToggleLike",
+          "path": "/v1/posts/{id}/toggle-like",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerToggleSave": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postsControllerToggleSave",
+          "path": "/v1/posts/{id}/toggle-save",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetComments": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetComments",
+          "path": "/v1/posts/{id}/comments",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetAllComment": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetAllComment",
+          "path": "/v1/posts/{id}/all-comments",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerExportMultiplePosts": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "postsControllerExportMultiplePosts",
+          "path": "/v1/posts/export/pdf",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetMyPostsCountWithinRange": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetMyPostsCountWithinRange",
+          "path": "/v1/posts/count-within-range",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "postsControllerGetMyPostsByVerse": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "postsControllerGetMyPostsByVerse",
+          "path": "/v1/posts/by-verse/{verseKey}",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "tagsControllerFind": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "tagsControllerFind",
+          "path": "/v1/tags",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "commentsControllerCreate": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "commentsControllerCreate",
+          "path": "/v1/comments",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "commentsControllerDeleteComment": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "commentsControllerDeleteComment",
+          "path": "/v1/comments/{id}/delete",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "commentsControllerToggleLike": {
+          "auth": "user",
+          "method": "post",
+          "operationName": "commentsControllerToggleLike",
+          "path": "/v1/comments/{id}/toggle-like",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        },
+        "commentsControllerGet": {
+          "auth": "user",
+          "method": "get",
+          "operationName": "commentsControllerGet",
+          "path": "/v1/comments/{id}/replies",
+          "service": "quranReflect",
+          "tags": [],
+          "version": "v1"
+        }
+      },
+      "service": "quranReflect",
+      "version": "v1"
+    }
+  }
+}

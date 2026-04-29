@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { QuranClient } from "../src";
+import { createServerClient } from "../src/server";
 
 describe("Custom fetcher", () => {
   it("should fail with no fetch", () => {
@@ -9,7 +9,7 @@ describe("Custom fetcher", () => {
 
     expect(
       () =>
-        new QuranClient({
+        createServerClient({
           clientId: "test",
           clientSecret: "test",
         }),
@@ -23,7 +23,7 @@ describe("Custom fetcher", () => {
     // @ts-expect-error - we are testing this
     globalThis.fetch = undefined;
 
-    const client = new QuranClient({
+    const client = createServerClient({
       clientId: "test",
       clientSecret: "test",
       fetch: originalFetch,

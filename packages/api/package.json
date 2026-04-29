@@ -20,6 +20,16 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.min.js",
       "import": "./dist/index.min.mjs"
+    },
+    "./public": {
+      "types": "./dist/public.d.ts",
+      "require": "./dist/public.min.js",
+      "import": "./dist/public.min.mjs"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "require": "./dist/server.min.js",
+      "import": "./dist/server.min.mjs"
     }
   },
   "files": [
@@ -34,6 +44,8 @@
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",
+    "smoke:local:server": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-server.cjs",
+    "smoke:local:public": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-public.cjs",
     "lint": "eslint \"src/**/*.ts*\" \"test/**/*.ts*\" \"mocks/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "size": "size-limit",
@@ -71,6 +83,14 @@
     {
       "path": "dist/index.min.mjs",
       "limit": "15 KB"
+    },
+    {
+      "path": "dist/server.min.js",
+      "limit": "25 KB"
+    },
+    {
+      "path": "dist/public.min.js",
+      "limit": "25 KB"
     }
   ],
   "engines": {

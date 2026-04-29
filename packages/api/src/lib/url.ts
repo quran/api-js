@@ -7,12 +7,32 @@ export const removeBeginningSlash = (url: string) => {
   return url.startsWith("/") ? url.slice(1) : url;
 };
 
+export const replacePathParams = (
+  path: string,
+  params?: Record<string, string | number>,
+): string => {
+  return path.replace(/\{([^}]+)\}/g, (_match: string, rawKey: string) => {
+    const value = params?.[rawKey];
+    if (value === undefined) {
+      throw new Error(`Missing path parameter: ${rawKey}`);
+    }
+
+    return encodeURIComponent(String(value));
+  });
+};
+
+export const normalizePathTemplate = (path: string): string =>
+  path.replace(/(^|\/):([A-Za-z0-9_]+)/g, "$1{$2}");
+
 const fieldsKey = ["wordFields", "translationFields", "fields"] as const;
 const fieldsKeySet = new Set<string>([
   ...fieldsKey,
   ...fieldsKey.map((key) => decamelize(key)),
 ]);
-const preservedKeys = new Set(["navigationalResultsNumber", "versesResultsNumber"]);
+const preservedKeys = new Set([
+  "navigationalResultsNumber",
+  "versesResultsNumber",
+]);
 
 export const paramsToString = (params?: ApiParams): string => {
   if (!params) return "";
