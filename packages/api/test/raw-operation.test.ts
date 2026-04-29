@@ -97,6 +97,20 @@ describe("raw operation requests", () => {
     expect(requestMethod).toBe("POST");
   });
 
+  it("does not treat verse keys as colon path templates", () => {
+    const fetcher = new QuranFetcher("server", {
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+      },
+    });
+
+    expect(
+      fetcher.buildServiceUrl("content", "/recitations/1/by_ayah/1:1"),
+    ).toBe("http://localhost:3020/api/v4/recitations/1/by_ayah/1:1");
+  });
+
   it("replaces public raw operation path params before fetching", async () => {
     let noteUrl: string | null = null;
 
