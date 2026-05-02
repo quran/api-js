@@ -111,6 +111,87 @@ describe("raw operation requests", () => {
     ).toBe("http://localhost:3020/api/v4/recitations/1/by_ayah/1:1");
   });
 
+  it("routes content-catalog gateway paths without the content prefix", async () => {
+    let feedUrl: string | null = null;
+    let commentsUrl: string | null = null;
+    const requestedScopes: string[] = [];
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
+        const body = await request.text();
+        const scope = new URLSearchParams(body).get("scope") ?? "";
+        requestedScopes.push(scope);
+
+        return HttpResponse.json({
+          access_token: `${scope}-token`,
+          expires_in: 3600,
+          scope,
+          token_type: "Bearer",
+        });
+      }),
+      http.get(
+        "http://localhost:3020/quran-reflect/v1/posts/feed",
+        ({ request }) => {
+          feedUrl = request.url;
+          expect(request.headers.get("x-auth-token")).toBe("post.read-token");
+
+          return HttpResponse.json({
+            data: [],
+          });
+        },
+      ),
+      http.get(
+        "http://localhost:3020/quran-reflect/v1/posts/123/comments",
+        ({ request }) => {
+          commentsUrl = request.url;
+          expect(request.headers.get("x-auth-token")).toBe(
+            "comment.read-token",
+          );
+
+          return HttpResponse.json({
+            data: [],
+          });
+        },
+      ),
+    );
+
+    const fetcher = new QuranFetcher("server", {
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        gatewayUrl: "http://localhost:3020",
+        tokenHost: "http://localhost:5444",
+      },
+    });
+    const feedOperation: OperationDefinition = {
+      auth: "app",
+      method: "get",
+      operationName: "postsControllerFeed",
+      path: "/quran-reflect/v1/posts/feed",
+      service: "content",
+      tags: [],
+      version: "v4",
+    };
+    const commentsOperation: OperationDefinition = {
+      auth: "app",
+      method: "get",
+      operationName: "postsControllerGetComments",
+      path: "/quran-reflect/v1/posts/{id}/comments",
+      service: "content",
+      tags: [],
+      version: "v4",
+    };
+
+    await fetcher.requestOperation(feedOperation);
+    await fetcher.requestOperation(commentsOperation, { path: { id: 123 } });
+
+    expect(feedUrl).toBe("http://localhost:3020/quran-reflect/v1/posts/feed");
+    expect(commentsUrl).toBe(
+      "http://localhost:3020/quran-reflect/v1/posts/123/comments",
+    );
+    expect(requestedScopes).toEqual(["post.read", "comment.read"]);
+  });
+
   it("replaces public raw operation path params before fetching", async () => {
     let noteUrl: string | null = null;
 

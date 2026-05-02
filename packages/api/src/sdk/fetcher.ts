@@ -14,6 +14,7 @@ import type {
 import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
 import {
+  API_BASE_URL,
   DEFAULT_BASE_URLS,
   DIRECT_PATH_PREFIX,
   GATEWAY_PATH_PREFIX,
@@ -36,6 +37,17 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
   content: "content",
   search: "search",
 };
+const QURAN_REFLECT_POSTS_PATH_PREFIX = "/quran-reflect/v1/posts/";
+const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
+  "/comments",
+  "/all-comments",
+] as const;
+const GATEWAY_SERVICES = [
+  "auth",
+  "content",
+  "quranReflect",
+  "search",
+] as const satisfies readonly ApiService[];
 
 const USER_SESSION_EXPIRED_MESSAGE = "User session expired. Sign in again.";
 const REFRESH_TOKEN_REJECTION_ERROR = "invalid_grant";
@@ -138,8 +150,20 @@ export class QuranFetcher {
     path: string,
     query?: ApiParams,
   ): string {
-    const { baseUrl, usesGateway } = this.resolveServiceBaseUrl(service);
-    const servicePath = this.normalizeServicePath(service, path, usesGateway);
+    const crossServiceGatewayPath = this.isCrossServiceGatewayPath(
+      service,
+      path,
+    );
+    const { baseUrl, usesGateway } = this.resolveServiceBaseUrl(
+      service,
+      crossServiceGatewayPath,
+    );
+    const servicePath = this.normalizeServicePath(
+      service,
+      path,
+      usesGateway,
+      crossServiceGatewayPath,
+    );
 
     return `${baseUrl}${servicePath}${paramsToString(query)}`;
   }
@@ -245,10 +269,16 @@ export class QuranFetcher {
       headers.set("x-client-id", this.config.clientId);
     }
 
-    await this.applyAuthenticationHeaders(service, auth, headers, {
-      ...request,
-      accessToken: accessToken ?? request.accessToken,
-    });
+    await this.applyAuthenticationHeaders(
+      service,
+      auth,
+      headers,
+      {
+        ...request,
+        accessToken: accessToken ?? request.accessToken,
+      },
+      url,
+    );
 
     return this.getFetch()(url, {
       body,
@@ -381,6 +411,7 @@ export class QuranFetcher {
     auth: "app" | "none" | "user",
     headers: Headers,
     request: OperationRequest,
+    resourceUrl?: string,
   ): Promise<void> {
     if (request.basicAuth) {
       headers.set(
@@ -402,7 +433,7 @@ export class QuranFetcher {
     }
 
     if (auth === "app") {
-      const token = await this.getAppAccessToken(service);
+      const token = await this.getAppAccessToken(service, resourceUrl);
       this.setTokenHeaders(service, headers, token);
       return;
     }
@@ -510,14 +541,17 @@ export class QuranFetcher {
     headers.set("x-auth-token", accessToken);
   }
 
-  private async getAppAccessToken(service: ApiService): Promise<string> {
+  private async getAppAccessToken(
+    service: ApiService,
+    resourceUrl?: string,
+  ): Promise<string> {
     if (this.mode !== "server") {
       throw new Error(
         "App-authenticated APIs require @quranjs/api/server or a backend.",
       );
     }
 
-    const scope = APP_SERVICE_SCOPES[service];
+    const scope = this.resolveAppScope(service, resourceUrl);
     if (!scope) {
       throw new Error(
         `No client-credentials scope is configured for ${service}.`,
@@ -581,11 +615,45 @@ export class QuranFetcher {
     return cached.value;
   }
 
-  private resolveServiceBaseUrl(service: ApiService): {
+  private resolveAppScope(
+    service: ApiService,
+    resourceUrl?: string,
+  ): string | undefined {
+    if (service !== "content" || !resourceUrl) {
+      return APP_SERVICE_SCOPES[service];
+    }
+
+    const pathname = new URL(resourceUrl).pathname;
+    if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
+      return APP_SERVICE_SCOPES.content;
+    }
+
+    if (
+      QURAN_REFLECT_COMMENT_PATH_SUFFIXES.some((suffix) =>
+        pathname.endsWith(suffix),
+      )
+    ) {
+      return "comment.read";
+    }
+
+    return "post.read";
+  }
+
+  private resolveServiceBaseUrl(
+    service: ApiService,
+    crossServiceGatewayPath = false,
+  ): {
     baseUrl: string;
     usesGateway: boolean;
   } {
     const { services } = this.config;
+    if (crossServiceGatewayPath) {
+      return {
+        baseUrl: removeTrailingSlash(services?.gatewayUrl ?? API_BASE_URL),
+        usesGateway: true,
+      };
+    }
+
     const directBaseUrl =
       service === "content"
         ? services?.contentBaseUrl
@@ -621,17 +689,21 @@ export class QuranFetcher {
     service: ApiService,
     path: string,
     usesGateway: boolean,
+    crossServiceGatewayPath = false,
   ): string {
+    const normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
     if (service === "oauth2") {
-      return ensureLeadingSlash(normalizePathTemplate(path));
+      return normalizedPath;
     }
 
-    let normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
+    if (crossServiceGatewayPath) {
+      return normalizedPath;
+    }
+
+    let servicePath = normalizedPath;
     for (const prefix of LEGACY_PREFIXES[service]) {
-      if (normalizedPath.startsWith(prefix)) {
-        normalizedPath = ensureLeadingSlash(
-          normalizedPath.slice(prefix.length),
-        );
+      if (servicePath.startsWith(prefix)) {
+        servicePath = ensureLeadingSlash(servicePath.slice(prefix.length));
         break;
       }
     }
@@ -640,10 +712,31 @@ export class QuranFetcher {
       ? GATEWAY_PATH_PREFIX[service]
       : DIRECT_PATH_PREFIX[service];
 
-    if (normalizedPath.startsWith(prefix)) {
-      return normalizedPath;
+    if (servicePath.startsWith(prefix)) {
+      return servicePath;
     }
 
-    return `${prefix}${normalizedPath}`;
+    return `${prefix}${servicePath}`;
+  }
+
+  private isCrossServiceGatewayPath(
+    service: ApiService,
+    path: string,
+  ): boolean {
+    const normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
+    const pathService = GATEWAY_SERVICES.find((gatewayService) =>
+      this.pathMatchesPrefix(
+        normalizedPath,
+        GATEWAY_PATH_PREFIX[gatewayService],
+      ),
+    );
+
+    return Boolean(pathService && pathService !== service);
+  }
+
+  private pathMatchesPrefix(path: string, prefix: string): boolean {
+    return (
+      prefix.length > 0 && (path === prefix || path.startsWith(`${prefix}/`))
+    );
   }
 }
