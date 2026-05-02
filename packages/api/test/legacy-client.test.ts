@@ -8,16 +8,20 @@ describe("QuranClient legacy compatibility", () => {
   it("keeps the root QuranClient export and legacy gateway routes working", async () => {
     let chaptersUrl: string | null = null;
     let searchUrl: string | null = null;
+    const requestedScopes: string[] = [];
     let tokenRequests = 0;
 
     server.use(
-      http.post("http://localhost:5444/oauth2/token", () => {
+      http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
         tokenRequests += 1;
+
+        const body = await request.text();
+        requestedScopes.push(new URLSearchParams(body).get("scope") ?? "");
 
         return HttpResponse.json({
           access_token: "legacy-token",
           expires_in: 3600,
-          scope: "content",
+          scope: "content search",
           token_type: "Bearer",
         });
       }),
@@ -69,6 +73,7 @@ describe("QuranClient legacy compatibility", () => {
     expect(searchUrl).toContain("language=ar");
     expect(searchUrl).toContain("query=mercy");
     expect(searchUrl).toContain("size=30");
+    expect(requestedScopes).toEqual(["content search"]);
     expect(tokenRequests).toBe(1);
   });
 

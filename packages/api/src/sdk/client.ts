@@ -20,6 +20,7 @@ import { QuranSearch } from "./search";
 import { QuranVerses } from "./verses";
 
 const { camelizeKeys } = humps;
+const LEGACY_CLIENT_CREDENTIALS_SCOPE = "content search";
 
 type LegacyConfig = Required<
   Pick<QuranClientConfig, "authBaseUrl" | "contentBaseUrl">
@@ -82,7 +83,7 @@ class LegacyQuranFetcher {
 
     const body = new URLSearchParams({
       grant_type: "client_credentials",
-      scope: "content",
+      scope: LEGACY_CLIENT_CREDENTIALS_SCOPE,
     }).toString();
 
     const response = await retry(
