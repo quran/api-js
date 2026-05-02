@@ -1,5 +1,9 @@
-import type { HttpMethod, OperationDefinition } from "@/generated/contracts";
-import type { ServiceOperationCatalog } from "@/generated/contracts";
+import type {
+  HttpMethod,
+  OperationDefinition,
+  ServiceOperationCatalog,
+} from "@/generated/contracts";
+import { resolveCatalogOperation } from "@/generated/contracts";
 
 export const HTTP_METHOD_TO_MUTATION_NAME: Record<HttpMethod, string> = {
   delete: "remove",
@@ -109,11 +113,7 @@ export interface FetcherLike {
   ): Promise<T>;
   getUserSession(): Promise<unknown>;
   setUserSession(session: unknown): Promise<void>;
-  buildServiceUrl(
-    service: string,
-    path: string,
-    query?: unknown,
-  ): string;
+  buildServiceUrl(service: string, path: string, query?: unknown): string;
 }
 
 export const createRawClient = (
@@ -123,8 +123,14 @@ export const createRawClient = (
   const rawOperations: Record<string, RawOperation> = {};
 
   for (const [operationName, operation] of Object.entries(section.operations)) {
+    const resolvedOperation = resolveCatalogOperation(
+      section,
+      operationName,
+      operation,
+    );
+
     rawOperations[operationName] = (request?: unknown) =>
-      fetcher.requestOperation(operation, request);
+      fetcher.requestOperation(resolvedOperation, request);
   }
 
   return rawOperations;
@@ -137,11 +143,16 @@ export const createGeneratedGroups = (
   const groups: GeneratedGroups = {};
 
   for (const [operationName, operation] of Object.entries(section.operations)) {
-    const literals = getResourceSegments(operation.path).filter(
+    const resolvedOperation = resolveCatalogOperation(
+      section,
+      operationName,
+      operation,
+    );
+    const literals = getResourceSegments(resolvedOperation.path).filter(
       (segment) => !isPathParam(segment),
     );
     const groupName = toCamelCase(literals[0] ?? "misc");
-    const suggestedName = pickGeneratedMethodName(operation);
+    const suggestedName = pickGeneratedMethodName(resolvedOperation);
     const currentGroup = groups[groupName] ?? {};
     let methodName = suggestedName;
 

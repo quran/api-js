@@ -1,4 +1,5 @@
 import type {
+  CatalogOperationDefinition as BaseCatalogOperationDefinition,
   OperationDefinition as BaseOperationDefinition,
   ServiceOperationCatalog as BaseServiceOperationCatalog,
   HttpMethod,
@@ -15,9 +16,14 @@ export interface OperationDefinition
   service: PublicApiService;
 }
 
+export interface CatalogOperationDefinition
+  extends Omit<BaseCatalogOperationDefinition, "service"> {
+  service?: PublicApiService;
+}
+
 export interface ServiceOperationCatalog
   extends Omit<BaseServiceOperationCatalog, "operations" | "service"> {
-  operations: Record<string, OperationDefinition>;
+  operations: Record<string, CatalogOperationDefinition>;
   service: PublicApiService;
 }
 

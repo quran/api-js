@@ -46,6 +46,8 @@
     "test:coverage": "vitest run --coverage",
     "smoke:local:server": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-server.cjs",
     "smoke:local:public": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-public.cjs",
+    "generate:operation-catalogs": "node ../../scripts/generate-operation-catalogs.mjs",
+    "check:operation-catalogs": "node ../../scripts/generate-operation-catalogs.mjs --check",
     "lint": "eslint \"src/**/*.ts*\" \"test/**/*.ts*\" \"mocks/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "size": "size-limit",

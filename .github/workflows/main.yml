@@ -25,6 +25,15 @@ jobs:
       - uses: ./.github/setup
       - run: pnpm build --filter="./packages/*"
 
+  operation-catalogs:
+    name: 📚 Operation Catalogs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - uses: ./.github/setup
+      - run: pnpm --filter @quranjs/api check:operation-catalogs
+
   lint:
     name: ✨ Lint
     runs-on: ubuntu-latest

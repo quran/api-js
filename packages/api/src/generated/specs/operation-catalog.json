@@ -2,356 +2,205 @@
   "auth": {
     "v1": {
       "operations": {
-        "postV1Collections": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "postV1Collections",
-          "path": "/v1/collections",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
-        },
         "getV1Collections": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1Collections",
-          "path": "/v1/collections",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections"
         },
-        "postV1CollectionsBycollectionIdByBookmarks": {
+        "postV1Collections": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1CollectionsBycollectionIdByBookmarks",
-          "path": "/v1/collections/{collectionId}/bookmarks",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections"
         },
-        "deleteV1CollectionsBycollectionIdBy": {
+        "postV1CollectionsByCollectionIdBookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/collections/{collectionId}/bookmarks"
+        },
+        "deleteV1CollectionsByCollectionIdBookmarks": {
           "auth": "user",
           "method": "delete",
-          "operationName": "deleteV1CollectionsBycollectionIdBy",
-          "path": "/v1/collections/{collectionId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections/{collectionId}/bookmarks"
         },
-        "getV1CollectionsBycollectionIdBy": {
+        "getV1CollectionsByCollectionId": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1CollectionsBycollectionIdBy",
-          "path": "/v1/collections/{collectionId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections/{collectionId}"
         },
-        "postV1CollectionsBycollectionIdBy": {
+        "postV1CollectionsByCollectionId": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1CollectionsBycollectionIdBy",
-          "path": "/v1/collections/{collectionId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections/{collectionId}"
         },
-        "deleteV1CollectionsBycollectionIdByBookmarksBybookmarkIdBy": {
+        "deleteV1CollectionsByCollectionId": {
           "auth": "user",
           "method": "delete",
-          "operationName": "deleteV1CollectionsBycollectionIdByBookmarksBybookmarkIdBy",
-          "path": "/v1/collections/{collectionId}/bookmarks/{bookmarkId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections/{collectionId}"
+        },
+        "deleteV1CollectionsByCollectionIdBookmarksByBookmarkId": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/collections/{collectionId}/bookmarks/{bookmarkId}"
         },
         "getV1CollectionsAll": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1CollectionsAll",
-          "path": "/v1/collections/all",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
-        },
-        "postV1Bookmarks": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "postV1Bookmarks",
-          "path": "/v1/bookmarks",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/collections/all"
         },
         "getV1Bookmarks": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1Bookmarks",
-          "path": "/v1/bookmarks",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/bookmarks"
         },
-        "deleteV1BookmarksBybookmarkIdBy": {
+        "postV1Bookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/bookmarks"
+        },
+        "deleteV1BookmarksByBookmarkId": {
           "auth": "user",
           "method": "delete",
-          "operationName": "deleteV1BookmarksBybookmarkIdBy",
-          "path": "/v1/bookmarks/{bookmarkId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/bookmarks/{bookmarkId}"
         },
         "getV1BookmarksAyahsRange": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1BookmarksAyahsRange",
-          "path": "/v1/bookmarks/ayahs-range",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/bookmarks/ayahs-range"
         },
         "getV1BookmarksBookmark": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1BookmarksBookmark",
-          "path": "/v1/bookmarks/bookmark",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/bookmarks/bookmark"
         },
         "getV1BookmarksCollections": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1BookmarksCollections",
-          "path": "/v1/bookmarks/collections",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
-        },
-        "postV1Preferences": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "postV1Preferences",
-          "path": "/v1/preferences",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/bookmarks/collections"
         },
         "getV1Preferences": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1Preferences",
-          "path": "/v1/preferences",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/preferences"
+        },
+        "postV1Preferences": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/preferences"
         },
         "postV1PreferencesBulk": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1PreferencesBulk",
-          "path": "/v1/preferences/bulk",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
-        },
-        "postV1ReadingSessions": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "postV1ReadingSessions",
-          "path": "/v1/reading-sessions",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/preferences/bulk"
         },
         "getV1ReadingSessions": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1ReadingSessions",
-          "path": "/v1/reading-sessions",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/reading-sessions"
+        },
+        "postV1ReadingSessions": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/reading-sessions"
         },
         "getV1GoalsGetTodaysPlan": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1GoalsGetTodaysPlan",
-          "path": "/v1/goals/get-todays-plan",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/goals/get-todays-plan"
         },
-        "putV1GoalsByidBy": {
+        "putV1GoalsById": {
           "auth": "user",
           "method": "put",
-          "operationName": "putV1GoalsByidBy",
-          "path": "/v1/goals/{id}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/goals/{id}"
         },
-        "deleteV1GoalsByidBy": {
+        "deleteV1GoalsById": {
           "auth": "user",
           "method": "delete",
-          "operationName": "deleteV1GoalsByidBy",
-          "path": "/v1/goals/{id}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/goals/{id}"
         },
         "postV1Goals": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1Goals",
-          "path": "/v1/goals",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/goals"
         },
         "getV1GoalsEstimate": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1GoalsEstimate",
-          "path": "/v1/goals/estimate",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/goals/estimate"
         },
         "getV1Streaks": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1Streaks",
-          "path": "/v1/streaks",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/streaks"
         },
         "getV1StreaksCurrentStreakDays": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1StreaksCurrentStreakDays",
-          "path": "/v1/streaks/current-streak-days",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
-        },
-        "postV1ActivityDays": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "postV1ActivityDays",
-          "path": "/v1/activity-days",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/streaks/current-streak-days"
         },
         "getV1ActivityDays": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1ActivityDays",
-          "path": "/v1/activity-days",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/activity-days"
+        },
+        "postV1ActivityDays": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/activity-days"
         },
         "getV1ActivityDaysEstimateReadingTime": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1ActivityDaysEstimateReadingTime",
-          "path": "/v1/activity-days/estimate-reading-time",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/activity-days/estimate-reading-time"
         },
         "getV1Notes": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1Notes",
-          "path": "/v1/notes",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes"
         },
         "postV1Notes": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1Notes",
-          "path": "/v1/notes",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes"
         },
-        "getV1NotesByVerseByverseKeyBy": {
+        "getV1NotesByVerseByVerseKey": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1NotesByVerseByverseKeyBy",
-          "path": "/v1/notes/by-verse/{verseKey}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/by-verse/{verseKey}"
         },
         "getV1NotesByAttachedEntity": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1NotesByAttachedEntity",
-          "path": "/v1/notes/by-attached-entity",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/by-attached-entity"
         },
         "getV1NotesCountWithinRange": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1NotesCountWithinRange",
-          "path": "/v1/notes/count-within-range",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/count-within-range"
         },
         "getV1NotesByRange": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1NotesByRange",
-          "path": "/v1/notes/by-range",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/by-range"
         },
-        "getV1NotesBynoteIdBy": {
+        "getV1NotesByNoteId": {
           "auth": "user",
           "method": "get",
-          "operationName": "getV1NotesBynoteIdBy",
-          "path": "/v1/notes/{noteId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/{noteId}"
         },
-        "patchV1NotesBynoteIdBy": {
+        "patchV1NotesByNoteId": {
           "auth": "user",
           "method": "patch",
-          "operationName": "patchV1NotesBynoteIdBy",
-          "path": "/v1/notes/{noteId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/{noteId}"
         },
-        "deleteV1NotesBynoteIdBy": {
+        "deleteV1NotesByNoteId": {
           "auth": "user",
           "method": "delete",
-          "operationName": "deleteV1NotesBynoteIdBy",
-          "path": "/v1/notes/{noteId}",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/{noteId}"
         },
-        "postV1NotesBynoteIdByPublish": {
+        "postV1NotesByNoteIdPublish": {
           "auth": "user",
           "method": "post",
-          "operationName": "postV1NotesBynoteIdByPublish",
-          "path": "/v1/notes/{noteId}/publish",
-          "service": "auth",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/notes/{noteId}/publish"
         }
       },
       "service": "auth",
@@ -361,725 +210,455 @@
   "content": {
     "v4": {
       "operations": {
-        "chapterReciterAudioFile": {
-          "auth": "app",
-          "method": "get",
-          "operationName": "chapterReciterAudioFile",
-          "path": "/chapter_recitations/{id}/{chapter_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
-        },
-        "chapterReciterAudioFiles": {
-          "auth": "app",
-          "method": "get",
-          "operationName": "chapterReciterAudioFiles",
-          "path": "/chapter_recitations/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
-        },
         "audioReciterTimestamp": {
           "auth": "app",
           "method": "get",
-          "operationName": "audioReciterTimestamp",
-          "path": "/audio/reciters/{reciter_id}/timestamp",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/audio/reciters/{reciter_id}/timestamp"
         },
         "audioReciterLookup": {
           "auth": "app",
           "method": "get",
-          "operationName": "audioReciterLookup",
-          "path": "/audio/reciters/{reciter_id}/lookup",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/audio/reciters/{reciter_id}/lookup"
         },
         "listChapters": {
           "auth": "app",
           "method": "get",
-          "operationName": "listChapters",
-          "path": "/chapters",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/chapters"
         },
         "getChapter": {
           "auth": "app",
           "method": "get",
-          "operationName": "getChapter",
-          "path": "/chapters/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/chapters/{id}"
         },
         "getChapterInfo": {
           "auth": "app",
           "method": "get",
-          "operationName": "getChapterInfo",
-          "path": "/chapters/{id}/info",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/chapters/{id}/info"
+        },
+        "hadithReferencesByAyah": {
+          "auth": "app",
+          "method": "get",
+          "path": "/hadith_references/by_ayah/{ayah_key}"
+        },
+        "hadithsByAyah": {
+          "auth": "app",
+          "method": "get",
+          "path": "/hadith_references/by_ayah/{ayah_key}/hadiths"
+        },
+        "hadithCountWithinRange": {
+          "auth": "app",
+          "method": "get",
+          "path": "/hadith_references/count_within_range"
         },
         "versesByChapterNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByChapterNumber",
-          "path": "/verses/by_chapter/{chapter_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_chapter/{chapter_number}"
         },
         "versesByPageNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByPageNumber",
-          "path": "/verses/by_page/{page_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_page/{page_number}"
         },
         "versesByJuzNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByJuzNumber",
-          "path": "/verses/by_juz/{juz_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_juz/{juz_number}"
         },
         "versesByHizbNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByHizbNumber",
-          "path": "/verses/by_hizb/{hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_hizb/{hizb_number}"
         },
         "versesByRubElHizbNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByRubElHizbNumber",
-          "path": "/verses/by_rub/{rub_el_hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_rub/{rub_el_hizb_number}"
         },
         "versesByManzilNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByManzilNumber",
-          "path": "/verses/by_manzil/{manzil_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_manzil/{manzil_number}"
         },
         "versesByRukuNumber": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByRukuNumber",
-          "path": "/verses/by_ruku/{ruku_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_ruku/{ruku_number}"
         },
         "versesByRange": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByRange",
-          "path": "/verses/by_range",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_range"
         },
         "versesByVerseKey": {
           "auth": "app",
           "method": "get",
-          "operationName": "versesByVerseKey",
-          "path": "/verses/by_key/{verse_key}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/by_key/{verse_key}"
         },
         "randomVerse": {
           "auth": "app",
           "method": "get",
-          "operationName": "randomVerse",
-          "path": "/verses/random",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/verses/random"
         },
         "listJuzs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listJuzs",
-          "path": "/juzs",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/juzs"
         },
         "quranVersesByScript": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesByScript",
-          "path": "/quran/verses/{script}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/{script}"
         },
         "quranVersesIndopak": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesIndopak",
-          "path": "/quran/verses/indopak",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/indopak"
         },
         "quranVersesIndopakNastaleeq": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesIndopakNastaleeq",
-          "path": "/quran/verses/indopak_nastaleeq",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/indopak_nastaleeq"
         },
         "quranVersesUthmaniTajweed": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesUthmaniTajweed",
-          "path": "/quran/verses/uthmani_tajweed",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/uthmani_tajweed"
         },
         "quranVersesUthmani": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesUthmani",
-          "path": "/quran/verses/uthmani",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/uthmani"
         },
         "quranVersesUthmaniSimple": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesUthmaniSimple",
-          "path": "/quran/verses/uthmani_simple",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/uthmani_simple"
         },
         "quranVersesImlaei": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesImlaei",
-          "path": "/quran/verses/imlaei",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/imlaei"
         },
         "recitations": {
           "auth": "app",
           "method": "get",
-          "operationName": "recitations",
-          "path": "/resources/recitations",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/recitations"
         },
         "recitationAudioFiles": {
           "auth": "app",
           "method": "get",
-          "operationName": "recitationAudioFiles",
-          "path": "/quran/recitations/{recitation_id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/recitations/{recitation_id}"
         },
         "translation": {
           "auth": "app",
           "method": "get",
-          "operationName": "translation",
-          "path": "/quran/translations/{translation_id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/translations/{translation_id}"
         },
         "chapterReciters": {
           "auth": "app",
           "method": "get",
-          "operationName": "chapterReciters",
-          "path": "/resources/chapter_reciters",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/chapter_reciters"
         },
         "tafsir": {
           "auth": "app",
           "method": "get",
-          "operationName": "tafsir",
-          "path": "/quran/tafsirs/{tafsir_id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/tafsirs/{tafsir_id}"
         },
         "quranVersesCodeV1": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesCodeV1",
-          "path": "/quran/verses/code_v1",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/code_v1"
         },
         "quranVersesCodeV2": {
           "auth": "app",
           "method": "get",
-          "operationName": "quranVersesCodeV2",
-          "path": "/quran/verses/code_v2",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran/verses/code_v2"
         },
         "listSurahRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listSurahRecitation",
-          "path": "/recitations/{recitation_id}/by_chapter/{chapter_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_chapter/{chapter_number}"
         },
         "listJuzRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listJuzRecitation",
-          "path": "/recitations/{recitation_id}/by_juz/{juz_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_juz/{juz_number}"
         },
         "listPageRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listPageRecitation",
-          "path": "/recitations/{recitation_id}/by_page/{page_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_page/{page_number}"
         },
         "listRubElHizbRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRubElHizbRecitation",
-          "path": "/recitations/{recitation_id}/by_rub/{rub_el_hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_rub/{rub_el_hizb_number}"
         },
         "listHizbRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listHizbRecitation",
-          "path": "/recitations/{recitation_id}/by_hizb/{hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_hizb/{hizb_number}"
         },
         "listAyahRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listAyahRecitation",
-          "path": "/recitations/{recitation_id}/by_ayah/{ayah_key}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_ayah/{ayah_key}"
         },
         "recitationInfo": {
           "auth": "app",
           "method": "get",
-          "operationName": "recitationInfo",
-          "path": "/resources/recitations/{recitation_id}/info",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/recitations/{recitation_id}/info"
         },
         "translationInfo": {
           "auth": "app",
           "method": "get",
-          "operationName": "translationInfo",
-          "path": "/resources/translations/{translation_id}/info",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/translations/{translation_id}/info"
         },
         "translations": {
           "auth": "app",
           "method": "get",
-          "operationName": "translations",
-          "path": "/resources/translations",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/translations"
         },
         "tafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "tafsirs",
-          "path": "/resources/tafsirs",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/tafsirs"
         },
         "tafsirInfo": {
           "auth": "app",
           "method": "get",
-          "operationName": "tafsirInfo",
-          "path": "/resources/tafsirs/{tafsir_id}/info",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/tafsirs/{tafsir_id}/info"
         },
         "recitationStyles": {
           "auth": "app",
           "method": "get",
-          "operationName": "recitationStyles",
-          "path": "/resources/recitation_styles",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/recitation_styles"
         },
         "languages": {
           "auth": "app",
           "method": "get",
-          "operationName": "languages",
-          "path": "/resources/languages",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/languages"
         },
         "chapterInfo": {
           "auth": "app",
           "method": "get",
-          "operationName": "chapterInfo",
-          "path": "/resources/chapter_infos",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/chapter_infos"
         },
         "verseMedia": {
           "auth": "app",
           "method": "get",
-          "operationName": "verseMedia",
-          "path": "/resources/verse_media",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/resources/verse_media"
         },
         "listManzilRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listManzilRecitation",
-          "path": "/recitations/{recitation_id}/by_manzil/{manzil_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_manzil/{manzil_number}"
         },
         "listRukuRecitation": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRukuRecitation",
-          "path": "/recitations/{recitation_id}/by_ruku/{ruku_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/recitations/{recitation_id}/by_ruku/{ruku_number}"
         },
         "listSurahTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listSurahTranslations",
-          "path": "/translations/{resource_id}/by_chapter/{chapter_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_chapter/{chapter_number}"
         },
         "listPageTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listPageTranslations",
-          "path": "/translations/{resource_id}/by_page/{page_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_page/{page_number}"
         },
         "listJuzTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listJuzTranslations",
-          "path": "/translations/{resource_id}/by_juz/{juz_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_juz/{juz_number}"
         },
         "listRubElHizbTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRubElHizbTranslations",
-          "path": "/translations/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}"
         },
         "listHizbTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listHizbTranslations",
-          "path": "/translations/{resource_id}/by_hizb/{hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_hizb/{hizb_number}"
         },
         "listManzilTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listManzilTranslations",
-          "path": "/translations/{resource_id}/by_manzil/{manzil_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_manzil/{manzil_number}"
         },
         "listRukuTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRukuTranslations",
-          "path": "/translations/{resource_id}/by_ruku/{ruku_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_ruku/{ruku_number}"
         },
         "listAyahTranslations": {
           "auth": "app",
           "method": "get",
-          "operationName": "listAyahTranslations",
-          "path": "/translations/{resource_id}/by_ayah/{ayah_key}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/translations/{resource_id}/by_ayah/{ayah_key}"
         },
         "listSurahTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listSurahTafsirs",
-          "path": "/tafsirs/{resource_id}/by_chapter/{chapter_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_chapter/{chapter_number}"
         },
         "listPageTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listPageTafsirs",
-          "path": "/tafsirs/{resource_id}/by_page/{page_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_page/{page_number}"
         },
         "listJuzTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listJuzTafsirs",
-          "path": "/tafsirs/{resource_id}/by_juz/{juz_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_juz/{juz_number}"
         },
         "listRubElHizbTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRubElHizbTafsirs",
-          "path": "/tafsirs/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}"
         },
         "listHizbTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listHizbTafsirs",
-          "path": "/tafsirs/{resource_id}/by_hizb/{hizb_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_hizb/{hizb_number}"
         },
         "listManzilTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listManzilTafsirs",
-          "path": "/tafsirs/{resource_id}/by_manzil/{manzil_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_manzil/{manzil_number}"
         },
         "listRukuTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRukuTafsirs",
-          "path": "/tafsirs/{resource_id}/by_ruku/{ruku_number}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_ruku/{ruku_number}"
         },
         "listAyahTafsirs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listAyahTafsirs",
-          "path": "/tafsirs/{resource_id}/by_ayah/{ayah_key}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/tafsirs/{resource_id}/by_ayah/{ayah_key}"
         },
         "getJuz": {
           "auth": "app",
           "method": "get",
-          "operationName": "getJuz",
-          "path": "/juzs/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/juzs/{id}"
         },
         "listHizbs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listHizbs",
-          "path": "/hizbs",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/hizbs"
         },
         "getHizb": {
           "auth": "app",
           "method": "get",
-          "operationName": "getHizb",
-          "path": "/hizbs/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/hizbs/{id}"
         },
         "listRubElHizbs": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRubElHizbs",
-          "path": "/rub_el_hizbs",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/rub_el_hizbs"
         },
         "getRubElHizb": {
           "auth": "app",
           "method": "get",
-          "operationName": "getRubElHizb",
-          "path": "/rub_el_hizbs/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/rub_el_hizbs/{id}"
         },
         "listRukus": {
           "auth": "app",
           "method": "get",
-          "operationName": "listRukus",
-          "path": "/rukus",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/rukus"
         },
         "getRuku": {
           "auth": "app",
           "method": "get",
-          "operationName": "getRuku",
-          "path": "/rukus/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/rukus/{id}"
         },
         "listManzils": {
           "auth": "app",
           "method": "get",
-          "operationName": "listManzils",
-          "path": "/manzils",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/manzils"
         },
         "getManzil": {
           "auth": "app",
           "method": "get",
-          "operationName": "getManzil",
-          "path": "/manzils/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/manzils/{id}"
         },
         "getFootNote": {
           "auth": "app",
           "method": "get",
-          "operationName": "getFootNote",
-          "path": "/foot_notes/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/foot_notes/{id}"
         },
         "postsControllerFeed": {
           "auth": "app",
           "method": "get",
-          "operationName": "postsControllerFeed",
-          "path": "/quran-reflect/v1/posts/feed",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran-reflect/v1/posts/feed"
         },
         "postsControllerFindOne": {
           "auth": "app",
           "method": "get",
-          "operationName": "postsControllerFindOne",
-          "path": "/quran-reflect/v1/posts/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran-reflect/v1/posts/{id}"
         },
         "postsControllerGetUserPost": {
           "auth": "app",
           "method": "get",
-          "operationName": "postsControllerGetUserPost",
-          "path": "/quran-reflect/v1/posts/user-posts/{id}",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran-reflect/v1/posts/user-posts/{id}"
         },
         "postsControllerGetComments": {
           "auth": "app",
           "method": "get",
-          "operationName": "postsControllerGetComments",
-          "path": "/quran-reflect/v1/posts/{id}/comments",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran-reflect/v1/posts/{id}/comments"
         },
         "postsControllerGetAllComment": {
           "auth": "app",
           "method": "get",
-          "operationName": "postsControllerGetAllComment",
-          "path": "/quran-reflect/v1/posts/{id}/all-comments",
-          "service": "content",
-          "tags": [],
-          "version": "v4"
+          "path": "/quran-reflect/v1/posts/{id}/all-comments"
+        },
+        "chapterReciterAudioFiles": {
+          "auth": "app",
+          "method": "get",
+          "path": "/chapter_recitations/{reciter_id}"
+        },
+        "chapterReciterAudioFile": {
+          "auth": "app",
+          "method": "get",
+          "path": "/chapter_recitations/{reciter_id}/{chapter_number}"
+        },
+        "versesByRubElHizbNumberRubElHizb": {
+          "auth": "app",
+          "method": "get",
+          "path": "/verses/by_rub_el_hizb/{rub_el_hizb_number}"
+        },
+        "listRubElHizbTranslationsRub": {
+          "auth": "app",
+          "method": "get",
+          "path": "/translations/{resource_id}/by_rub/{rub_el_hizb_number}"
+        },
+        "listRubElHizbTafsirsRub": {
+          "auth": "app",
+          "method": "get",
+          "path": "/tafsirs/{resource_id}/by_rub/{rub_el_hizb_number}"
+        },
+        "listRubElHizbRecitationRubElHizb": {
+          "auth": "app",
+          "method": "get",
+          "path": "/recitations/{recitation_id}/by_rub_el_hizb/{rub_el_hizb_number}"
+        },
+        "listAyahAnswers": {
+          "auth": "app",
+          "method": "get",
+          "path": "/answers/by_ayah/{ayah_key}"
+        },
+        "getAnswerById": {
+          "auth": "app",
+          "method": "get",
+          "path": "/answers/{question_id}"
+        },
+        "countAnswersWithinRange": {
+          "auth": "app",
+          "method": "get",
+          "path": "/answers/count_within_range"
         }
       },
       "service": "content",
@@ -1092,47 +671,27 @@
         "oauth2TokenExchange": {
           "auth": "none",
           "method": "post",
-          "operationName": "oauth2TokenExchange",
-          "path": "/oauth2/token",
-          "service": "oauth2",
-          "tags": [],
-          "version": "v1"
+          "path": "/oauth2/token"
         },
         "introspectOauth2Token": {
           "auth": "none",
           "method": "post",
-          "operationName": "introspectOauth2Token",
-          "path": "/oauth2/introspect",
-          "service": "oauth2",
-          "tags": [],
-          "version": "v1"
+          "path": "/oauth2/introspect"
         },
         "oAuth2Authorize": {
           "auth": "none",
           "method": "get",
-          "operationName": "oAuth2Authorize",
-          "path": "/oauth2/auth",
-          "service": "oauth2",
-          "tags": [],
-          "version": "v1"
+          "path": "/oauth2/auth"
         },
         "getOidcUserInfo": {
           "auth": "user",
           "method": "get",
-          "operationName": "getOidcUserInfo",
-          "path": "/userinfo",
-          "service": "oauth2",
-          "tags": [],
-          "version": "v1"
+          "path": "/userinfo"
         },
         "revokeOidcSession": {
           "auth": "none",
           "method": "get",
-          "operationName": "revokeOidcSession",
-          "path": "/oauth2/sessions/logout",
-          "service": "oauth2",
-          "tags": [],
-          "version": "v1"
+          "path": "/oauth2/sessions/logout"
         }
       },
       "service": "oauth2",
@@ -1142,545 +701,295 @@
   "quranReflect": {
     "v1": {
       "operations": {
-        "usersControllerEditProfile": {
-          "auth": "user",
-          "method": "patch",
-          "operationName": "usersControllerEditProfile",
-          "path": "/v1/users/profile",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
         "usersControllerProfile": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerProfile",
-          "path": "/v1/users/profile",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/profile"
         },
         "usersControllerUpdateProfile": {
           "auth": "user",
           "method": "put",
-          "operationName": "usersControllerUpdateProfile",
-          "path": "/v1/users/profile",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/profile"
+        },
+        "usersControllerEditProfile": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/users/profile"
         },
         "usersControllerRooms": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerRooms",
-          "path": "/v1/users/my-rooms",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/my-rooms"
         },
         "usersControllerSearch": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerSearch",
-          "path": "/v1/users/search",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/search"
         },
         "usersControllerToggleFollow": {
           "auth": "user",
           "method": "post",
-          "operationName": "usersControllerToggleFollow",
-          "path": "/v1/users/{followeeId}/toggle-follow",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{followeeId}/toggle-follow"
         },
         "usersControllerRemoveFollower": {
           "auth": "user",
           "method": "post",
-          "operationName": "usersControllerRemoveFollower",
-          "path": "/v1/users/{followerId}/remove-follower",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
-        "usersControllerGetFeaturedUsers": {
-          "auth": "user",
-          "method": "get",
-          "operationName": "usersControllerGetFeaturedUsers",
-          "path": "/v1/users/featured",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
-        "usersControllerFollowFeaturedUsers": {
-          "auth": "user",
-          "method": "post",
-          "operationName": "usersControllerFollowFeaturedUsers",
-          "path": "/v1/users/featured/follow-all",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{followerId}/remove-follower"
         },
         "usersControllerGetUserProfile": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerGetUserProfile",
-          "path": "/v1/users/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{id}"
         },
         "usersControllerGetUserProfile2": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerGetUserProfile2",
-          "path": "/v1/users/{username}/profile",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{username}/profile"
         },
         "usersControllerGetUserFollowers": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerGetUserFollowers",
-          "path": "/v1/users/{id}/followers",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{id}/followers"
         },
         "usersControllerGetUserFollowing": {
           "auth": "user",
           "method": "get",
-          "operationName": "usersControllerGetUserFollowing",
-          "path": "/v1/users/{id}/following",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
-        "usersControllerDeleteAccount": {
-          "auth": "user",
-          "method": "delete",
-          "operationName": "usersControllerDeleteAccount",
-          "path": "/v1/users",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/users/{id}/following"
         },
         "roomsControllerAdminsAccess": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerAdminsAccess",
-          "path": "/v1/rooms/admins-access",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
-        "roomsControllerUpdateGroup": {
-          "auth": "user",
-          "method": "patch",
-          "operationName": "roomsControllerUpdateGroup",
-          "path": "/v1/rooms/groups",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/admins-access"
         },
         "roomsControllerCreateNewGroup": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerCreateNewGroup",
-          "path": "/v1/rooms/groups",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/groups"
         },
-        "roomsControllerUpdatePage": {
+        "roomsControllerUpdateGroup": {
           "auth": "user",
           "method": "patch",
-          "operationName": "roomsControllerUpdatePage",
-          "path": "/v1/rooms/pages",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/groups"
         },
         "roomsControllerCreateNewPage": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerCreateNewPage",
-          "path": "/v1/rooms/pages",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/pages"
+        },
+        "roomsControllerUpdatePage": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/rooms/pages"
         },
         "roomsControllerGetRoomMembers": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRoomMembers",
-          "path": "/v1/rooms/{id}/members",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/members"
         },
         "roomsControllerInviteUserToRoom": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerInviteUserToRoom",
-          "path": "/v1/rooms/{id}/invite",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/invite"
         },
         "roomsControllerAcceptInvite": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerAcceptInvite",
-          "path": "/v1/rooms/{id}/accept-invite",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/accept-invite"
         },
         "roomsControllerRejectInvite": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerRejectInvite",
-          "path": "/v1/rooms/{id}/reject-invite",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/reject-invite"
         },
         "roomsControllerRemoveMember": {
           "auth": "user",
           "method": "delete",
-          "operationName": "roomsControllerRemoveMember",
-          "path": "/v1/rooms/{id}/members/{userId}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/members/{userId}"
         },
         "roomsControllerGetRooms": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRooms",
-          "path": "/v1/rooms/joined-rooms",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/joined-rooms"
         },
         "roomsControllerGetRooms2": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRooms2",
-          "path": "/v1/rooms/managed-rooms",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/managed-rooms"
         },
         "roomsControllerSearchRooms": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerSearchRooms",
-          "path": "/v1/rooms/search",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/search"
         },
         "roomsControllerGetRoomProfile": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRoomProfile",
-          "path": "/v1/rooms/group/{url}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/group/{url}"
         },
         "roomsControllerGetRoomProfile2": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRoomProfile2",
-          "path": "/v1/rooms/page/{subdomain}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/page/{subdomain}"
         },
         "roomsControllerAcceptByPrivateToken": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerAcceptByPrivateToken",
-          "path": "/v1/rooms/group/{url}/accept/{token}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/group/{url}/accept/{token}"
         },
         "roomsControllerAcceptByPrivateToken2": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerAcceptByPrivateToken2",
-          "path": "/v1/rooms/page/{subdomain}/accept/{token}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/page/{subdomain}/accept/{token}"
         },
         "roomsControllerGetRoomProfileById": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRoomProfileById",
-          "path": "/v1/rooms/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}"
         },
         "roomsControllerGetRoomPosts": {
           "auth": "user",
           "method": "get",
-          "operationName": "roomsControllerGetRoomPosts",
-          "path": "/v1/rooms/{id}/posts",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{id}/posts"
         },
         "roomsControllerJoinRoom": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerJoinRoom",
-          "path": "/v1/rooms/{groupId}/join",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{groupId}/join"
         },
         "roomsControllerLeaveGroup": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerLeaveGroup",
-          "path": "/v1/rooms/{groupId}/leave",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{groupId}/leave"
         },
         "roomsControllerFollowPage": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerFollowPage",
-          "path": "/v1/rooms/{pageId}/follow",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{pageId}/follow"
         },
         "roomsControllerUnfollowPage": {
           "auth": "user",
           "method": "post",
-          "operationName": "roomsControllerUnfollowPage",
-          "path": "/v1/rooms/{pageId}/unfollow",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{pageId}/unfollow"
         },
         "roomsControllerUpdatePostPrivacy": {
           "auth": "user",
           "method": "patch",
-          "operationName": "roomsControllerUpdatePostPrivacy",
-          "path": "/v1/rooms/{roomId}/posts/{postId}/privacy",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/rooms/{roomId}/posts/{postId}/privacy"
         },
         "postsControllerFeed": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerFeed",
-          "path": "/v1/posts/feed",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/feed"
         },
         "postsControllerGetRelatedPosts": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetRelatedPosts",
-          "path": "/v1/posts/{postId}/related",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{postId}/related"
         },
         "postsControllerGetLoggedinUserPosts": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetLoggedinUserPosts",
-          "path": "/v1/posts/my-posts",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/my-posts"
+        },
+        "postsControllerGetLikedState": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{id}/liked"
         },
         "postsControllerFindOne": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerFindOne",
-          "path": "/v1/posts/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
-        },
-        "postsControllerDelete": {
-          "auth": "user",
-          "method": "delete",
-          "operationName": "postsControllerDelete",
-          "path": "/v1/posts/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}"
         },
         "postsControllerEdit": {
           "auth": "user",
           "method": "patch",
-          "operationName": "postsControllerEdit",
-          "path": "/v1/posts/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}"
+        },
+        "postsControllerDelete": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/posts/{id}"
         },
         "postsControllerViewTracking": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerViewTracking",
-          "path": "/v1/posts/viewed/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/viewed/{id}"
         },
         "postsControllerCreate": {
           "auth": "user",
           "method": "post",
-          "operationName": "postsControllerCreate",
-          "path": "/v1/posts",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts"
         },
         "postsControllerReportAbuse": {
           "auth": "user",
           "method": "post",
-          "operationName": "postsControllerReportAbuse",
-          "path": "/v1/posts/{id}/report",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}/report"
         },
         "postsControllerGetUserPost": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetUserPost",
-          "path": "/v1/posts/user-posts/{id}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/user-posts/{id}"
         },
         "postsControllerToggleLike": {
           "auth": "user",
           "method": "post",
-          "operationName": "postsControllerToggleLike",
-          "path": "/v1/posts/{id}/toggle-like",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}/toggle-like"
         },
         "postsControllerToggleSave": {
           "auth": "user",
           "method": "post",
-          "operationName": "postsControllerToggleSave",
-          "path": "/v1/posts/{id}/toggle-save",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}/toggle-save"
         },
         "postsControllerGetComments": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetComments",
-          "path": "/v1/posts/{id}/comments",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}/comments"
         },
         "postsControllerGetAllComment": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetAllComment",
-          "path": "/v1/posts/{id}/all-comments",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/{id}/all-comments"
         },
         "postsControllerExportMultiplePosts": {
           "auth": "user",
           "method": "post",
-          "operationName": "postsControllerExportMultiplePosts",
-          "path": "/v1/posts/export/pdf",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/export/pdf"
         },
         "postsControllerGetMyPostsCountWithinRange": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetMyPostsCountWithinRange",
-          "path": "/v1/posts/count-within-range",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/count-within-range"
         },
         "postsControllerGetMyPostsByVerse": {
           "auth": "user",
           "method": "get",
-          "operationName": "postsControllerGetMyPostsByVerse",
-          "path": "/v1/posts/by-verse/{verseKey}",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/posts/by-verse/{verseKey}"
         },
         "tagsControllerFind": {
           "auth": "user",
           "method": "get",
-          "operationName": "tagsControllerFind",
-          "path": "/v1/tags",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/tags"
         },
         "commentsControllerCreate": {
           "auth": "user",
           "method": "post",
-          "operationName": "commentsControllerCreate",
-          "path": "/v1/comments",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/comments"
         },
         "commentsControllerDeleteComment": {
           "auth": "user",
           "method": "get",
-          "operationName": "commentsControllerDeleteComment",
-          "path": "/v1/comments/{id}/delete",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/comments/{id}/delete"
         },
         "commentsControllerToggleLike": {
           "auth": "user",
           "method": "post",
-          "operationName": "commentsControllerToggleLike",
-          "path": "/v1/comments/{id}/toggle-like",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/comments/{id}/toggle-like"
         },
         "commentsControllerGet": {
           "auth": "user",
           "method": "get",
-          "operationName": "commentsControllerGet",
-          "path": "/v1/comments/{id}/replies",
-          "service": "quranReflect",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/comments/{id}/replies"
         }
       },
       "service": "quranReflect",
@@ -1693,11 +1002,7 @@
         "searchControllerSearch": {
           "auth": "app",
           "method": "get",
-          "operationName": "searchControllerSearch",
-          "path": "/v1/search",
-          "service": "search",
-          "tags": [],
-          "version": "v1"
+          "path": "/v1/search"
         }
       },
       "service": "search",

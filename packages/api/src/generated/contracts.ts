@@ -17,8 +17,16 @@ export interface OperationDefinition {
   version: string;
 }
 
+export type CatalogOperationDefinition = Omit<
+  OperationDefinition,
+  "operationName" | "service" | "tags" | "version"
+> &
+  Partial<
+    Pick<OperationDefinition, "operationName" | "service" | "tags" | "version">
+  >;
+
 export interface ServiceOperationCatalog {
-  operations: Record<string, OperationDefinition>;
+  operations: Record<string, CatalogOperationDefinition>;
   service: ApiService;
   version: string;
 }
@@ -33,6 +41,20 @@ interface OperationCatalog {
 
 export const operationCatalog = operationCatalogJson as OperationCatalog;
 
+export const resolveCatalogOperation = (
+  section: ServiceOperationCatalog,
+  operationName: string,
+  operation: CatalogOperationDefinition,
+): OperationDefinition => {
+  return {
+    ...operation,
+    operationName: operation.operationName ?? operationName,
+    service: operation.service ?? section.service,
+    tags: operation.tags ?? [],
+    version: operation.version ?? section.version,
+  };
+};
+
 export const getOperationByName = (
   service: ApiService,
   version: string,
@@ -46,5 +68,10 @@ export const getOperationByName = (
   }
 
   const versionCatalog = serviceCatalog[version];
-  return versionCatalog?.operations[operationName];
+  const operation = versionCatalog?.operations[operationName];
+  if (!versionCatalog || !operation) {
+    return undefined;
+  }
+
+  return resolveCatalogOperation(versionCatalog, operationName, operation);
 };

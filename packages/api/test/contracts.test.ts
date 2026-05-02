@@ -5,7 +5,7 @@ import { getOperationByName, operationCatalog } from "../src/generated/contracts
 const representativeOperations = [
   ["content", "v4", "getChapter", "get", "/chapters/{id}"],
   ["search", "v1", "searchControllerSearch", "get", "/v1/search"],
-  ["auth", "v1", "getV1NotesBynoteIdBy", "get", "/v1/notes/{noteId}"],
+  ["auth", "v1", "getV1NotesByNoteId", "get", "/v1/notes/{noteId}"],
   ["quranReflect", "v1", "postsControllerFeed", "get", "/v1/posts/feed"],
   ["oauth2", "v1", "oauth2TokenExchange", "post", "/oauth2/token"],
 ] as const;
