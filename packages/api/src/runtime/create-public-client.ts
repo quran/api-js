@@ -1,10 +1,14 @@
 import type {
   ApiParams,
+  HTTPMethod,
   OperationRequest,
   PublicClientConfig,
   TokenResponse,
 } from "@/types";
-import { publicOperationCatalog } from "@/generated/public-contracts";
+import {
+  AuthService,
+  publicOperationCatalog,
+} from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
@@ -25,12 +29,8 @@ const SERVER_ONLY_MESSAGE =
   "This API requires @quranjs/api/server or a backend. Content and search are server-side for confidential clients.";
 
 const createUserServiceRequest =
-  (fetcher: PublicQuranFetcher, service: "auth" | "quranReflect") =>
-  (
-    method: "DELETE" | "GET" | "PATCH" | "POST" | "PUT",
-    path: string,
-    request?: OperationRequest,
-  ) => {
+  (fetcher: PublicQuranFetcher, service: AuthService) =>
+  (method: HTTPMethod, path: string, request?: OperationRequest) => {
     return fetcher.request<unknown>(
       service,
       replacePathParams(path, request?.path),

@@ -1,3 +1,5 @@
+import { AuthService } from "@/generated/public-contracts";
+
 import type { ApiParams, BaseApiParams } from "./BaseApiParams";
 
 /**
@@ -7,16 +9,13 @@ export type CustomFetcher = typeof fetch;
 
 export type RuntimeMode = "server" | "public";
 
+export type HTTPMethod = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
+
 export interface QuranFetchClient {
   fetch<T = unknown>(url: string, params?: ApiParams): Promise<T>;
 }
 
-export type ApiService =
-  | "content"
-  | "search"
-  | "auth"
-  | "quranReflect"
-  | "oauth2";
+export type ApiService = "content" | "search" | AuthService | "oauth2";
 
 export interface ServiceEnvironmentConfig {
   gatewayUrl?: string;
@@ -98,7 +97,7 @@ export interface OperationRequest {
   query?: ApiParams;
   body?: string | URLSearchParams | Record<string, unknown> | null;
   headers?: Record<string, string>;
-  method?: "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
+  method?: HTTPMethod;
   auth?: "auto" | "none" | "app" | "user";
   accessToken?: string;
   basicAuth?: {

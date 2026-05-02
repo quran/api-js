@@ -2,6 +2,7 @@ import type {
   ApiParams,
   ChapterId,
   HizbNumber,
+  HTTPMethod,
   JuzNumber,
   OperationRequest,
   PageNumber,
@@ -13,6 +14,7 @@ import type {
   VerseKey,
 } from "@/types";
 import { operationCatalog } from "@/generated/contracts";
+import { AuthService } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
@@ -38,12 +40,8 @@ type QuranReflectFacade = {
 };
 
 const createUserServiceRequest =
-  (fetcher: QuranFetcher, service: "auth" | "quranReflect") =>
-  (
-    method: "DELETE" | "GET" | "PATCH" | "POST" | "PUT",
-    path: string,
-    request?: OperationRequest,
-  ) => {
+  (fetcher: QuranFetcher, service: AuthService) =>
+  (method: HTTPMethod, path: string, request?: OperationRequest) => {
     return fetcher.request<unknown>(
       service,
       replacePathParams(path, request?.path),
