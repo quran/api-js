@@ -20,8 +20,7 @@
     "typecheck": "node ./scripts/run-with-project-node.cjs pnpm exec turbo run typecheck --filter=\"./packages/*\"",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --no-frozen-lockfile",
-    "release": "changeset publish",
-    "sync:sdk-docs": "node ./scripts/sync-sdk-docs.mjs"
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",

@@ -1,27 +1,14 @@
 {
-  "description": "Thin local mirror for the canonical Quran Foundation SDK docs.",
+  "title": "Quran API",
+  "description": "The Quran API documentation",
   "icon": "Building",
-  "pages": [
-    "---Canonical Docs---",
-    "index",
-    "runtime-matrix",
-    "auth-matrix",
-    "entrypoint-matrix",
-    "apis-by-runtime",
-    "server-quickstart",
-    "public-quickstart",
-    "full-stack",
-    "search",
-    "chapters",
-    "verses",
-    "audio",
-    "resources",
-    "juzs",
-    "common-errors",
-    "migration-cheat-sheet",
-    "v1-migration-guide",
-    "app-shapes"
-  ],
   "root": true,
-  "title": "Quran API"
+  "pages": [
+    "---Introduction---",
+    "index",
+    "---API---",
+    "...",
+    "---Migration from v1---",
+    "v1-migration-guide"
+  ]
 }

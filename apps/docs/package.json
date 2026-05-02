@@ -5,8 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbo",
-    "start": "next start",
-    "sync:sdk-docs": "node ../../scripts/sync-sdk-docs.mjs"
+    "start": "next start"
   },
   "dependencies": {
     "clsx": "^2.1.1",
