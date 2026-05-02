@@ -11,10 +11,19 @@ import type {
   TokenResponse,
   UserSession,
 } from "@/types";
+import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
 import {
+  DEFAULT_BASE_URLS,
+  DIRECT_PATH_PREFIX,
+  GATEWAY_PATH_PREFIX,
+  LEGACY_PREFIXES,
+} from "@/lib/service-config";
+import {
+  ensureLeadingSlash,
   normalizePathTemplate,
   paramsToString,
+  removeTrailingSlash,
   replacePathParams,
 } from "@/lib/url";
 import humps from "humps";
@@ -22,38 +31,6 @@ import humps from "humps";
 const { camelizeKeys } = humps;
 
 type RuntimeClientConfig = PublicClientConfig | ServerClientConfig;
-
-const DEFAULT_BASE_URLS = {
-  auth: "https://apis.quran.foundation/auth",
-  content: "https://apis.quran.foundation/content",
-  oauth2: "https://oauth2.quran.foundation",
-  quranReflect: "https://apis.quran.foundation/quran-reflect",
-  search: "https://apis.quran.foundation/search",
-} as const;
-
-const DIRECT_PATH_PREFIX = {
-  auth: "/v1",
-  content: "/api/v4",
-  oauth2: "",
-  quranReflect: "/v1",
-  search: "/v1",
-} as const;
-
-const GATEWAY_PATH_PREFIX = {
-  auth: "/auth/v1",
-  content: "/content/api/v4",
-  oauth2: "",
-  quranReflect: "/quran-reflect/v1",
-  search: "/search/v1",
-} as const;
-
-const LEGACY_PREFIXES = {
-  auth: ["/auth/v1", "/v1"],
-  content: ["/content/api/v4", "/api/v4"],
-  oauth2: [""],
-  quranReflect: ["/quran-reflect/v1", "/v1"],
-  search: ["/search/v1", "/v1"],
-} as const;
 
 const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
   content: "content",
@@ -63,12 +40,6 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
 const USER_SESSION_EXPIRED_MESSAGE = "User session expired. Sign in again.";
 const REFRESH_TOKEN_REJECTION_ERROR = "invalid_grant";
 const USER_SESSION_REFRESH_WINDOW_MS = 60_000;
-
-const ensureLeadingSlash = (value: string): string =>
-  value.startsWith("/") ? value : `/${value}`;
-
-const removeTrailingSlash = (value: string): string =>
-  value.endsWith("/") ? value.slice(0, -1) : value;
 
 const readResponseBody = async (response: Response): Promise<string> => {
   try {
@@ -101,20 +72,6 @@ const formatRefreshFailureMessage = (
   const details = body ? `: ${body}` : "";
 
   return `Token refresh failed: ${response.status} ${response.statusText}${details}`;
-};
-
-const encodeBasicAuth = (username: string, password: string): string => {
-  const raw = `${username}:${password}`;
-
-  if (typeof Buffer !== "undefined") {
-    return Buffer.from(raw).toString("base64");
-  }
-
-  if (typeof globalThis.btoa === "function") {
-    return globalThis.btoa(raw);
-  }
-
-  throw new Error("No base64 encoder available for HTTP basic auth.");
 };
 
 export class QuranFetcher {
@@ -274,29 +231,6 @@ export class QuranFetcher {
     });
   }
 
-  private prepareBody(
-    request: OperationRequest,
-    headers: Headers,
-  ): string | URLSearchParams | undefined {
-    if (request.body === undefined || request.body === null) {
-      return undefined;
-    }
-
-    if (
-      typeof request.body === "string" ||
-      request.body instanceof URLSearchParams
-    ) {
-      if (request.contentType) {
-        headers.set("Content-Type", request.contentType);
-      }
-
-      return request.body;
-    }
-
-    headers.set("Content-Type", request.contentType ?? "application/json");
-    return JSON.stringify(request.body);
-  }
-
   private async performRequest(
     service: ApiService,
     url: string,
@@ -305,7 +239,7 @@ export class QuranFetcher {
     accessToken?: string,
   ): Promise<Response> {
     const headers = new Headers(request.headers);
-    const body = this.prepareBody(request, headers);
+    const body = prepareBody(request, headers);
 
     if (service !== "oauth2") {
       headers.set("x-client-id", this.config.clientId);
@@ -713,35 +647,3 @@ export class QuranFetcher {
     return `${prefix}${normalizedPath}`;
   }
 }
-
-const toUserSession = (
-  token: TokenResponse & {
-    accessToken?: string;
-    expiresIn?: number;
-    idToken?: string;
-    refreshToken?: string;
-    tokenType?: string;
-  },
-  currentSession?: UserSession | null,
-): UserSession => {
-  const expiresIn = token.expiresIn ?? token.expires_in;
-  const accessToken = token.accessToken ?? token.access_token;
-  const idToken = token.idToken ?? token.id_token ?? currentSession?.idToken;
-  const refreshToken =
-    token.refreshToken ?? token.refresh_token ?? currentSession?.refreshToken;
-  const tokenType =
-    token.tokenType ?? token.token_type ?? currentSession?.tokenType;
-  const scope = token.scope ?? currentSession?.scope;
-  const expiresAt = expiresIn
-    ? Date.now() + expiresIn * 1000
-    : currentSession?.expiresAt;
-
-  return {
-    accessToken,
-    expiresAt,
-    idToken,
-    refreshToken,
-    scope,
-    tokenType,
-  };
-};

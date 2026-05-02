@@ -3,6 +3,12 @@ import humps from "humps";
 
 const { decamelize } = humps;
 
+export const ensureLeadingSlash = (value: string): string =>
+  value.startsWith("/") ? value : `/${value}`;
+
+export const removeTrailingSlash = (value: string): string =>
+  value.endsWith("/") ? value.slice(0, -1) : value;
+
 export const removeBeginningSlash = (url: string) => {
   return url.startsWith("/") ? url.slice(1) : url;
 };

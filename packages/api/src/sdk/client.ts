@@ -5,9 +5,11 @@ import type {
   QuranClientConfig,
   TokenResponse,
 } from "@/types";
-import { Language } from "@/types";
+import { encodeBasicAuth } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
+import { API_BASE_URL, DEFAULT_BASE_URLS } from "@/lib/service-config";
 import { paramsToString, removeBeginningSlash } from "@/lib/url";
+import { Language } from "@/types";
 import humps from "humps";
 
 import { QuranAudio } from "./audio";
@@ -23,20 +25,6 @@ type LegacyConfig = Required<
   Pick<QuranClientConfig, "authBaseUrl" | "contentBaseUrl">
 > &
   Omit<QuranClientConfig, "authBaseUrl" | "contentBaseUrl">;
-
-const encodeBasicAuth = (username: string, password: string): string => {
-  const raw = `${username}:${password}`;
-
-  if (typeof Buffer !== "undefined") {
-    return Buffer.from(raw).toString("base64");
-  }
-
-  if (typeof globalThis.btoa === "function") {
-    return globalThis.btoa(raw);
-  }
-
-  throw new Error("No base64 encoder available for HTTP basic auth.");
-};
 
 class LegacyQuranFetcher {
   private cachedToken: CachedToken | null = null;
@@ -63,10 +51,7 @@ class LegacyQuranFetcher {
     this.cachedToken = null;
   }
 
-  public async fetch<T = unknown>(
-    url: string,
-    params?: ApiParams,
-  ): Promise<T> {
+  public async fetch<T = unknown>(url: string, params?: ApiParams): Promise<T> {
     const token = await this.getAccessToken();
     const response = await this.getFetch()(this.makeUrl(url, params), {
       headers: {
@@ -151,8 +136,8 @@ export class QuranClient {
 
   constructor(config: QuranClientConfig) {
     this.config = {
-      authBaseUrl: "https://oauth2.quran.foundation",
-      contentBaseUrl: "https://apis.quran.foundation",
+      authBaseUrl: DEFAULT_BASE_URLS.oauth2,
+      contentBaseUrl: API_BASE_URL,
       ...config,
       defaults: {
         language: Language.ARABIC,

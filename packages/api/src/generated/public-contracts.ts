@@ -6,7 +6,7 @@ import type {
 } from "./contracts";
 import publicOperationCatalogJson from "./specs/public-operation-catalog.json";
 
-type PublicApiService = "auth" | "oauth2" | "quranReflect";
+export type PublicApiService = "auth" | "oauth2" | "quranReflect";
 
 export interface OperationDefinition
   extends Omit<BaseOperationDefinition, "service"> {

@@ -1,4 +1,7 @@
-import type { OperationDefinition } from "@/generated/public-contracts";
+import type {
+  OperationDefinition,
+  PublicApiService,
+} from "@/generated/public-contracts";
 import type {
   ApiParams,
   CustomFetcher,
@@ -6,46 +9,23 @@ import type {
   PublicClientConfig,
   UserSession,
 } from "@/types";
+import { prepareBody } from "@/lib/http-utils";
 import {
+  DEFAULT_BASE_URLS,
+  DIRECT_PATH_PREFIX,
+  GATEWAY_PATH_PREFIX,
+  LEGACY_PREFIXES,
+} from "@/lib/service-config";
+import {
+  ensureLeadingSlash,
   normalizePathTemplate,
   paramsToString,
+  removeTrailingSlash,
   replacePathParams,
 } from "@/lib/url";
 import humps from "humps";
 
 const { camelizeKeys } = humps;
-
-type PublicApiService = "auth" | "oauth2" | "quranReflect";
-
-const DEFAULT_BASE_URLS = {
-  auth: "https://apis.quran.foundation/auth",
-  oauth2: "https://oauth2.quran.foundation",
-  quranReflect: "https://apis.quran.foundation/quran-reflect",
-} as const;
-
-const DIRECT_PATH_PREFIX = {
-  auth: "/v1",
-  oauth2: "",
-  quranReflect: "/v1",
-} as const;
-
-const GATEWAY_PATH_PREFIX = {
-  auth: "/auth/v1",
-  oauth2: "",
-  quranReflect: "/quran-reflect/v1",
-} as const;
-
-const LEGACY_PREFIXES: Record<PublicApiService, readonly string[]> = {
-  auth: ["/auth/v1", "/v1"],
-  oauth2: [],
-  quranReflect: ["/quran-reflect/v1", "/v1"],
-};
-
-const ensureLeadingSlash = (value: string): string =>
-  value.startsWith("/") ? value : `/${value}`;
-
-const removeTrailingSlash = (value: string): string =>
-  value.endsWith("/") ? value.slice(0, -1) : value;
 
 export class PublicQuranFetcher {
   private userSession: UserSession | null | undefined;
@@ -146,7 +126,7 @@ export class PublicQuranFetcher {
     const effectiveAuth = this.resolveAuthMode(service, request.auth);
     const url = this.buildServiceUrl(service, path, query);
     const headers = new Headers(request.headers);
-    const body = this.prepareBody(request, headers);
+    const body = prepareBody(request, headers);
 
     if (service !== "oauth2") {
       headers.set("x-client-id", this.config.clientId);
@@ -180,29 +160,6 @@ export class PublicQuranFetcher {
 
     const json = await response.json();
     return camelizeKeys(json as object) as T;
-  }
-
-  private prepareBody(
-    request: OperationRequest,
-    headers: Headers,
-  ): string | URLSearchParams | undefined {
-    if (request.body === undefined || request.body === null) {
-      return undefined;
-    }
-
-    if (
-      typeof request.body === "string" ||
-      request.body instanceof URLSearchParams
-    ) {
-      if (request.contentType) {
-        headers.set("Content-Type", request.contentType);
-      }
-
-      return request.body;
-    }
-
-    headers.set("Content-Type", request.contentType ?? "application/json");
-    return JSON.stringify(request.body);
   }
 
   private resolveAuthMode(
