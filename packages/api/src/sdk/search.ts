@@ -1,6 +1,4 @@
-import type { SearchParams, SearchResponse } from "@/types";
-
-import type { QuranFetcher } from "./fetcher";
+import type { QuranFetchClient, SearchParams, SearchResponse } from "@/types";
 
 type SearchOptions = Omit<SearchParams, "query">;
 
@@ -8,7 +6,7 @@ type SearchOptions = Omit<SearchParams, "query">;
  * Search API methods
  */
 export class QuranSearch {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Search

@@ -3,6 +3,7 @@ import type {
   ChapterInfoResource,
   ChapterReciterResource,
   LanguageResource,
+  QuranFetchClient,
   RecitationInfoResource,
   RecitationResource,
   RecitationStylesResource,
@@ -13,15 +14,13 @@ import type {
   VerseMediaResource,
 } from "@/types";
 
-import type { QuranFetcher } from "./fetcher";
-
 type GetResourceOptions = BaseApiParams;
 
 /**
  * Resources API methods
  */
 export class QuranResources {
-  constructor(private fetcher: QuranFetcher) {}
+  constructor(private fetcher: QuranFetchClient) {}
 
   /**
    * Get all recitations.

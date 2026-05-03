@@ -2,7 +2,7 @@ import type { Options } from "tsup";
 import { defineConfig } from "tsup";
 
 const baseConfig: Options = {
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "src/public.ts", "src/server.ts"],
   outDir: "dist",
   outExtension({ format, options }) {
     const ext = format === "esm" ? "mjs" : "js";

@@ -9,7 +9,10 @@ A JavaScript/TypeScript library for fetching **authentic, scholarly verified Qur
 
 Unlike other sources, this SDK connects you directly to the **[Quran Foundation](https://quran.foundation)**—ensuring a **trusted, highly scrutinized source** of reliable content, including properly licensed translations, tafsir, and supplementary materials.
 
-Works seamlessly in both Node.js and browser environments.
+Works in both server and browser environments through separate runtime entrypoints:
+
+- `@quranjs/api/server`
+- `@quranjs/api/public`
 
 **Built by the [Quran Foundation](https://quran.foundation) — the team behind [Quran.com](https://quran.com)**
 
@@ -29,20 +32,37 @@ pnpm add @quranjs/api
 ## Quick Start
 
 ```typescript
-import { quran } from '@quranjs/api';
+import { SearchMode } from "@quranjs/api";
+import { createServerClient } from "@quranjs/api/server";
 
-// Get all chapters
-const chapters = await quran.v4.chapters.findAll();
+const client = createServerClient({
+  clientId: process.env.CLIENT_ID!,
+  clientSecret: process.env.CLIENT_SECRET!,
+});
 
-// Get a specific chapter
-const surah = await quran.v4.chapters.findById(1);
-
-// Get verses of a chapter
-const verses = await quran.v4.verses.findByChapter(1);
-
-// Search the Quran
-const results = await quran.v4.search.search('mercy');
+const chapters = await client.content.v4.chapters.list();
+const results = await client.search.v1.query({
+  query: "mercy",
+  mode: SearchMode.Quick,
+});
 ```
+
+For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
+
+Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
+
+```typescript
+import { QuranClient } from "@quranjs/api";
+
+const client = new QuranClient({
+  clientId: process.env.CLIENT_ID!,
+  clientSecret: process.env.CLIENT_SECRET!,
+});
+
+const chapters = await client.chapters.findAll();
+```
+
+For new apps, prefer the runtime-specific `@quranjs/api/server` and `@quranjs/api/public` entrypoints.
 
 ## Documentation
 

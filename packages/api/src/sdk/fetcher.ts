@@ -1,39 +1,105 @@
+import type { OperationDefinition } from "@/generated/contracts";
 import type {
   ApiParams,
+  ApiService,
   CachedToken,
   CustomFetcher,
-  QuranClientConfig,
+  OperationRequest,
+  PublicClientConfig,
+  RuntimeMode,
+  ServerClientConfig,
   TokenResponse,
+  UserSession,
 } from "@/types";
+import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
-import { paramsToString, removeBeginningSlash } from "@/lib/url";
+import {
+  API_BASE_URL,
+  DEFAULT_BASE_URLS,
+  DIRECT_PATH_PREFIX,
+  GATEWAY_PATH_PREFIX,
+  LEGACY_PREFIXES,
+} from "@/lib/service-config";
+import {
+  ensureLeadingSlash,
+  normalizePathTemplate,
+  paramsToString,
+  removeTrailingSlash,
+  replacePathParams,
+} from "@/lib/url";
 import humps from "humps";
 
 const { camelizeKeys } = humps;
 
-type Config = Required<
-  Pick<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">
-> &
-  Omit<QuranClientConfig, "contentBaseUrl" | "authBaseUrl">;
+type RuntimeClientConfig = PublicClientConfig | ServerClientConfig;
 
-/**
- * Handles HTTP requests with authentication for the Quran API
- */
+const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
+  content: "content",
+  search: "search",
+};
+const QURAN_REFLECT_POSTS_PATH_PREFIX = "/quran-reflect/v1/posts/";
+const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
+  "/comments",
+  "/all-comments",
+] as const;
+const GATEWAY_SERVICES = [
+  "auth",
+  "content",
+  "quranReflect",
+  "search",
+] as const satisfies readonly ApiService[];
+
+const USER_SESSION_EXPIRED_MESSAGE = "User session expired. Sign in again.";
+const REFRESH_TOKEN_REJECTION_ERROR = "invalid_grant";
+const USER_SESSION_REFRESH_WINDOW_MS = 60_000;
+
+const readResponseBody = async (response: Response): Promise<string> => {
+  try {
+    return await response.text();
+  } catch {
+    return "";
+  }
+};
+
+const isRefreshTokenRejection = (
+  response: Response,
+  responseBody: string,
+): boolean => {
+  if (
+    response.status < 400 ||
+    response.status >= 500 ||
+    response.status === 429
+  ) {
+    return false;
+  }
+
+  return responseBody.toLowerCase().includes(REFRESH_TOKEN_REJECTION_ERROR);
+};
+
+const formatRefreshFailureMessage = (
+  response: Response,
+  responseBody: string,
+): string => {
+  const body = responseBody.trim();
+  const details = body ? `: ${body}` : "";
+
+  return `Token refresh failed: ${response.status} ${response.statusText}${details}`;
+};
+
 export class QuranFetcher {
-  private cachedToken: CachedToken | null = null;
+  private appTokens = new Map<string, CachedToken>();
+  private userSession: UserSession | null | undefined;
+  private userSessionRefreshPromise: Promise<UserSession> | null = null;
 
-  constructor(private config: Config) {}
-
-  /**
-   * Update the configuration
-   */
-  updateConfig(config: Config): void {
-    this.config = config;
+  constructor(
+    private readonly mode: RuntimeMode,
+    private readonly config: RuntimeClientConfig,
+  ) {
+    this.userSession = config.userSession;
   }
 
   public getFetch(): CustomFetcher {
-    const { fetch: fetchFn } = this.config;
-    const doFetch = fetchFn ?? globalThis.fetch;
+    const doFetch = this.config.fetch ?? globalThis.fetch;
 
     if (typeof doFetch !== "function") {
       throw new Error(
@@ -44,97 +110,633 @@ export class QuranFetcher {
     return doFetch;
   }
 
-  private doFetch(...args: Parameters<typeof fetch>) {
-    const runFetch = this.getFetch();
-    return runFetch(...args);
+  public clearCachedTokens(): void {
+    this.appTokens.clear();
   }
 
-  /**
-   * Get access token for API authentication
-   */
-  private async getAccessToken(): Promise<string> {
-    // add 30 seconds to the expiration time to account for clock skew
-    if (this.cachedToken && this.cachedToken.expiresAt > Date.now() + 30_000) {
-      return this.cachedToken.value; // still fresh
+  public async getUserSession(): Promise<UserSession | null> {
+    const storedSession = await this.config.storage?.getSession?.();
+    if (storedSession !== undefined) {
+      return storedSession;
     }
 
-    const { clientId, clientSecret, authBaseUrl } = this.config;
+    return this.userSession ?? null;
+  }
 
-    const auth = btoa(`${clientId}:${clientSecret}`);
+  public async setUserSession(session: UserSession | null): Promise<void> {
+    if (!this.config.storage) {
+      this.userSession = session;
+      return;
+    }
+
+    if (!session) {
+      if (this.config.storage.clearSession) {
+        await this.config.storage.clearSession();
+        this.userSession = null;
+        return;
+      }
+
+      await this.config.storage.setSession?.(null);
+      this.userSession = null;
+      return;
+    }
+
+    await this.config.storage.setSession?.(session);
+    this.userSession = session;
+  }
+
+  public buildServiceUrl(
+    service: ApiService,
+    path: string,
+    query?: ApiParams,
+  ): string {
+    const crossServiceGatewayPath = this.isCrossServiceGatewayPath(
+      service,
+      path,
+    );
+    const { baseUrl, usesGateway } = this.resolveServiceBaseUrl(
+      service,
+      crossServiceGatewayPath,
+    );
+    const servicePath = this.normalizeServicePath(
+      service,
+      path,
+      usesGateway,
+      crossServiceGatewayPath,
+    );
+
+    return `${baseUrl}${servicePath}${paramsToString(query)}`;
+  }
+
+  public async requestOperation<T = unknown>(
+    operation: OperationDefinition,
+    request?: OperationRequest,
+  ): Promise<T> {
+    return this.request<T>(
+      operation.service,
+      replacePathParams(operation.path, request?.path),
+      request?.query,
+      {
+        ...request,
+        auth:
+          request?.auth === "auto" || !request?.auth
+            ? operation.auth
+            : request.auth,
+        method:
+          request?.method ??
+          (operation.method.toUpperCase() as OperationRequest["method"]),
+        path: undefined,
+      },
+    );
+  }
+
+  public async request<T = unknown>(
+    service: ApiService,
+    path: string,
+    query?: ApiParams,
+    request: OperationRequest = {},
+  ): Promise<T> {
+    const effectiveAuth = this.resolveAuthMode(service, request.auth);
+
+    if (this.mode === "public" && effectiveAuth === "app") {
+      throw new Error(
+        "This API requires @quranjs/api/server or a backend. Content and search are server-side for confidential clients.",
+      );
+    }
+
+    const url = this.buildServiceUrl(service, path, query);
+    const userSession = await this.getRequestUserSession(
+      effectiveAuth,
+      request,
+    );
+    let response = await this.performRequest(
+      service,
+      url,
+      request,
+      effectiveAuth,
+      userSession?.accessToken,
+    );
+
+    if (
+      this.shouldRetryUserRequest(response, effectiveAuth, request, userSession)
+    ) {
+      const refreshedSession = await this.refreshStoredUserSession();
+      response = await this.performRequest(
+        service,
+        url,
+        request,
+        effectiveAuth,
+        refreshedSession.accessToken,
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      return (await response.text()) as T;
+    }
+
+    const json = await response.json();
+    return camelizeKeys(json as object) as T;
+  }
+
+  public async fetch<T = unknown>(url: string, params?: ApiParams): Promise<T> {
+    const route = this.resolveLegacyRoute(url);
+    return this.request<T>(route.service, route.path, {
+      ...this.config.defaults,
+      ...params,
+    });
+  }
+
+  private async performRequest(
+    service: ApiService,
+    url: string,
+    request: OperationRequest,
+    auth: "app" | "none" | "user",
+    accessToken?: string,
+  ): Promise<Response> {
+    const headers = new Headers(request.headers);
+    const body = prepareBody(request, headers);
+
+    if (service !== "oauth2") {
+      headers.set("x-client-id", this.config.clientId);
+    }
+
+    await this.applyAuthenticationHeaders(
+      service,
+      auth,
+      headers,
+      {
+        ...request,
+        accessToken: accessToken ?? request.accessToken,
+      },
+      url,
+    );
+
+    return this.getFetch()(url, {
+      body,
+      headers,
+      method: request.method ?? "GET",
+    });
+  }
+
+  private resolveLegacyRoute(url: string): {
+    path: string;
+    service: ApiService;
+  } {
+    const normalizedPath = ensureLeadingSlash(normalizePathTemplate(url));
+
+    if (
+      normalizedPath.startsWith("/content/api/v4") ||
+      normalizedPath.startsWith("/api/v4")
+    ) {
+      return {
+        path: normalizedPath,
+        service: "content",
+      };
+    }
+
+    if (
+      normalizedPath === "/v1/search" ||
+      normalizedPath.startsWith("/search/v1")
+    ) {
+      return {
+        path: normalizedPath,
+        service: "search",
+      };
+    }
+
+    if (normalizedPath.startsWith("/auth/v1")) {
+      return {
+        path: normalizedPath,
+        service: "auth",
+      };
+    }
+
+    if (normalizedPath.startsWith("/quran-reflect/v1")) {
+      return {
+        path: normalizedPath,
+        service: "quranReflect",
+      };
+    }
+
+    if (
+      normalizedPath.startsWith("/oauth2") ||
+      normalizedPath.startsWith("/userinfo")
+    ) {
+      return {
+        path: normalizedPath,
+        service: "oauth2",
+      };
+    }
+
+    throw new Error(`Unsupported SDK route: ${url}`);
+  }
+
+  private resolveAuthMode(
+    service: ApiService,
+    auth: OperationRequest["auth"] = "auto",
+  ): "app" | "none" | "user" {
+    if (auth !== "auto") {
+      return auth;
+    }
+
+    if (service === "content" || service === "search") {
+      return "app";
+    }
+
+    if (service === "auth" || service === "quranReflect") {
+      return "user";
+    }
+
+    return "none";
+  }
+
+  private async getRequestUserSession(
+    auth: "app" | "none" | "user",
+    request: OperationRequest,
+  ): Promise<UserSession | null> {
+    if (auth !== "user" || request.accessToken || this.mode !== "server") {
+      return null;
+    }
+
+    const session = await this.getUserSession();
+    if (!session?.accessToken) {
+      throw new Error(
+        "This operation requires a user session. Sign in first or use @quranjs/api/server.",
+      );
+    }
+
+    if (!this.shouldRefreshUserSession(session)) {
+      return session;
+    }
+
+    return this.refreshStoredUserSession(session);
+  }
+
+  private shouldRefreshUserSession(session: UserSession): boolean {
+    if (!session.refreshToken || !session.expiresAt) {
+      return false;
+    }
+
+    return session.expiresAt <= Date.now() + USER_SESSION_REFRESH_WINDOW_MS;
+  }
+
+  private shouldRetryUserRequest(
+    response: Response,
+    auth: "app" | "none" | "user",
+    request: OperationRequest,
+    session: UserSession | null,
+  ): boolean {
+    if (response.status !== 401) {
+      return false;
+    }
+
+    if (auth !== "user" || request.accessToken || this.mode !== "server") {
+      return false;
+    }
+
+    return Boolean(session?.refreshToken);
+  }
+
+  private async applyAuthenticationHeaders(
+    service: ApiService,
+    auth: "app" | "none" | "user",
+    headers: Headers,
+    request: OperationRequest,
+    resourceUrl?: string,
+  ): Promise<void> {
+    if (request.basicAuth) {
+      headers.set(
+        "Authorization",
+        `Basic ${encodeBasicAuth(
+          request.basicAuth.username,
+          request.basicAuth.password,
+        )}`,
+      );
+    }
+
+    if (request.accessToken) {
+      this.setTokenHeaders(service, headers, request.accessToken);
+      return;
+    }
+
+    if (auth === "none") {
+      return;
+    }
+
+    if (auth === "app") {
+      const token = await this.getAppAccessToken(service, resourceUrl);
+      this.setTokenHeaders(service, headers, token);
+      return;
+    }
+
+    const session = await this.getUserSession();
+    if (!session?.accessToken) {
+      throw new Error(
+        "This operation requires a user session. Sign in first or use @quranjs/api/server.",
+      );
+    }
+
+    this.setTokenHeaders(service, headers, session.accessToken);
+  }
+
+  private async refreshStoredUserSession(
+    currentSession?: UserSession | null,
+  ): Promise<UserSession> {
+    if (this.userSessionRefreshPromise) {
+      return this.userSessionRefreshPromise;
+    }
+
+    const refreshPromise = this.executeUserSessionRefresh(currentSession);
+    this.userSessionRefreshPromise = refreshPromise;
+
+    try {
+      return await refreshPromise;
+    } finally {
+      if (this.userSessionRefreshPromise === refreshPromise) {
+        this.userSessionRefreshPromise = null;
+      }
+    }
+  }
+
+  private async executeUserSessionRefresh(
+    currentSession?: UserSession | null,
+  ): Promise<UserSession> {
+    if (this.mode !== "server" || !("clientSecret" in this.config)) {
+      throw new Error(
+        "Automatic session refresh requires @quranjs/api/server or a backend.",
+      );
+    }
+
+    const clientSecret = this.config.clientSecret;
+
+    const session = currentSession ?? (await this.getUserSession());
+    if (!session?.refreshToken) {
+      throw new Error(USER_SESSION_EXPIRED_MESSAGE);
+    }
+
+    const tokenUrl = `${removeTrailingSlash(
+      this.config.services?.tokenHost ??
+        this.config.services?.oauth2BaseUrl ??
+        DEFAULT_BASE_URLS.oauth2,
+    )}/oauth2/token`;
 
     const body = new URLSearchParams({
-      grant_type: "client_credentials",
-      scope: "content",
-    }).toString();
+      grant_type: "refresh_token",
+      refresh_token: session.refreshToken,
+    });
 
-    const res = await retry(
+    const response = await retry(
       () =>
-        this.doFetch(`${authBaseUrl}/oauth2/token`, {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${auth}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-            Accept: "application/json",
-          },
+        this.getFetch()(tokenUrl, {
           body,
+          headers: {
+            Accept: "application/json",
+            Authorization: `Basic ${encodeBasicAuth(
+              this.config.clientId,
+              clientSecret,
+            )}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
         }),
       { retries: 3 },
     );
 
-    if (!res.ok) {
-      throw new Error(`Token request failed: ${res.statusText}`);
+    if (!response.ok) {
+      const responseBody = await readResponseBody(response);
+      if (isRefreshTokenRejection(response, responseBody)) {
+        await this.setUserSession(null);
+        throw new Error(USER_SESSION_EXPIRED_MESSAGE);
+      }
+
+      throw new Error(formatRefreshFailureMessage(response, responseBody));
     }
 
-    const json = (await res.json()) as TokenResponse;
+    const token = (await response.json()) as TokenResponse;
+    const refreshedSession = toUserSession(token, session);
+    await this.setUserSession(refreshedSession);
 
-    // Calculate expiration time (current time + expires_in seconds - converted to milliseconds)
-    const expiresAt = Date.now() + json.expires_in * 1000;
-
-    this.cachedToken = {
-      value: json.access_token,
-      expiresAt,
-    };
-
-    return this.cachedToken.value;
+    return refreshedSession;
   }
 
-  /**
-   * Clear cached token (useful for testing or forcing re-authentication)
-   */
-  clearCachedToken(): void {
-    this.cachedToken = null;
+  private setTokenHeaders(
+    service: ApiService,
+    headers: Headers,
+    accessToken: string,
+  ): void {
+    if (service === "oauth2") {
+      headers.set("Authorization", `Bearer ${accessToken}`);
+      return;
+    }
+
+    headers.set("x-auth-token", accessToken);
   }
 
-  /**
-   * Make URL with base URL and query parameters
-   */
-  private makeUrl(url: string, params?: ApiParams): string {
-    const { contentBaseUrl } = this.config;
-    return `${contentBaseUrl}/${removeBeginningSlash(url)}${paramsToString(params)}`;
-  }
+  private async getAppAccessToken(
+    service: ApiService,
+    resourceUrl?: string,
+  ): Promise<string> {
+    if (this.mode !== "server") {
+      throw new Error(
+        "App-authenticated APIs require @quranjs/api/server or a backend.",
+      );
+    }
 
-  /**
-   * Make authenticated HTTP request
-   */
-  async fetch<T extends object>(url: string, params?: ApiParams): Promise<T> {
-    const { clientId, defaults } = this.config;
+    const scope = this.resolveAppScope(service, resourceUrl);
+    if (!scope) {
+      throw new Error(
+        `No client-credentials scope is configured for ${service}.`,
+      );
+    }
 
-    const token = await this.getAccessToken();
-    const fullUrl = this.makeUrl(url, { ...defaults, ...params });
+    const cacheKey = `${service}:${scope}`;
+    const cachedToken = this.appTokens.get(cacheKey);
 
-    const res = await this.doFetch(fullUrl, {
-      headers: {
-        "x-auth-token": token,
-        "x-client-id": clientId,
-        "Content-Type": "application/json",
-      },
+    if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
+      return cachedToken.value;
+    }
+
+    if (!("clientSecret" in this.config)) {
+      throw new Error("client_secret is server-only. Use @quranjs/api/server.");
+    }
+
+    const clientSecret = this.config.clientSecret;
+
+    const tokenUrl = `${removeTrailingSlash(
+      this.config.services?.tokenHost ??
+        this.config.services?.oauth2BaseUrl ??
+        DEFAULT_BASE_URLS.oauth2,
+    )}/oauth2/token`;
+
+    const body = new URLSearchParams({
+      grant_type: "client_credentials",
+      scope,
     });
 
-    if (!res.ok || res.status >= 400) {
-      throw new Error(`${res.status} ${res.statusText}`);
+    const response = await retry(
+      () =>
+        this.getFetch()(tokenUrl, {
+          body,
+          headers: {
+            Accept: "application/json",
+            Authorization: `Basic ${encodeBasicAuth(
+              this.config.clientId,
+              clientSecret,
+            )}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
+        }),
+      { retries: 3 },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Token request failed: ${response.status} ${response.statusText}`,
+      );
     }
 
-    const json = await res.json();
-    return camelizeKeys(json as object) as T;
+    const json = (await response.json()) as TokenResponse;
+    const cached = {
+      expiresAt: Date.now() + json.expires_in * 1000,
+      value: json.access_token,
+    };
+
+    this.appTokens.set(cacheKey, cached);
+    return cached.value;
+  }
+
+  private resolveAppScope(
+    service: ApiService,
+    resourceUrl?: string,
+  ): string | undefined {
+    if (service !== "content" || !resourceUrl) {
+      return APP_SERVICE_SCOPES[service];
+    }
+
+    const pathname = new URL(resourceUrl).pathname;
+    if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
+      return APP_SERVICE_SCOPES.content;
+    }
+
+    if (
+      QURAN_REFLECT_COMMENT_PATH_SUFFIXES.some((suffix) =>
+        pathname.endsWith(suffix),
+      )
+    ) {
+      return "comment.read";
+    }
+
+    return "post.read";
+  }
+
+  private resolveServiceBaseUrl(
+    service: ApiService,
+    crossServiceGatewayPath = false,
+  ): {
+    baseUrl: string;
+    usesGateway: boolean;
+  } {
+    const { services } = this.config;
+    if (crossServiceGatewayPath) {
+      return {
+        baseUrl: removeTrailingSlash(services?.gatewayUrl ?? API_BASE_URL),
+        usesGateway: true,
+      };
+    }
+
+    const directBaseUrl =
+      service === "content"
+        ? services?.contentBaseUrl
+        : service === "search"
+          ? services?.searchBaseUrl
+          : service === "auth"
+            ? services?.authBaseUrl
+            : service === "quranReflect"
+              ? services?.quranReflectBaseUrl
+              : (services?.oauth2BaseUrl ?? services?.tokenHost);
+
+    if (directBaseUrl) {
+      return {
+        baseUrl: removeTrailingSlash(directBaseUrl),
+        usesGateway: false,
+      };
+    }
+
+    if (services?.gatewayUrl && service !== "oauth2") {
+      return {
+        baseUrl: removeTrailingSlash(services.gatewayUrl),
+        usesGateway: true,
+      };
+    }
+
+    return {
+      baseUrl: DEFAULT_BASE_URLS[service],
+      usesGateway: false,
+    };
+  }
+
+  private normalizeServicePath(
+    service: ApiService,
+    path: string,
+    usesGateway: boolean,
+    crossServiceGatewayPath = false,
+  ): string {
+    const normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
+    if (service === "oauth2") {
+      return normalizedPath;
+    }
+
+    if (crossServiceGatewayPath) {
+      return normalizedPath;
+    }
+
+    let servicePath = normalizedPath;
+    for (const prefix of LEGACY_PREFIXES[service]) {
+      if (servicePath.startsWith(prefix)) {
+        servicePath = ensureLeadingSlash(servicePath.slice(prefix.length));
+        break;
+      }
+    }
+
+    const prefix = usesGateway
+      ? GATEWAY_PATH_PREFIX[service]
+      : DIRECT_PATH_PREFIX[service];
+
+    if (servicePath.startsWith(prefix)) {
+      return servicePath;
+    }
+
+    return `${prefix}${servicePath}`;
+  }
+
+  private isCrossServiceGatewayPath(
+    service: ApiService,
+    path: string,
+  ): boolean {
+    const normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
+    const pathService = GATEWAY_SERVICES.find((gatewayService) =>
+      this.pathMatchesPrefix(
+        normalizedPath,
+        GATEWAY_PATH_PREFIX[gatewayService],
+      ),
+    );
+
+    return Boolean(pathService && pathService !== service);
+  }
+
+  private pathMatchesPrefix(path: string, prefix: string): boolean {
+    return (
+      prefix.length > 0 && (path === prefix || path.startsWith(`${prefix}/`))
+    );
   }
 }

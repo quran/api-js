@@ -1,0 +1,541 @@
+{
+  "auth": {
+    "v1": {
+      "operations": {
+        "getV1Collections": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/collections"
+        },
+        "postV1Collections": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/collections"
+        },
+        "postV1CollectionsByCollectionIdBookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/collections/{collectionId}/bookmarks"
+        },
+        "deleteV1CollectionsByCollectionIdBookmarks": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/collections/{collectionId}/bookmarks"
+        },
+        "getV1CollectionsByCollectionId": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/collections/{collectionId}"
+        },
+        "postV1CollectionsByCollectionId": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/collections/{collectionId}"
+        },
+        "deleteV1CollectionsByCollectionId": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/collections/{collectionId}"
+        },
+        "deleteV1CollectionsByCollectionIdBookmarksByBookmarkId": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/collections/{collectionId}/bookmarks/{bookmarkId}"
+        },
+        "getV1CollectionsAll": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/collections/all"
+        },
+        "getV1Bookmarks": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/bookmarks"
+        },
+        "postV1Bookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/bookmarks"
+        },
+        "deleteV1BookmarksByBookmarkId": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/bookmarks/{bookmarkId}"
+        },
+        "getV1BookmarksAyahsRange": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/bookmarks/ayahs-range"
+        },
+        "getV1BookmarksBookmark": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/bookmarks/bookmark"
+        },
+        "getV1BookmarksCollections": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/bookmarks/collections"
+        },
+        "getV1Preferences": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/preferences"
+        },
+        "postV1Preferences": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/preferences"
+        },
+        "postV1PreferencesBulk": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/preferences/bulk"
+        },
+        "getV1ReadingSessions": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/reading-sessions"
+        },
+        "postV1ReadingSessions": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/reading-sessions"
+        },
+        "getV1GoalsGetTodaysPlan": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/goals/get-todays-plan"
+        },
+        "putV1GoalsById": {
+          "auth": "user",
+          "method": "put",
+          "path": "/v1/goals/{id}"
+        },
+        "deleteV1GoalsById": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/goals/{id}"
+        },
+        "postV1Goals": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/goals"
+        },
+        "getV1GoalsEstimate": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/goals/estimate"
+        },
+        "getV1Streaks": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/streaks"
+        },
+        "getV1StreaksCurrentStreakDays": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/streaks/current-streak-days"
+        },
+        "getV1ActivityDays": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/activity-days"
+        },
+        "postV1ActivityDays": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/activity-days"
+        },
+        "getV1ActivityDaysEstimateReadingTime": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/activity-days/estimate-reading-time"
+        },
+        "getV1Notes": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes"
+        },
+        "postV1Notes": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/notes"
+        },
+        "getV1NotesByVerseByVerseKey": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes/by-verse/{verseKey}"
+        },
+        "getV1NotesByAttachedEntity": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes/by-attached-entity"
+        },
+        "getV1NotesCountWithinRange": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes/count-within-range"
+        },
+        "getV1NotesByRange": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes/by-range"
+        },
+        "getV1NotesByNoteId": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/notes/{noteId}"
+        },
+        "patchV1NotesByNoteId": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/notes/{noteId}"
+        },
+        "deleteV1NotesByNoteId": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/notes/{noteId}"
+        },
+        "postV1NotesByNoteIdPublish": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/notes/{noteId}/publish"
+        }
+      },
+      "service": "auth",
+      "version": "v1"
+    }
+  },
+  "oauth2": {
+    "v1": {
+      "operations": {
+        "oauth2TokenExchange": {
+          "auth": "none",
+          "method": "post",
+          "path": "/oauth2/token"
+        },
+        "introspectOauth2Token": {
+          "auth": "none",
+          "method": "post",
+          "path": "/oauth2/introspect"
+        },
+        "oAuth2Authorize": {
+          "auth": "none",
+          "method": "get",
+          "path": "/oauth2/auth"
+        },
+        "getOidcUserInfo": {
+          "auth": "user",
+          "method": "get",
+          "path": "/userinfo"
+        },
+        "revokeOidcSession": {
+          "auth": "none",
+          "method": "get",
+          "path": "/oauth2/sessions/logout"
+        }
+      },
+      "service": "oauth2",
+      "version": "v1"
+    }
+  },
+  "quranReflect": {
+    "v1": {
+      "operations": {
+        "usersControllerProfile": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/profile"
+        },
+        "usersControllerUpdateProfile": {
+          "auth": "user",
+          "method": "put",
+          "path": "/v1/users/profile"
+        },
+        "usersControllerEditProfile": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/users/profile"
+        },
+        "usersControllerRooms": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/my-rooms"
+        },
+        "usersControllerSearch": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/search"
+        },
+        "usersControllerToggleFollow": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/users/{followeeId}/toggle-follow"
+        },
+        "usersControllerRemoveFollower": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/users/{followerId}/remove-follower"
+        },
+        "usersControllerGetUserProfile": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/{id}"
+        },
+        "usersControllerGetUserProfile2": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/{username}/profile"
+        },
+        "usersControllerGetUserFollowers": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/{id}/followers"
+        },
+        "usersControllerGetUserFollowing": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/users/{id}/following"
+        },
+        "roomsControllerAdminsAccess": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/admins-access"
+        },
+        "roomsControllerCreateNewGroup": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/groups"
+        },
+        "roomsControllerUpdateGroup": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/rooms/groups"
+        },
+        "roomsControllerCreateNewPage": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/pages"
+        },
+        "roomsControllerUpdatePage": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/rooms/pages"
+        },
+        "roomsControllerGetRoomMembers": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/members"
+        },
+        "roomsControllerInviteUserToRoom": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{id}/invite"
+        },
+        "roomsControllerAcceptInvite": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/accept-invite"
+        },
+        "roomsControllerRejectInvite": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/reject-invite"
+        },
+        "roomsControllerRemoveMember": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/rooms/{id}/members/{userId}"
+        },
+        "roomsControllerGetRooms": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/joined-rooms"
+        },
+        "roomsControllerGetRooms2": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/managed-rooms"
+        },
+        "roomsControllerSearchRooms": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/search"
+        },
+        "roomsControllerGetRoomProfile": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/group/{url}"
+        },
+        "roomsControllerGetRoomProfile2": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/page/{subdomain}"
+        },
+        "roomsControllerAcceptByPrivateToken": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/group/{url}/accept/{token}"
+        },
+        "roomsControllerAcceptByPrivateToken2": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/page/{subdomain}/accept/{token}"
+        },
+        "roomsControllerGetRoomProfileById": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}"
+        },
+        "roomsControllerGetRoomPosts": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/posts"
+        },
+        "roomsControllerJoinRoom": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{groupId}/join"
+        },
+        "roomsControllerLeaveGroup": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{groupId}/leave"
+        },
+        "roomsControllerFollowPage": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{pageId}/follow"
+        },
+        "roomsControllerUnfollowPage": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{pageId}/unfollow"
+        },
+        "roomsControllerUpdatePostPrivacy": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/rooms/{roomId}/posts/{postId}/privacy"
+        },
+        "postsControllerFeed": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/feed"
+        },
+        "postsControllerGetRelatedPosts": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{postId}/related"
+        },
+        "postsControllerGetLoggedinUserPosts": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/my-posts"
+        },
+        "postsControllerGetLikedState": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{id}/liked"
+        },
+        "postsControllerFindOne": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{id}"
+        },
+        "postsControllerEdit": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/posts/{id}"
+        },
+        "postsControllerDelete": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/posts/{id}"
+        },
+        "postsControllerViewTracking": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/viewed/{id}"
+        },
+        "postsControllerCreate": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts"
+        },
+        "postsControllerReportAbuse": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/{id}/report"
+        },
+        "postsControllerGetUserPost": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/user-posts/{id}"
+        },
+        "postsControllerToggleLike": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/{id}/toggle-like"
+        },
+        "postsControllerToggleSave": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/{id}/toggle-save"
+        },
+        "postsControllerGetComments": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{id}/comments"
+        },
+        "postsControllerGetAllComment": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{id}/all-comments"
+        },
+        "postsControllerExportMultiplePosts": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/export/pdf"
+        },
+        "postsControllerGetMyPostsCountWithinRange": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/count-within-range"
+        },
+        "postsControllerGetMyPostsByVerse": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/by-verse/{verseKey}"
+        },
+        "tagsControllerFind": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/tags"
+        },
+        "commentsControllerCreate": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments"
+        },
+        "commentsControllerDeleteComment": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/comments/{id}/delete"
+        },
+        "commentsControllerToggleLike": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/toggle-like"
+        },
+        "commentsControllerGet": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/comments/{id}/replies"
+        }
+      },
+      "service": "quranReflect",
+      "version": "v1"
+    }
+  }
+}

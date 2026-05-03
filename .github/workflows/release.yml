@@ -27,6 +27,9 @@ jobs:
       - name: Setup
         uses: ./.github/setup
 
+      - name: Check operation catalogs
+        run: pnpm --filter @quranjs/api check:operation-catalogs
+
       - name: Build
         run: pnpm build --filter=./packages/*
 
