@@ -1,5 +1,15 @@
 # @quranjs/api
 
+## 3.0.0
+
+### Major Changes
+
+- 43052fd: Add runtime-split public and server SDK entrypoints, generated operation contracts, and server/client helpers for the updated Quran Foundation API flows.
+
+### Patch Changes
+
+- 0ba15c9: Add absolute audioUrl values to verse recitation responses.
+
 ## 2.2.0
 
 ### Minor Changes
