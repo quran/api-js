@@ -191,6 +191,23 @@ describe("raw operation requests", () => {
     );
   });
 
+  it("rejects legacy server bookmark id lookup calls", async () => {
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        authBaseUrl: "http://localhost:3001",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+
+    await expect(client.auth.bookmarks.get("bookmark-1")).rejects.toThrow(
+      "auth.bookmarks.get(bookmarkId) is not supported",
+    );
+  });
+
   it("routes content-catalog gateway paths without the content prefix", async () => {
     let feedUrl: string | null = null;
     let commentsUrl: string | null = null;
@@ -400,6 +417,23 @@ describe("raw operation requests", () => {
 
     expect(bookmarkUrl).toBe(
       "http://localhost:3001/v1/bookmarks/bookmark?isReading=true&mushafId=1",
+    );
+  });
+
+  it("rejects legacy public bookmark id lookup calls", async () => {
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      services: {
+        authBaseUrl: "http://localhost:3001",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+
+    await expect(client.auth.bookmarks.get("bookmark-1")).rejects.toThrow(
+      "auth.bookmarks.get(bookmarkId) is not supported",
     );
   });
 
