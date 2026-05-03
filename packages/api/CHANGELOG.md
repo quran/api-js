@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.1.0
+
+### Minor Changes
+
+- aba0feb: Update casing of params
+
 ## 3.0.0
 
 ### Major Changes
