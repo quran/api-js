@@ -14,7 +14,7 @@ import type {
   VerseKey,
 } from "@/types";
 import { operationCatalog } from "@/generated/contracts";
-import { AuthService } from "@/generated/public-contracts";
+import type { AuthService } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
@@ -102,9 +102,9 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
       ...generatedGroups.bookmarks,
       create: (body: Record<string, unknown>) =>
         request("POST", "/v1/bookmarks", { body }),
-      get: (bookmarkId: string) =>
+      get: (query?: ApiParams) =>
         request("GET", "/v1/bookmarks/bookmark", {
-          query: { bookmarkId },
+          query,
         }),
       list: (query?: ApiParams) => request("GET", "/v1/bookmarks", { query }),
       listCollections: (query?: ApiParams) =>

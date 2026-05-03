@@ -88,7 +88,12 @@ export class PublicQuranFetcher {
   ): string {
     const { baseUrl, usesGateway } = this.resolveServiceBaseUrl(service);
     const servicePath = this.normalizeServicePath(service, path, usesGateway);
-    return `${baseUrl}${servicePath}${paramsToString(query)}`;
+    const preserveQueryParamCase =
+      service === "auth" || service === "quranReflect";
+
+    return `${baseUrl}${servicePath}${paramsToString(query, {
+      preserveCase: preserveQueryParamCase,
+    })}`;
   }
 
   public async requestOperation<T = unknown>(

@@ -164,8 +164,12 @@ export class QuranFetcher {
       usesGateway,
       crossServiceGatewayPath,
     );
+    const preserveQueryParamCase =
+      service === "auth" || service === "quranReflect";
 
-    return `${baseUrl}${servicePath}${paramsToString(query)}`;
+    return `${baseUrl}${servicePath}${paramsToString(query, {
+      preserveCase: preserveQueryParamCase,
+    })}`;
   }
 
   public async requestOperation<T = unknown>(
