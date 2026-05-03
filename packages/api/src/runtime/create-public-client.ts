@@ -5,10 +5,8 @@ import type {
   PublicClientConfig,
   TokenResponse,
 } from "@/types";
-import {
-  AuthService,
-  publicOperationCatalog,
-} from "@/generated/public-contracts";
+import type { AuthService } from "@/generated/public-contracts";
+import { publicOperationCatalog } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
@@ -27,6 +25,8 @@ type QuranReflectFacade = {
 
 const SERVER_ONLY_MESSAGE =
   "This API requires @quranjs/api/server or a backend. Content and search are server-side for confidential clients.";
+const LEGACY_BOOKMARK_GET_MESSAGE =
+  "auth.bookmarks.get(bookmarkId) is not supported because /v1/bookmarks/bookmark expects bookmark detail query parameters. Pass a query object such as { mushafId, key, type, verseNumber } or { mushafId, isReading: true }.";
 
 const createUserServiceRequest =
   (fetcher: PublicQuranFetcher, service: AuthService) =>
@@ -94,10 +94,15 @@ const createAuthFacade = (fetcher: PublicQuranFetcher) => {
       ...generatedGroups.bookmarks,
       create: (body: Record<string, unknown>) =>
         request("POST", "/v1/bookmarks", { body }),
-      get: (bookmarkId: string) =>
-        request("GET", "/v1/bookmarks/bookmark", {
-          query: { bookmarkId },
-        }),
+      get: async (query?: ApiParams | string) => {
+        if (typeof query === "string") {
+          throw new Error(LEGACY_BOOKMARK_GET_MESSAGE);
+        }
+
+        return request("GET", "/v1/bookmarks/bookmark", {
+          query,
+        });
+      },
       list: (query?: ApiParams) => request("GET", "/v1/bookmarks", { query }),
       listCollections: (query?: ApiParams) =>
         request("GET", "/v1/bookmarks/collections", { query }),

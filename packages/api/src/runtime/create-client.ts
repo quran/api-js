@@ -14,7 +14,7 @@ import type {
   VerseKey,
 } from "@/types";
 import { operationCatalog } from "@/generated/contracts";
-import { AuthService } from "@/generated/public-contracts";
+import type { AuthService } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
@@ -38,6 +38,9 @@ type QuranReflectFacade = {
   tags: GeneratedGroup;
   users: GeneratedGroup;
 };
+
+const LEGACY_BOOKMARK_GET_MESSAGE =
+  "auth.bookmarks.get(bookmarkId) is not supported because /v1/bookmarks/bookmark expects bookmark detail query parameters. Pass a query object such as { mushafId, key, type, verseNumber } or { mushafId, isReading: true }.";
 
 const createUserServiceRequest =
   (fetcher: QuranFetcher, service: AuthService) =>
@@ -102,10 +105,15 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
       ...generatedGroups.bookmarks,
       create: (body: Record<string, unknown>) =>
         request("POST", "/v1/bookmarks", { body }),
-      get: (bookmarkId: string) =>
-        request("GET", "/v1/bookmarks/bookmark", {
-          query: { bookmarkId },
-        }),
+      get: async (query?: ApiParams | string) => {
+        if (typeof query === "string") {
+          throw new Error(LEGACY_BOOKMARK_GET_MESSAGE);
+        }
+
+        return request("GET", "/v1/bookmarks/bookmark", {
+          query,
+        });
+      },
       list: (query?: ApiParams) => request("GET", "/v1/bookmarks", { query }),
       listCollections: (query?: ApiParams) =>
         request("GET", "/v1/bookmarks/collections", { query }),

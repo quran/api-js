@@ -30,6 +30,10 @@ export const replacePathParams = (
 export const normalizePathTemplate = (path: string): string =>
   path.replace(/(^|\/):([A-Za-z0-9_]+)/g, "$1{$2}");
 
+interface ParamsToStringOptions {
+  preserveCase?: boolean;
+}
+
 const fieldsKey = ["wordFields", "translationFields", "fields"] as const;
 const fieldsKeySet = new Set<string>([
   ...fieldsKey,
@@ -40,7 +44,10 @@ const preservedKeys = new Set([
   "versesResultsNumber",
 ]);
 
-export const paramsToString = (params?: ApiParams): string => {
+export const paramsToString = (
+  params?: ApiParams,
+  options: ParamsToStringOptions = {},
+): string => {
   if (!params) return "";
 
   const paramsString = new URLSearchParams();
@@ -48,7 +55,10 @@ export const paramsToString = (params?: ApiParams): string => {
   for (const [rawKey, rawValue] of Object.entries(params)) {
     if (rawValue === undefined) continue;
 
-    const key = preservedKeys.has(rawKey) ? rawKey : decamelize(rawKey);
+    const key =
+      options.preserveCase || preservedKeys.has(rawKey)
+        ? rawKey
+        : decamelize(rawKey);
 
     // fields is a special case, it's an object with boolean values
     if (fieldsKeySet.has(rawKey) || fieldsKeySet.has(key)) {
