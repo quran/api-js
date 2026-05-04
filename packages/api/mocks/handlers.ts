@@ -667,6 +667,12 @@ export const handlers = [
       const includeResources =
         url.searchParams.get("include_resources") === "true";
       const resourceId = url.searchParams.get("resource_id");
+      const chapterInfoResourceId =
+        resourceId === "en-tafsir-ibn-ashur"
+          ? 167
+          : resourceId
+            ? Number(resourceId) || 58
+            : 58;
       const chapterInfo =
         resourceId === "missing-resource"
           ? null
@@ -674,7 +680,7 @@ export const handlers = [
               id: 1,
               chapter_id: 1,
               language_name: "english",
-              resource_id: resourceId ? Number(resourceId) || 58 : 58,
+              resource_id: chapterInfoResourceId,
               short_text:
                 "This Surah is named Al-Fatihah because of its subject-matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.",
               source:

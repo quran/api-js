@@ -43,6 +43,14 @@ describe("Chapters API", () => {
       expect(response.resources?.[0]?.id).toBe(58);
     });
 
+    it("should support resource slugs when selecting chapter info", async () => {
+      const response = await testClient.chapters.findInfoResponseById("1", {
+        resourceId: "en-tafsir-ibn-ashur",
+      });
+
+      expect(response.chapterInfo?.resourceId).toBe(167);
+    });
+
     it("should support null chapter info for missing resources", async () => {
       const response = await testClient.chapters.findInfoResponseById("1", {
         resourceId: "missing-resource",
