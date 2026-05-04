@@ -662,18 +662,56 @@ export const handlers = [
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/chapters/:chapter_id/info",
-    () => {
+    ({ request }) => {
+      const url = new URL(request.url);
+      const includeResources =
+        url.searchParams.get("include_resources") === "true";
+      const resourceId = url.searchParams.get("resource_id");
+      const chapterInfo =
+        resourceId === "missing-resource"
+          ? null
+          : {
+              id: 1,
+              chapter_id: 1,
+              language_name: "english",
+              resource_id: resourceId ? Number(resourceId) || 58 : 58,
+              short_text:
+                "This Surah is named Al-Fatihah because of its subject-matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.",
+              source:
+                "Sayyid Abul Ala Maududi - Tafhim al-Qur'an - The Meaning of the Quran",
+              text: "<h2>Name</h2>\r\n<p>This Surah is named Al-Fatihah because of its subject-matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.</p>\r\n<h2>Period of Revelation</h2>...",
+            };
+
       return HttpResponse.json({
-        chapterInfo: {
-          id: 1,
-          chapter_id: 1,
-          language_name: "english",
-          short_text:
-            "This Surah is named Al-Fatihah because of its subject-matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.",
-          source:
-            "Sayyid Abul Ala Maududi - Tafhim al-Qur'an - The Meaning of the Quran",
-          text: "<h2>Name</h2>\r\n<p>This Surah is named Al-Fatihah because of its subject-matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.</p>\r\n<h2>Period of Revelation</h2>...",
-        },
+        chapter_info: chapterInfo,
+        ...(includeResources
+          ? {
+              resources: [
+                {
+                  id: 58,
+                  name: "Chapter Info",
+                  author_name: "Sayyid Abul Ala Maududi",
+                  slug: "",
+                  language_name: "english",
+                  translated_name: {
+                    name: "Chapter Info",
+                    language_name: "english",
+                  },
+                },
+                {
+                  id: 167,
+                  name: "Tafsir al-Tahrir wa'l-Tanwir",
+                  author_name: "Ibn Ashur",
+                  slug: "en-tafsir-ibn-ashur",
+                  language_name: "english",
+                  translated_name: {
+                    name: "Tafsir al-Tahrir wa'l-Tanwir",
+                    language_name: "english",
+                  },
+                },
+              ],
+            }
+          : {}),
       });
     },
   ),
@@ -743,6 +781,91 @@ export const handlers = [
             },
           },
         ],
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/hadith_references/by_ayah/:ayah_key",
+    ({ params }) => {
+      return HttpResponse.json({
+        verse_key: params.ayah_key,
+        verse_number: 12,
+        chapter_number: 12,
+        language: "en",
+        direction: "ltr",
+        hadith_references: [
+          {
+            id: 10,
+            collection: "bukhari",
+            hadith_number: "1",
+            our_hadith_number: 1,
+            arabic_urn: 111,
+            english_urn: 211,
+            surah_number: 12,
+            ayah_start_number: 11,
+            ayah_end_number: 12,
+          },
+          {
+            id: 11,
+            collection: "muslim",
+            hadith_number: "3",
+            our_hadith_number: 1,
+            arabic_urn: 113,
+            english_urn: 213,
+            surah_number: 12,
+            ayah_start_number: 12,
+            ayah_end_number: 14,
+          },
+        ],
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/hadith_references/by_ayah/:ayah_key/hadiths",
+    () => {
+      return HttpResponse.json({
+        hadiths: [
+          {
+            urn: 201,
+            collection: "bukhari",
+            bookNumber: "1",
+            chapterId: "1",
+            hadithNumber: "1",
+            name: "Sahih al-Bukhari",
+            hadith: [
+              {
+                lang: "en",
+                chapterNumber: "1",
+                chapterTitle: "Revelation",
+                body: "Narrated Umar bin Al-Khattab:...",
+                urn: 31,
+                grades: [
+                  {
+                    graded_by: "Ahmad Muhammad Shakir",
+                    grade: "Sahih",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        page: 1,
+        limit: 4,
+        has_more: true,
+        language: "en",
+        direction: "ltr",
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/hadith_references/count_within_range",
+    () => {
+      return HttpResponse.json({
+        "12:12": 2,
+        "12:13": 2,
       });
     },
   ),

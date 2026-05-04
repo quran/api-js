@@ -3,11 +3,16 @@ import type {
   Chapter,
   ChapterId,
   ChapterInfo,
+  ChapterInfoResponse,
   QuranFetchClient,
 } from "@/types";
 import { isValidChapterId } from "@/utils";
 
 type GetChapterOptions = BaseApiParams;
+type GetChapterInfoOptions = BaseApiParams & {
+  resourceId?: string | number;
+  includeResources?: boolean;
+};
 
 /**
  * Chapters API methods
@@ -55,21 +60,38 @@ export class QuranChapters {
    * Get chapter info by id.
    * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/get-chapter-info
    * @param {ChapterId} id chapter id, minimum 1, maximum 114
-   * @param {GetChapterOptions} options
+   * @param {GetChapterInfoOptions} options
    * @example
    * client.chapters.findInfoById('1')
    * client.chapters.findInfoById('114')
    */
   async findInfoById(
     id: ChapterId,
-    options?: GetChapterOptions,
-  ): Promise<ChapterInfo> {
-    if (!isValidChapterId(id)) throw new Error("Invalid chapter id");
-
-    const { chapterInfo } = await this.fetcher.fetch<{
-      chapterInfo: ChapterInfo;
-    }>(`/content/api/v4/chapters/${id}/info`, options);
+    options?: GetChapterInfoOptions,
+  ): Promise<ChapterInfo | null> {
+    const { chapterInfo } = await this.findInfoResponseById(id, options);
 
     return chapterInfo;
+  }
+
+  /**
+   * Get the full chapter info response, including available resources when requested.
+   * @description https://api-docs.quran.com/docs/quran.com_versioned/4.0.0/get-chapter-info
+   * @param {ChapterId} id chapter id, minimum 1, maximum 114
+   * @param {GetChapterInfoOptions} options
+   * @example
+   * client.chapters.findInfoResponseById('1', { includeResources: true })
+   * client.chapters.findInfoResponseById('1', { resourceId: 'en-tafsir-ibn-ashur' })
+   */
+  async findInfoResponseById(
+    id: ChapterId,
+    options?: GetChapterInfoOptions,
+  ): Promise<ChapterInfoResponse> {
+    if (!isValidChapterId(id)) throw new Error("Invalid chapter id");
+
+    return this.fetcher.fetch<ChapterInfoResponse>(
+      `/content/api/v4/chapters/${id}/info`,
+      options,
+    );
   }
 }
