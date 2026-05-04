@@ -1,3 +1,4 @@
+import type { AuthService } from "@/generated/public-contracts";
 import type {
   ApiParams,
   ChapterId,
@@ -14,13 +15,13 @@ import type {
   VerseKey,
 } from "@/types";
 import { operationCatalog } from "@/generated/contracts";
-import type { AuthService } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
 import { QuranAudio } from "@/sdk/audio";
 import { QuranChapters } from "@/sdk/chapters";
 import { QuranFetcher } from "@/sdk/fetcher";
+import { QuranHadithReferences } from "@/sdk/hadith-references";
 import { QuranJuzs } from "@/sdk/juzs";
 import { QuranResources } from "@/sdk/resources";
 import { QuranSearch } from "@/sdk/search";
@@ -348,6 +349,7 @@ const createContentFacade = (
   verses: QuranVerses,
   juzs: QuranJuzs,
   audio: QuranAudio,
+  hadithReferences: QuranHadithReferences,
   resources: QuranResources,
   raw: Record<string, RawOperation>,
 ) => {
@@ -374,7 +376,17 @@ const createContentFacade = (
       get: (id: ChapterId, query?: ApiParams) => chapters.findById(id, query),
       getInfo: (id: ChapterId, query?: ApiParams) =>
         chapters.findInfoById(id, query),
+      getInfoResponse: (id: ChapterId, query?: ApiParams) =>
+        chapters.findInfoResponseById(id, query),
       list: (query?: ApiParams) => chapters.findAll(query),
+    },
+    hadithReferences: {
+      byAyah: (key: VerseKey, query?: ApiParams) =>
+        hadithReferences.findByAyah(key, query),
+      countWithinRange: (from: VerseKey, to: VerseKey, query?: ApiParams) =>
+        hadithReferences.countWithinRange(from, to, query),
+      hadithsByAyah: (key: VerseKey, query?: ApiParams) =>
+        hadithReferences.findHadithsByAyah(key, query),
     },
     juzs: {
       list: () => juzs.findAll(),
@@ -439,6 +451,7 @@ export const createRuntimeClient = (
   const verses = new QuranVerses(fetcher);
   const juzs = new QuranJuzs(fetcher);
   const audio = new QuranAudio(fetcher);
+  const hadithReferences = new QuranHadithReferences(fetcher);
   const resources = new QuranResources(fetcher);
   const searchClient = new QuranSearch(fetcher);
 
@@ -465,6 +478,7 @@ export const createRuntimeClient = (
     verses,
     juzs,
     audio,
+    hadithReferences,
     resources,
     raw.content.v4,
   );
@@ -501,6 +515,7 @@ export const createRuntimeClient = (
       v4: contentV4,
     },
     getUserSession: () => fetcher.getUserSession(),
+    hadithReferences,
     juzs,
     oauth2: {
       ...oauth2V1,

@@ -4,6 +4,7 @@ export * from './AudioResponse';
 export * from './Chapter';
 export * from './ChapterInfo';
 export * from './Footnote';
+export * from './HadithReference';
 export * from './Reciter';
 export * from './Segment';
 export * from './Tafsir';

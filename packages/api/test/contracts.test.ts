@@ -1,9 +1,26 @@
 import { describe, expect, it } from "vitest";
 
-import { getOperationByName, operationCatalog } from "../src/generated/contracts";
+import {
+  getOperationByName,
+  operationCatalog,
+} from "../src/generated/contracts";
 
 const representativeOperations = [
   ["content", "v4", "getChapter", "get", "/chapters/{id}"],
+  [
+    "content",
+    "v4",
+    "hadithReferencesByAyah",
+    "get",
+    "/hadith_references/by_ayah/{ayah_key}",
+  ],
+  [
+    "content",
+    "v4",
+    "listSurahTafsirs",
+    "get",
+    "/tafsirs/{resource_id}/by_chapter/{chapter_number}",
+  ],
   ["search", "v1", "searchControllerSearch", "get", "/v1/search"],
   ["auth", "v1", "getV1NotesByNoteId", "get", "/v1/notes/{noteId}"],
   ["quranReflect", "v1", "postsControllerFeed", "get", "/v1/posts/feed"],
@@ -14,20 +31,22 @@ describe("operation contracts", () => {
   it.each(representativeOperations)(
     "loads %s %s %s from the synced OpenAPI contracts",
     (service, version, operationName, method, path) => {
-      expect(getOperationByName(service, version, operationName)).toMatchObject({
-        method,
-        operationName,
-        path,
-        service,
-        version,
-      });
+      expect(getOperationByName(service, version, operationName)).toMatchObject(
+        {
+          method,
+          operationName,
+          path,
+          service,
+          version,
+        },
+      );
     },
   );
 
   it("normalizes colon params into curly-brace params", () => {
-    const noteOperation = Object.values(operationCatalog.auth.v1.operations).find(
-      (operation) => operation.path.includes("/v1/notes/{noteId}"),
-    );
+    const noteOperation = Object.values(
+      operationCatalog.auth.v1.operations,
+    ).find((operation) => operation.path.includes("/v1/notes/{noteId}"));
 
     expect(noteOperation).toBeDefined();
   });

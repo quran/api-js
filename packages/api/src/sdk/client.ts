@@ -14,6 +14,7 @@ import humps from "humps";
 
 import { QuranAudio } from "./audio";
 import { QuranChapters } from "./chapters";
+import { QuranHadithReferences } from "./hadith-references";
 import { QuranJuzs } from "./juzs";
 import { QuranResources } from "./resources";
 import { QuranSearch } from "./search";
@@ -132,6 +133,7 @@ export class QuranClient {
   public readonly verses: QuranVerses;
   public readonly juzs: QuranJuzs;
   public readonly audio: QuranAudio;
+  public readonly hadithReferences: QuranHadithReferences;
   public readonly resources: QuranResources;
   public readonly search: QuranSearch;
 
@@ -153,6 +155,7 @@ export class QuranClient {
     this.verses = new QuranVerses(this.fetcher);
     this.juzs = new QuranJuzs(this.fetcher);
     this.audio = new QuranAudio(this.fetcher);
+    this.hadithReferences = new QuranHadithReferences(this.fetcher);
     this.resources = new QuranResources(this.fetcher);
     this.search = new QuranSearch(this.fetcher);
   }

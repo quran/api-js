@@ -1,3 +1,4 @@
+import type { AuthService } from "@/generated/public-contracts";
 import type {
   ApiParams,
   HTTPMethod,
@@ -5,7 +6,6 @@ import type {
   PublicClientConfig,
   TokenResponse,
 } from "@/types";
-import type { AuthService } from "@/generated/public-contracts";
 import { publicOperationCatalog } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
@@ -357,6 +357,7 @@ export const createPublicRuntimeClient = (config: PublicClientConfig) => {
     clearCachedTokens: () => fetcher.clearCachedTokens(),
     content: serverOnlyGuard,
     getUserSession: () => fetcher.getUserSession(),
+    hadithReferences: serverOnlyGuard,
     juzs: serverOnlyGuard,
     oauth2: {
       ...oauth2V1,
