@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.2.0
+
+### Minor Changes
+
+- 2a80a43: Add typed v4 hadith reference SDK methods and expose the full chapter info response with resource selection support.
+
 ## 3.1.0
 
 ### Minor Changes
