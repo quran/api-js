@@ -93,9 +93,16 @@ describe("Answers API", () => {
     });
 
     it("should expose the same methods through content.v4", async () => {
-      const response = await testClient.content.v4.answers.byAyah("2:255");
+      const byAyah = await testClient.content.v4.answers.byAyah("2:255");
+      const answer = await testClient.content.v4.answers.get("question-1");
+      const count = await testClient.content.v4.answers.countWithinRange(
+        "2:255",
+        "2:256",
+      );
 
-      expect(response.questions[0]?.answers[0]?.id).toBe("answer-1");
+      expect(byAyah.questions[0]?.answers[0]?.id).toBe("answer-1");
+      expect(answer.answers[0]?.body).toContain("Ayat al-Kursi");
+      expect(count["2:255"]?.types?.TAFSIR).toBe(1);
     });
   });
 });
