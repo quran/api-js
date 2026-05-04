@@ -18,6 +18,7 @@ import { operationCatalog } from "@/generated/contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
+import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
 import { QuranChapters } from "@/sdk/chapters";
 import { QuranFetcher } from "@/sdk/fetcher";
@@ -345,6 +346,7 @@ const createOAuth2Facade = (
 };
 
 const createContentFacade = (
+  answers: QuranAnswers,
   chapters: QuranChapters,
   verses: QuranVerses,
   juzs: QuranJuzs,
@@ -354,6 +356,14 @@ const createContentFacade = (
   raw: Record<string, RawOperation>,
 ) => {
   return {
+    answers: {
+      byAyah: (key: VerseKey, query?: ApiParams) =>
+        answers.findByAyah(key, query),
+      countWithinRange: (from: VerseKey, to: VerseKey, query?: ApiParams) =>
+        answers.countWithinRange(from, to, query),
+      get: (questionId: string | number) =>
+        answers.findByQuestionId(questionId),
+    },
     audio: {
       chapterRecitation: {
         get: (reciterId: string, chapterId: ChapterId, query?: ApiParams) =>
@@ -447,6 +457,7 @@ export const createRuntimeClient = (
 ) => {
   const fetcher = new QuranFetcher(mode, config);
   fetcher.getFetch();
+  const answers = new QuranAnswers(fetcher);
   const chapters = new QuranChapters(fetcher);
   const verses = new QuranVerses(fetcher);
   const juzs = new QuranJuzs(fetcher);
@@ -474,6 +485,7 @@ export const createRuntimeClient = (
   };
 
   const contentV4 = createContentFacade(
+    answers,
     chapters,
     verses,
     juzs,
@@ -503,6 +515,7 @@ export const createRuntimeClient = (
   });
 
   return {
+    answers,
     audio,
     auth: {
       ...authV1,

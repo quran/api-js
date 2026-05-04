@@ -12,6 +12,7 @@ import { paramsToString, removeBeginningSlash } from "@/lib/url";
 import { Language } from "@/types";
 import humps from "humps";
 
+import { QuranAnswers } from "./answers";
 import { QuranAudio } from "./audio";
 import { QuranChapters } from "./chapters";
 import { QuranHadithReferences } from "./hadith-references";
@@ -130,6 +131,7 @@ export class QuranClient {
   private fetcher: LegacyQuranFetcher;
 
   public readonly chapters: QuranChapters;
+  public readonly answers: QuranAnswers;
   public readonly verses: QuranVerses;
   public readonly juzs: QuranJuzs;
   public readonly audio: QuranAudio;
@@ -151,6 +153,7 @@ export class QuranClient {
     this.fetcher = new LegacyQuranFetcher(this.config);
     this.fetcher.getFetch();
 
+    this.answers = new QuranAnswers(this.fetcher);
     this.chapters = new QuranChapters(this.fetcher);
     this.verses = new QuranVerses(this.fetcher);
     this.juzs = new QuranJuzs(this.fetcher);

@@ -1,4 +1,5 @@
 export * from './ApiResponses';
+export * from './Answer';
 export * from './AudioData';
 export * from './AudioResponse';
 export * from './Chapter';
