@@ -1,10 +1,17 @@
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
+import { server } from "../mocks/server";
 import { testClient } from "./test-client";
 
 const VALID_RECITATION_ID = "1";
 const VALID_TRANSLATION_ID = "1";
 const VALID_TAFSIR_ID = "169";
+
+const expectCapturedUrl = (url: URL | null): URL => {
+  expect(url).not.toBeNull();
+  return url!;
+};
 
 describe("Resources API", () => {
   describe("findAllChapterInfos()", () => {
@@ -92,6 +99,146 @@ describe("Resources API", () => {
       const response =
         await testClient.resources.findTafsirInfo(VALID_TAFSIR_ID);
       expect(response).toBeDefined();
+    });
+  });
+
+  describe("sync()", () => {
+    it("serializes bootstrap sync request params", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/sync",
+          ({ request }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              sync: {
+                sync_until_sequence: 1,
+                has_more: false,
+                next_page_url: null,
+                next_sync_token: "sync-token-1",
+                mutations: [],
+              },
+            });
+          },
+        ),
+      );
+
+      await testClient.resources.sync({
+        bootstrap: true,
+        resources: "articles:*;translations:1,6",
+        perPage: 100,
+      });
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.pathname).toBe("/content/api/v4/resources/sync");
+      expect(url.searchParams.get("bootstrap")).toBe("true");
+      expect(url.searchParams.get("resources")).toBe(
+        "articles:*;translations:1,6",
+      );
+      expect(url.searchParams.get("per_page")).toBe("100");
+    });
+
+    it("serializes incremental sync request params", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/sync",
+          ({ request }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              sync: {
+                sync_until_sequence: 2,
+                has_more: false,
+                next_page_url: null,
+                next_sync_token: "sync-token-2",
+                mutations: [],
+              },
+            });
+          },
+        ),
+      );
+
+      await testClient.resources.sync({
+        resources: "translations:19",
+        syncToken: "sync-token-1",
+        perPage: 50,
+      });
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.searchParams.get("resources")).toBe("translations:19");
+      expect(url.searchParams.get("sync_token")).toBe("sync-token-1");
+      expect(url.searchParams.get("per_page")).toBe("50");
+      expect(url.searchParams.has("bootstrap")).toBe(false);
+    });
+
+    it("camel-cases sync mutation fields", async () => {
+      const response = await testClient.resources.sync({
+        resources: "translations:19",
+        bootstrap: true,
+      });
+
+      expect(response.sync.syncUntilSequence).toBe(98100);
+      expect(response.sync.nextSyncToken).toBe("sync-token-98100");
+      expect(response.sync.hasMore).toBe(false);
+
+      const mutation = response.sync.mutations[0];
+      expect(mutation?.resourceGroup).toBe("translations");
+      expect(mutation?.resourceContentId).toBe(19);
+      expect(mutation?.recordType).toBe("translation");
+      expect(mutation?.recordKey).toBe("85108");
+      expect(mutation?.sourceRecordId).toBe(85108);
+      expect(mutation?.changedAt).toBe("2026-05-05T10:00:00Z");
+      expect(mutation?.snapshotUrl).toBeNull();
+      expect(mutation?.unavailableReason).toBeNull();
+      expect(mutation?.data?.verseKey).toBe("26:153");
+    });
+
+    it("exposes sync through content.v4.resources", async () => {
+      const response = await testClient.content.v4.resources.sync({
+        resources: "translations:19",
+        bootstrap: true,
+      });
+
+      expect(response.sync.nextSyncToken).toBe("sync-token-98100");
+    });
+  });
+
+  describe("findSnapshot()", () => {
+    it("serializes snapshot path params", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/snapshots/:resourceGroup/:id",
+          ({ request, params }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              resource_group: params.resourceGroup,
+              resource_id: Number(params.id),
+              resource_content_id: Number(params.id),
+              schema_version: 1,
+              sync_sequence: 98100,
+              records: [],
+            });
+          },
+        ),
+      );
+
+      const snapshot = await testClient.content.v4.resources.findSnapshot(
+        "translations",
+        19,
+      );
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.pathname).toBe(
+        "/content/api/v4/resources/snapshots/translations/19",
+      );
+      expect(snapshot.resourceGroup).toBe("translations");
+      expect(snapshot.resourceId).toBe(19);
+      expect(snapshot.resourceContentId).toBe(19);
+      expect(snapshot.syncSequence).toBe(98100);
     });
   });
 });

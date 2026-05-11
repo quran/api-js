@@ -5,6 +5,63 @@ description: Access metadata about translations, tafsirs, reciters, and language
 
 The Resources API provides metadata about translations, tafsirs, reciters, and other Quranic resources.
 
+## Content Resource Sync
+
+Use content sync when your app needs to cache public resources locally and keep them updated without refetching every resource list.
+
+### Bootstrap Resources
+
+```ts
+const page = await client.resources.sync({
+  bootstrap: true,
+  resources: "articles:*;tafsirs:151;translations:1,6",
+  perPage: 100,
+});
+
+for (const mutation of page.sync.mutations) {
+  if (mutation.snapshotUrl) {
+    const snapshot = await client.resources.findSnapshot(
+      mutation.resourceGroup,
+      mutation.resourceId,
+    );
+    console.log(snapshot.records);
+  }
+}
+```
+
+If `page.sync.hasMore` is true, fetch `page.sync.nextPageUrl` through your backend or call `sync` again with the cursor from that URL. Store `page.sync.nextSyncToken` from the final bootstrap page.
+
+### Poll Incremental Changes
+
+```ts
+const changes = await client.resources.sync({
+  resources: "articles:*;tafsirs:151;translations:1,6",
+  syncToken: savedSyncToken,
+});
+
+for (const mutation of changes.sync.mutations) {
+  if (mutation.type === "ROW_UPDATE") {
+    updateLocalRow(mutation.recordKey, mutation.data);
+  }
+}
+```
+
+Use `client.content.v4.resources.sync(...)` and `client.content.v4.resources.findSnapshot(...)` when working through the namespaced v4 client.
+
+### ContentSyncResponse Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ContentSyncResponse"
+/>
+
+### ContentResourceSnapshot Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="ContentResourceSnapshot"
+/>
+
 ## Recitations
 
 ### Get All Recitations
@@ -101,7 +158,7 @@ tafsirs.forEach((t) => {
 ```ts
 const info = await client.resources.findTafsirInfo("171");
 
-console.log(info.name);       // "Tafsir Ibn Kathir"
+console.log(info.name); // "Tafsir Ibn Kathir"
 console.log(info.authorName); // "Ibn Kathir"
 console.log(info.bio);
 ```
@@ -119,7 +176,9 @@ console.log(info.bio);
 const languages = await client.resources.findAllLanguages();
 
 languages.forEach((lang) => {
-  console.log(`${lang.name} (${lang.iso}): ${lang.translationsCount} translations`);
+  console.log(
+    `${lang.name} (${lang.iso}): ${lang.translationsCount} translations`,
+  );
 });
 ```
 
@@ -171,8 +230,8 @@ reciters.forEach((r) => {
 ```ts
 const styles = await client.resources.findAllRecitationStyles();
 
-console.log(styles.murattal);  // Murattal reciters
-console.log(styles.mujawwad);  // Mujawwad reciters
+console.log(styles.murattal); // Murattal reciters
+console.log(styles.mujawwad); // Mujawwad reciters
 ```
 
 ### RecitationStylesResource Type
@@ -188,8 +247,8 @@ console.log(styles.mujawwad);  // Mujawwad reciters
 const media = await client.resources.findVerseMedia();
 
 console.log(media.unicode); // Font URL
-console.log(media.image);   // Images base URL
-console.log(media.audio);   // Audio base URL
+console.log(media.image); // Images base URL
+console.log(media.audio); // Audio base URL
 ```
 
 ### VerseMediaResource Type

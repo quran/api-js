@@ -250,6 +250,21 @@
           "method": "get",
           "path": "/hadith_references/count_within_range"
         },
+        "listPages": {
+          "auth": "app",
+          "method": "get",
+          "path": "/pages"
+        },
+        "getPagesLookup": {
+          "auth": "app",
+          "method": "get",
+          "path": "/pages/lookup"
+        },
+        "getPagesPageNumber": {
+          "auth": "app",
+          "method": "get",
+          "path": "/pages/{page_number}"
+        },
         "versesByChapterNumber": {
           "auth": "app",
           "method": "get",
@@ -659,6 +674,16 @@
           "auth": "app",
           "method": "get",
           "path": "/answers/count_within_range"
+        },
+        "resourcesSync": {
+          "auth": "app",
+          "method": "get",
+          "path": "/resources/sync"
+        },
+        "resourcesSnapshot": {
+          "auth": "app",
+          "method": "get",
+          "path": "/resources/snapshots/{resource_group}/{id}"
         }
       },
       "service": "content",

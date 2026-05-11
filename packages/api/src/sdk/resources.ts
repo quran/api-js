@@ -2,6 +2,11 @@ import type {
   BaseApiParams,
   ChapterInfoResource,
   ChapterReciterResource,
+  ContentResourceSnapshot,
+  ContentResourceSnapshotOptions,
+  ContentSyncOptions,
+  ContentSyncResourceGroup,
+  ContentSyncResponse,
   LanguageResource,
   QuranFetchClient,
   RecitationInfoResource,
@@ -202,5 +207,41 @@ export class QuranResources {
     }>("/content/api/v4/resources/verse_media", options);
 
     return verseMedia;
+  }
+
+  /**
+   * Bootstrap or incrementally sync public content resources.
+   * @param {ContentSyncOptions} options
+   * @example
+   * client.resources.sync({ bootstrap: true, resources: "translations:19" })
+   */
+  async sync<TData extends Record<string, unknown> = Record<string, unknown>>(
+    options?: ContentSyncOptions,
+  ): Promise<ContentSyncResponse<TData>> {
+    return this.fetcher.fetch<ContentSyncResponse<TData>>(
+      "/content/api/v4/resources/sync",
+      options,
+    );
+  }
+
+  /**
+   * Fetch the current full snapshot for a syncable public content resource.
+   * @param {ContentSyncResourceGroup} resourceGroup
+   * @param {string | number} id
+   * @param {ContentResourceSnapshotOptions} options
+   * @example
+   * client.resources.findSnapshot("translations", 19)
+   */
+  async findSnapshot<
+    TRecord extends Record<string, unknown> = Record<string, unknown>,
+  >(
+    resourceGroup: ContentSyncResourceGroup,
+    id: string | number,
+    options?: ContentResourceSnapshotOptions,
+  ): Promise<ContentResourceSnapshot<TRecord>> {
+    return this.fetcher.fetch<ContentResourceSnapshot<TRecord>>(
+      `/content/api/v4/resources/snapshots/${resourceGroup}/${id}`,
+      options,
+    );
   }
 }
