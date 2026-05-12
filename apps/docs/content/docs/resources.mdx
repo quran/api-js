@@ -40,7 +40,11 @@ const changes = await client.resources.sync({
 });
 
 for (const mutation of changes.sync.mutations) {
-  if (mutation.type === "ROW_UPDATE") {
+  if (
+    mutation.type === "ROW_UPDATE" &&
+    mutation.recordKey !== null &&
+    mutation.data !== null
+  ) {
     updateLocalRow(mutation.recordKey, mutation.data);
   }
 }
