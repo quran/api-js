@@ -30,6 +30,7 @@ import { QuranHadithReferences } from "@/sdk/hadith-references";
 import { QuranJuzs } from "@/sdk/juzs";
 import { QuranResources } from "@/sdk/resources";
 import { QuranSearch } from "@/sdk/search";
+import { QuranTafsir } from "@/sdk/tafsir";
 import { QuranVerses } from "@/sdk/verses";
 
 type RuntimeClientConfig = PublicClientConfig | ServerClientConfig;
@@ -360,6 +361,7 @@ const createContentFacade = (
   audio: QuranAudio,
   hadithReferences: QuranHadithReferences,
   resources: QuranResources,
+  tafsir: QuranTafsir,
   raw: Record<string, RawOperation>,
 ) => {
   return {
@@ -409,6 +411,28 @@ const createContentFacade = (
       list: () => juzs.findAll(),
     },
     raw,
+    tafsir: {
+      get: (tafsirId: string | number, query?: ApiParams) =>
+        tafsir.get(tafsirId, query),
+      byAyah: (resourceId: string | number, verseKey: VerseKey, query?: ApiParams) =>
+        tafsir.findByAyah(resourceId, verseKey, query),
+      byChapter: (resourceId: string | number, chapterId: ChapterId, query?: ApiParams) =>
+        tafsir.findByChapter(resourceId, chapterId, query),
+      byHizb: (resourceId: string | number, hizb: HizbNumber, query?: ApiParams) =>
+        tafsir.findByHizb(resourceId, hizb, query),
+      byJuz: (resourceId: string | number, juz: JuzNumber, query?: ApiParams) =>
+        tafsir.findByJuz(resourceId, juz, query),
+      byManzil: (resourceId: string | number, manzilNumber: number | string, query?: ApiParams) =>
+        tafsir.findByManzil(resourceId, manzilNumber, query),
+      byPage: (resourceId: string | number, page: PageNumber, query?: ApiParams) =>
+        tafsir.findByPage(resourceId, page, query),
+      byRub: (resourceId: string | number, rubNumber: number | string, query?: ApiParams) =>
+        tafsir.findByRub(resourceId, rubNumber, query),
+      byRubElHizb: (resourceId: string | number, rubElHizbNumber: number | string, query?: ApiParams) =>
+        tafsir.findByRubElHizb(resourceId, rubElHizbNumber, query),
+      byRuku: (resourceId: string | number, rukuNumber: number | string, query?: ApiParams) =>
+        tafsir.findByRuku(resourceId, rukuNumber, query),
+    },
     resources: {
       findSnapshot: (
         resourceGroup: ContentSyncResourceGroup,
@@ -478,6 +502,7 @@ export const createRuntimeClient = (
   const hadithReferences = new QuranHadithReferences(fetcher);
   const resources = new QuranResources(fetcher);
   const searchClient = new QuranSearch(fetcher);
+  const tafsir = new QuranTafsir(fetcher);
 
   const raw = {
     auth: {
@@ -505,6 +530,7 @@ export const createRuntimeClient = (
     audio,
     hadithReferences,
     resources,
+    tafsir,
     raw.content.v4,
   );
   const authV1 = createAuthFacade(fetcher);
@@ -554,6 +580,7 @@ export const createRuntimeClient = (
     raw,
     resources,
     search,
+    tafsir,
     verses,
   };
 };
