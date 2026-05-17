@@ -50,6 +50,7 @@ describe("createPublicClient", () => {
     };
 
     await expect(content.v4.chapters.list()).rejects.toThrowError(/server/i);
+    expect(typeof client.tafsir.get).toBe("function");
 
     const response =
       (await client.auth.v1.collections.list()) as CollectionListResponse;

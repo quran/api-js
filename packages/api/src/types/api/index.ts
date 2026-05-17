@@ -9,6 +9,7 @@ export * from './Reciter';
 export * from './Segment';
 export * from './Tafsir';
 export * from './TafsirInfo';
+export * from './TafsirResponse';
 export * from './TranslatedName';
 export * from './Translation';
 export * from './Transliteration';

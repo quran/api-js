@@ -18,6 +18,7 @@ import { QuranHadithReferences } from "./hadith-references";
 import { QuranJuzs } from "./juzs";
 import { QuranResources } from "./resources";
 import { QuranSearch } from "./search";
+import { QuranTafsir } from "./tafsir";
 import { QuranVerses } from "./verses";
 
 const { camelizeKeys } = humps;
@@ -136,6 +137,7 @@ export class QuranClient {
   public readonly hadithReferences: QuranHadithReferences;
   public readonly resources: QuranResources;
   public readonly search: QuranSearch;
+  public readonly tafsir: QuranTafsir;
 
   constructor(config: QuranClientConfig) {
     this.config = {
@@ -158,6 +160,7 @@ export class QuranClient {
     this.hadithReferences = new QuranHadithReferences(this.fetcher);
     this.resources = new QuranResources(this.fetcher);
     this.search = new QuranSearch(this.fetcher);
+    this.tafsir = new QuranTafsir(this.fetcher);
   }
 
   public getConfig(): QuranClientConfig {

@@ -355,6 +355,7 @@ export const createPublicRuntimeClient = (config: PublicClientConfig) => {
     },
     chapters: serverOnlyGuard,
     clearCachedTokens: () => fetcher.clearCachedTokens(),
+    tafsir: serverOnlyGuard,
     content: serverOnlyGuard,
     getUserSession: () => fetcher.getUserSession(),
     hadithReferences: serverOnlyGuard,
