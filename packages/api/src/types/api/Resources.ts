@@ -1,3 +1,4 @@
+import type { ApiParams } from "../BaseApiParams";
 import type { TranslatedName } from "./TranslatedName";
 
 export interface RecitationResource {
@@ -78,4 +79,74 @@ export interface ChapterReciterResource {
   relativePath?: string;
   format?: string;
   filesSize?: number; // in kb
+}
+
+export type ContentSyncResourceGroup =
+  | "articles"
+  | "recitations"
+  | "tafsirs"
+  | "translations";
+
+export type ContentSyncMutationType =
+  | "RESOURCE_CREATE"
+  | "RESOURCE_UPDATE"
+  | "RESOURCE_DELETE"
+  | "ROW_CREATE"
+  | "ROW_UPDATE"
+  | "ROW_DELETE"
+  | "RESOURCE_INVALIDATE";
+
+export interface ContentSyncOptions extends ApiParams {
+  /** Resource filter, e.g. `articles:*;translations:1,6`. */
+  resources?: string;
+  /** Set to true for the initial sync. */
+  bootstrap?: boolean;
+  /** Token returned by the final bootstrap or incremental page. */
+  syncToken?: string;
+  /** Pagination cursor from `nextPageUrl`. */
+  cursor?: string;
+  /** Page size, up to the API maximum. */
+  perPage?: number;
+}
+
+export type ContentResourceSnapshotOptions = ApiParams;
+
+export interface ContentSyncMutation<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+> {
+  sequence: number;
+  type: ContentSyncMutationType;
+  resourceGroup: ContentSyncResourceGroup;
+  resourceId: number;
+  resourceContentId: number | null;
+  recordType: string | null;
+  recordKey: string | null;
+  sourceRecordId: number | null;
+  changedAt: string;
+  data: TData | null;
+  snapshotUrl: string | null;
+  unavailableReason: string | null;
+}
+
+export interface ContentSyncResponse<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+> {
+  sync: {
+    syncUntilSequence: number;
+    hasMore: boolean;
+    nextPageUrl: string | null;
+    nextSyncToken: string | null;
+    mutations: ContentSyncMutation<TData>[];
+  };
+}
+
+export interface ContentResourceSnapshot<
+  TRecord extends Record<string, unknown> = Record<string, unknown>,
+> {
+  resourceGroup: ContentSyncResourceGroup;
+  resourceId: number;
+  resourceContentId: number | null;
+  schemaVersion: number;
+  syncSequence: number;
+  records: TRecord[];
 }

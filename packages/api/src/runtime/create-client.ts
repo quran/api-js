@@ -2,6 +2,8 @@ import type { AuthService } from "@/generated/public-contracts";
 import type {
   ApiParams,
   ChapterId,
+  ContentSyncOptions,
+  ContentSyncResourceGroup,
   HizbNumber,
   HTTPMethod,
   JuzNumber,
@@ -403,6 +405,11 @@ const createContentFacade = (
     },
     raw,
     resources: {
+      findSnapshot: (
+        resourceGroup: ContentSyncResourceGroup,
+        id: string | number,
+        query?: ApiParams,
+      ) => resources.findSnapshot(resourceGroup, id, query),
       chapterInfos: {
         list: (query?: ApiParams) => resources.findAllChapterInfos(query),
       },
@@ -433,6 +440,7 @@ const createContentFacade = (
       verseMedia: {
         list: (query?: ApiParams) => resources.findVerseMedia(query),
       },
+      sync: (query?: ContentSyncOptions) => resources.sync(query),
     },
     verses: {
       byChapter: (id: ChapterId, query?: ApiParams) =>

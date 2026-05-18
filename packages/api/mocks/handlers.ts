@@ -122,6 +122,70 @@ export const handlers = [
     },
   ),
 
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/resources/sync",
+    ({ request }) => {
+      try {
+        validateAuth(request);
+        return HttpResponse.json({
+          sync: {
+            sync_until_sequence: 98100,
+            has_more: false,
+            next_page_url: null,
+            next_sync_token: "sync-token-98100",
+            mutations: [
+              {
+                sequence: 98100,
+                type: "ROW_UPDATE",
+                resource_group: "translations",
+                resource_id: 19,
+                resource_content_id: 19,
+                record_type: "translation",
+                record_key: "85108",
+                source_record_id: 85108,
+                changed_at: "2026-05-05T10:00:00Z",
+                data: {
+                  id: 85108,
+                  verse_key: "26:153",
+                  text: "They said: Thou art but one of the bewitched;",
+                },
+                snapshot_url: null,
+                unavailable_reason: null,
+              },
+            ],
+          },
+        });
+      } catch {
+        return HttpResponse.text("Unauthorized", { status: 401 });
+      }
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/resources/snapshots/:resource_group/:id",
+    ({ request, params }) => {
+      try {
+        validateAuth(request);
+        return HttpResponse.json({
+          resource_group: params.resource_group,
+          resource_id: Number(params.id),
+          resource_content_id: Number(params.id),
+          schema_version: 1,
+          sync_sequence: 98100,
+          records: [
+            {
+              id: 85108,
+              verse_key: "26:153",
+              text: "They said: Thou art but one of the bewitched;",
+            },
+          ],
+        });
+      } catch {
+        return HttpResponse.text("Unauthorized", { status: 401 });
+      }
+    },
+  ),
+
   http.get("https://apis.quran.foundation/v1/search", ({ request }) => {
     try {
       validateAuth(request);
