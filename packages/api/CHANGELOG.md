@@ -1,5 +1,12 @@
 # @quranjs/api
 
+## 3.3.0
+
+### Minor Changes
+
+- 578e89a: Add content resource sync and snapshot SDK helpers.
+- 4250b1e: Add first-class SDK methods and types for the public Content v4 answers endpoints.
+
 ## 3.2.1
 
 ### Patch Changes
