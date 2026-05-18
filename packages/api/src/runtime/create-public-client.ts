@@ -348,6 +348,7 @@ export const createPublicRuntimeClient = (config: PublicClientConfig) => {
   };
 
   return {
+    answers: serverOnlyGuard,
     audio: serverOnlyGuard,
     auth: {
       ...authV1,

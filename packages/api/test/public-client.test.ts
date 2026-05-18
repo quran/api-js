@@ -48,8 +48,12 @@ describe("createPublicClient", () => {
     const content = client.content as {
       v4: { chapters: { list: () => Promise<unknown> } };
     };
+    const answers = client.answers as {
+      findByAyah: (key: string) => Promise<unknown>;
+    };
 
     await expect(content.v4.chapters.list()).rejects.toThrowError(/server/i);
+    await expect(answers.findByAyah("2:255")).rejects.toThrowError(/server/i);
 
     const response =
       (await client.auth.v1.collections.list()) as CollectionListResponse;

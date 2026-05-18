@@ -877,6 +877,86 @@ export const handlers = [
   ),
 
   http.get(
+    "https://apis.quran.foundation/content/api/v4/answers/by_ayah/:ayah_key",
+    ({ params }) => {
+      return HttpResponse.json({
+        questions: [
+          {
+            id: "question-1",
+            body: "What is the context of this ayah?",
+            type: "CLARIFICATION",
+            ranges: [params.ayah_key],
+            surah: 2,
+            theme: ["Faith"],
+            summary: "A short summary",
+            references: ["Tafsir al-Tabari"],
+            language: "en",
+            status: "Published",
+            answers: [
+              {
+                id: "answer-1",
+                body: "This ayah is known as Ayat al-Kursi.",
+                answeredBy: "Scholar",
+                status: "Published",
+                language: "en",
+              },
+            ],
+          },
+        ],
+        totalCount: 1,
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/answers/count_within_range",
+    () => {
+      return HttpResponse.json({
+        "2:255": {
+          total: 2,
+          types: {
+            CLARIFICATION: 1,
+            TAFSIR: 1,
+          },
+        },
+        "2:256": {
+          total: 1,
+          types: {
+            TAFSIR: 1,
+          },
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/answers/:question_id",
+    ({ params }) => {
+      return HttpResponse.json({
+        id: params.question_id,
+        body: "What is the context of this ayah?",
+        type: "CLARIFICATION",
+        ranges: ["2:255"],
+        surah: 2,
+        theme: ["Faith"],
+        summary: "A short summary",
+        references: ["Tafsir al-Tabari"],
+        language: "en",
+        status: "Published",
+        answers: [
+          {
+            id: "answer-1",
+            body: "This ayah is known as Ayat al-Kursi.",
+            answeredBy: "Scholar",
+            status: "Published",
+            language: "en",
+          },
+        ],
+      });
+    },
+  ),
+
+  http.get(
     "https://apis.quran.foundation/content/api/v4/resources/verse_media",
     () => {
       return HttpResponse.json({

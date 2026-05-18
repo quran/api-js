@@ -106,4 +106,64 @@ describe("QuranClient legacy compatibility", () => {
       perPage: 5,
     });
   });
+
+  it("exposes answers through the legacy root client", async () => {
+    let answersUrl = "http://missing.test";
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "legacy-token",
+          expires_in: 3600,
+          scope: "content search",
+          token_type: "Bearer",
+        }),
+      ),
+      http.get(
+        "http://localhost:3020/content/api/v4/answers/by_ayah/:ayah_key",
+        ({ request }) => {
+          answersUrl = request.url;
+          expect(request.headers.get("x-auth-token")).toBe("legacy-token");
+          expect(request.headers.get("x-client-id")).toBe("client-id");
+
+          return HttpResponse.json({
+            questions: [
+              {
+                id: "question-1",
+                answers: [],
+                body: "What is the context of this ayah?",
+                ranges: ["2:255"],
+                status: "Published",
+                surah: 2,
+                type: "TAFSIR",
+              },
+            ],
+            totalCount: 1,
+          });
+        },
+      ),
+    );
+
+    const client = new QuranClient({
+      authBaseUrl: "http://localhost:5444",
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      contentBaseUrl: "http://localhost:3020",
+    });
+
+    await expect(
+      client.answers.findByAyah("2:255", {
+        language: "en",
+        pageSize: 2,
+      }),
+    ).resolves.toMatchObject({
+      questions: [{ id: "question-1" }],
+      totalCount: 1,
+    });
+
+    const params = new URL(answersUrl).searchParams;
+    expect(params.get("language")).toBe("en");
+    expect(params.get("pageSize")).toBe("2");
+    expect(params.get("page_size")).toBeNull();
+  });
 });

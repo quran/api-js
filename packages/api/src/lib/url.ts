@@ -41,6 +41,7 @@ const fieldsKeySet = new Set<string>([
 ]);
 const preservedKeys = new Set([
   "navigationalResultsNumber",
+  "pageSize",
   "versesResultsNumber",
 ]);
 
