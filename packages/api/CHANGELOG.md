@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.2.1
+
+### Patch Changes
+
+- 61ef3d0: Export public OAuth session and token storage types from the `/public` entrypoint.
+
 ## 3.2.0
 
 ### Minor Changes
