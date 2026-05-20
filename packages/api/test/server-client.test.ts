@@ -761,11 +761,11 @@ describe("createServerClient", () => {
   });
 
   it("keeps Quran Reflect generated create operation request compatibility", async () => {
-    let postBody: unknown;
+    const postBodies: unknown[] = [];
 
     server.use(
       http.post("http://localhost:3002/v1/posts", async ({ request }) => {
-        postBody = await request.json();
+        postBodies.push(await request.json());
 
         return HttpResponse.json({
           success: true,
@@ -799,7 +799,14 @@ describe("createServerClient", () => {
       },
     });
 
-    expect(postBody).toEqual({ post: payload });
+    await client.quranReflect.v1.posts.create({
+      body: JSON.stringify({ post: payload }),
+      headers: {
+        "x-test": "raw-json-body",
+      },
+    });
+
+    expect(postBodies).toEqual([{ post: payload }, { post: payload }]);
   });
 
   it("wraps typed Quran Reflect post update and get helpers", async () => {

@@ -74,10 +74,18 @@ export type QuranReflectPostsFacade = GeneratedGroup & {
 const isObject = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === "object" && !Array.isArray(value);
 
-const isCreatePayload = (
-  value: CreateQuranReflectPostPayload | QuranReflectPostCreateOperationRequest,
-): value is CreateQuranReflectPostPayload =>
-  isObject(value) && typeof value.body === "string";
+const isCreatePayload = (value: unknown): value is CreateQuranReflectPostPayload => {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    typeof value["body"] === "string" &&
+    typeof value["draft"] === "boolean" &&
+    Array.isArray(value["references"]) &&
+    Array.isArray(value["mentions"])
+  );
+};
 
 export const createQuranReflectPostsFacade = (
   generatedPosts: GeneratedGroup,
