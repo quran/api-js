@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.4.0
+
+### Minor Changes
+
+- 01176d4: Add typed QuranReflect post helpers for create, update, and get operations.
+
 ## 3.3.0
 
 ### Minor Changes
