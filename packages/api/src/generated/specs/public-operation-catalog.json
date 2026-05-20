@@ -518,6 +518,11 @@
           "method": "post",
           "path": "/v1/comments"
         },
+        "commentsControllerEdit": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/comments/{id}"
+        },
         "commentsControllerDeleteComment": {
           "auth": "user",
           "method": "get",

@@ -25,27 +25,61 @@ const formatDiagnostics = (diagnostics: readonly ts.Diagnostic[]): string =>
     })
     .join("\n");
 
-describe("@quranjs/api/public type surface", () => {
-  it("exports public session storage types", () => {
+describe("QuranReflect post type surface", () => {
+  it("types direct post payload helpers and the compatibility request shape", () => {
     const sourceFile = path.join(
       process.cwd(),
       "test",
-      "__public-entrypoint-types.ts",
+      "__quran-reflect-post-types.ts",
     );
     const source = `
-      import type { PublicClient, TokenStorage, UserSession } from "@quranjs/api/public";
+      import type {
+        CreateQuranReflectPostPayload,
+        QuranReflectPostMutationResponse,
+      } from "@quranjs/api";
+      import { createPublicClient } from "@quranjs/api/public";
+      import { createServerClient } from "@quranjs/api/server";
 
-      const storage: TokenStorage = {
-        getSession: async (): Promise<UserSession | null> => ({
-          accessToken: "access-token",
-        }),
-        setSession: async (_session: UserSession | null) => undefined,
-        clearSession: async () => undefined,
+      const payload: CreateQuranReflectPostPayload = {
+        body: "Reflection text",
+        draft: false,
+        mentions: [],
+        references: [{ chapterId: 1, from: 1, to: 1 }],
       };
-      const client: PublicClient | null = null;
+      const serverClient = createServerClient({
+        clientId: "client-id",
+        clientSecret: "client-secret",
+      });
+      const publicClient = createPublicClient({
+        clientId: "client-id",
+        clientType: "confidential-proxy",
+      });
 
-      void storage;
-      void client;
+      void serverClient.quranReflect.v1.posts.create(payload).then(
+        (response: QuranReflectPostMutationResponse) => response.data?.id,
+      );
+      void publicClient.quranReflect.v1.posts.create(payload);
+      void serverClient.quranReflect.v1.posts.create({
+        body: {
+          post: payload,
+        },
+      });
+      void serverClient.quranReflect.v1.posts.update(123, {
+        body: "Updated reflection",
+      });
+      void serverClient.quranReflect.v1.posts.get(123);
+
+      const invalidPayload: CreateQuranReflectPostPayload = {
+        body: "Invalid reflection",
+        draft: false,
+        mentions: [],
+        references: [
+          // @ts-expect-error - chapterId must be numeric.
+          { chapterId: "1", from: 1, to: 1 },
+        ],
+      };
+
+      void invalidPayload;
     `;
     const options: ts.CompilerOptions = {
       baseUrl: process.cwd(),
@@ -56,7 +90,9 @@ describe("@quranjs/api/public type surface", () => {
       noEmit: true,
       paths: {
         "@/*": ["src/*"],
+        "@quranjs/api": ["src/index.ts"],
         "@quranjs/api/public": ["src/public.ts"],
+        "@quranjs/api/server": ["src/server.ts"],
       },
       skipLibCheck: true,
       strict: true,

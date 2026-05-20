@@ -1,4 +1,4 @@
-import { AuthService } from "@/generated/public-contracts";
+import type { AuthService } from "@/generated/public-contracts";
 
 import type { ApiParams, BaseApiParams } from "./BaseApiParams";
 

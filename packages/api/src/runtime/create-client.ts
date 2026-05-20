@@ -20,6 +20,8 @@ import { operationCatalog } from "@/generated/contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
+import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
+import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
 import { QuranChapters } from "@/sdk/chapters";
@@ -36,7 +38,7 @@ type RawOperation = (request?: OperationRequest) => Promise<unknown>;
 type GeneratedGroup = Record<string, RawOperation>;
 type QuranReflectFacade = {
   comments: GeneratedGroup;
-  posts: GeneratedGroup;
+  posts: QuranReflectPostsFacade;
   raw: Record<string, RawOperation>;
   rooms: GeneratedGroup;
   tags: GeneratedGroup;
@@ -203,7 +205,10 @@ const createQuranReflectFacade = (
 
   return {
     comments: generatedGroups.comments ?? {},
-    posts: generatedGroups.posts ?? {},
+    posts: createQuranReflectPostsFacade(
+      generatedGroups.posts ?? {},
+      createUserServiceRequest(fetcher, "quranReflect"),
+    ),
     raw,
     rooms: generatedGroups.rooms ?? {},
     tags: generatedGroups.tags ?? {},

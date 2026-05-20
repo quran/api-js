@@ -1,17 +1,33 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import {
-  checkCatalogs,
-  generateCatalogs,
-} from "../../../scripts/generate-operation-catalogs.mjs";
+const testDir = path.dirname(fileURLToPath(import.meta.url));
 
 const writeJson = async (filePath, value) => {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
 };
+
+const loadCatalogModule = async () => {
+  const sourcePath = path.resolve(
+    testDir,
+    "../../../scripts/generate-operation-catalogs.mjs",
+  );
+  const source = await fs.readFile(sourcePath, "utf8");
+  const moduleDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), "quranjs-catalog-module-"),
+  );
+  const modulePath = path.join(moduleDir, "generate-operation-catalogs.mjs");
+
+  await fs.writeFile(modulePath, source.replace(/^#!.*(?:\r?\n|$)/, ""));
+
+  return import(pathToFileURL(modulePath).href);
+};
+
+const catalogModule = loadCatalogModule();
 
 const operation = (
   operationId,
@@ -28,6 +44,7 @@ const operation = (
 
 describe("operation catalog generator", () => {
   it("builds compact server and public catalogs from OpenAPI specs", async () => {
+    const { generateCatalogs } = await catalogModule;
     const sourceDir = await fs.mkdtemp(
       path.join(os.tmpdir(), "quranjs-openapi-"),
     );
@@ -170,6 +187,7 @@ describe("operation catalog generator", () => {
   });
 
   it("suffixes duplicate normalized operation names deterministically", async () => {
+    const { generateCatalogs } = await catalogModule;
     const sourceDir = await fs.mkdtemp(
       path.join(os.tmpdir(), "quranjs-openapi-"),
     );
@@ -211,6 +229,7 @@ describe("operation catalog generator", () => {
   });
 
   it("reports missing generated catalog files as out of date", async () => {
+    const { checkCatalogs } = await catalogModule;
     const outputDir = await fs.mkdtemp(
       path.join(os.tmpdir(), "quranjs-catalog-output-"),
     );

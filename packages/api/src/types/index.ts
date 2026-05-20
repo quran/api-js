@@ -125,3 +125,4 @@ export * from "./common/rub-number";
 export * from "./api";
 export * from "./BaseApiParams";
 export * from "./quran-client";
+export * from "./quran-reflect";

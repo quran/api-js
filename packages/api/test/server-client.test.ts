@@ -711,4 +711,154 @@ describe("createServerClient", () => {
       refreshToken: "refresh-token-1",
     });
   });
+
+  it("wraps direct Quran Reflect post create payloads", async () => {
+    let postBody: unknown;
+    let postToken: string | null = null;
+    let postClientId: string | null = null;
+
+    server.use(
+      http.post("http://localhost:3002/v1/posts", async ({ request }) => {
+        postBody = await request.json();
+        postToken = request.headers.get("x-auth-token");
+        postClientId = request.headers.get("x-client-id");
+
+        return HttpResponse.json({
+          success: true,
+          data: {
+            id: 123,
+            body: "Reflection from SDK",
+            draft: false,
+            references: [{ chapterId: 1, from: 1, to: 1 }],
+          },
+        });
+      }),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        quranReflectBaseUrl: "http://localhost:3002",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+    const payload = {
+      body: "Reflection from SDK",
+      draft: false,
+      mentions: [],
+      references: [{ chapterId: 1, from: 1, to: 1 }],
+    };
+
+    const response = await client.quranReflect.v1.posts.create(payload);
+
+    expect(postBody).toEqual({ post: payload });
+    expect(postToken).toBe("user-token");
+    expect(postClientId).toBe("client-id");
+    expect(response.data?.id).toBe(123);
+  });
+
+  it("keeps Quran Reflect generated create operation request compatibility", async () => {
+    const postBodies: unknown[] = [];
+
+    server.use(
+      http.post("http://localhost:3002/v1/posts", async ({ request }) => {
+        postBodies.push(await request.json());
+
+        return HttpResponse.json({
+          success: true,
+          data: {
+            id: 456,
+          },
+        });
+      }),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        quranReflectBaseUrl: "http://localhost:3002",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+    const payload = {
+      body: "Reflection from generated request shape",
+      draft: false,
+      mentions: [],
+      references: [{ chapterId: 2, from: 255, to: 255 }],
+    };
+
+    await client.quranReflect.v1.posts.create({
+      body: {
+        post: payload,
+      },
+    });
+
+    await client.quranReflect.v1.posts.create({
+      body: JSON.stringify({ post: payload }),
+      headers: {
+        "x-test": "raw-json-body",
+      },
+    });
+
+    expect(postBodies).toEqual([{ post: payload }, { post: payload }]);
+  });
+
+  it("wraps typed Quran Reflect post update and get helpers", async () => {
+    let updateBody: unknown;
+    let updateUrl: string | null = null;
+    let getUrl: string | null = null;
+
+    server.use(
+      http.patch("http://localhost:3002/v1/posts/123", async ({ request }) => {
+        updateUrl = request.url;
+        updateBody = await request.json();
+
+        return HttpResponse.json({
+          success: true,
+          data: {
+            id: 123,
+            body: "Updated reflection",
+          },
+        });
+      }),
+      http.get("http://localhost:3002/v1/posts/123", ({ request }) => {
+        getUrl = request.url;
+
+        return HttpResponse.json({
+          id: 123,
+          body: "Updated reflection",
+        });
+      }),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        quranReflectBaseUrl: "http://localhost:3002",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+
+    await client.quranReflect.v1.posts.update(123, {
+      body: "Updated reflection",
+    });
+    await client.quranReflect.v1.posts.get(123, { include: "references" });
+
+    expect(updateUrl).toBe("http://localhost:3002/v1/posts/123");
+    expect(updateBody).toEqual({
+      body: "Updated reflection",
+    });
+    expect(getUrl).toBe(
+      "http://localhost:3002/v1/posts/123?include=references",
+    );
+  });
 });
