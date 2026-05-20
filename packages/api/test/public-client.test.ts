@@ -295,4 +295,52 @@ describe("createPublicClient", () => {
     );
     expect(tokenRequests).toBe(0);
   });
+
+  it("wraps direct Quran Reflect post create payloads", async () => {
+    let postBody: unknown;
+    let postToken: string | null = null;
+    let postClientId: string | null = null;
+
+    server.use(
+      http.post("http://localhost:3002/v1/posts", async ({ request }) => {
+        postBody = await request.json();
+        postToken = request.headers.get("x-auth-token");
+        postClientId = request.headers.get("x-client-id");
+
+        return HttpResponse.json({
+          success: true,
+          data: {
+            id: 123,
+            body: "Reflection from public SDK",
+            draft: false,
+            references: [{ chapterId: 1, from: 1, to: 1 }],
+          },
+        });
+      }),
+    );
+
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      services: {
+        quranReflectBaseUrl: "http://localhost:3002",
+      },
+      userSession: {
+        accessToken: "user-access-token",
+      },
+    });
+    const payload = {
+      body: "Reflection from public SDK",
+      draft: false,
+      mentions: [],
+      references: [{ chapterId: 1, from: 1, to: 1 }],
+    };
+
+    const response = await client.quranReflect.v1.posts.create(payload);
+
+    expect(postBody).toEqual({ post: payload });
+    expect(postToken).toBe("user-access-token");
+    expect(postClientId).toBe("client-id");
+    expect(response.data?.id).toBe(123);
+  });
 });
