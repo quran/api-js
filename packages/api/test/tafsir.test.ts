@@ -47,6 +47,27 @@ describe("Tafsir API", () => {
     });
   });
 
+  describe("findByRub()", () => {
+    it("should return tafsirs for a rub", async () => {
+      const response = await testClient.tafsir.findByRub(RESOURCE_ID, "1");
+      expect(response.tafsirs).toBeInstanceOf(Array);
+    });
+
+    it("should throw for invalid rub number", async () => {
+      await expect(
+        // @ts-expect-error - invalid rub number
+        testClient.tafsir.findByRub(RESOURCE_ID, "0"),
+      ).rejects.toThrowError();
+    });
+  });
+
+  describe("findByRubElHizb()", () => {
+    it("should return tafsirs for a rub el hizb", async () => {
+      const response = await testClient.tafsir.findByRubElHizb(RESOURCE_ID, "1");
+      expect(response.tafsirs).toBeInstanceOf(Array);
+    });
+  });
+
   describe("findByAyah()", () => {
     it("should return tafsirs for an ayah", async () => {
       const response = await testClient.tafsir.findByAyah(RESOURCE_ID, "1:1");

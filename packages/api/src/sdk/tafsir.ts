@@ -5,6 +5,7 @@ import type {
   JuzNumber,
   PageNumber,
   QuranFetchClient,
+  RubNumber,
   TafsirResponse,
   VerseKey,
 } from "@/types";
@@ -13,10 +14,12 @@ import {
   isValidHizb,
   isValidJuz,
   isValidQuranPage,
+  isValidRub,
   isValidVerseKey,
 } from "@/utils";
 
 type GetTafsirOptions = BaseApiParams & {
+  chapterNumber?: ChapterId;
   fields?: string;
   page?: number;
   perPage?: number;
@@ -105,9 +108,11 @@ export class QuranTafsir {
    */
   async findByRubElHizb(
     resourceId: string | number,
-    rubElHizbNumber: number | string,
+    rubElHizbNumber: RubNumber,
     options?: GetTafsirOptions,
   ): Promise<TafsirResponse> {
+    if (!isValidRub(rubElHizbNumber)) throw new Error("Invalid rub number");
+
     return this.fetcher.fetch<TafsirResponse>(
       `/content/api/v4/tafsirs/${resourceId}/by_rub_el_hizb/${rubElHizbNumber}`,
       options,
@@ -119,9 +124,11 @@ export class QuranTafsir {
    */
   async findByRub(
     resourceId: string | number,
-    rubNumber: number | string,
+    rubNumber: RubNumber,
     options?: GetTafsirOptions,
   ): Promise<TafsirResponse> {
+    if (!isValidRub(rubNumber)) throw new Error("Invalid rub number");
+
     return this.fetcher.fetch<TafsirResponse>(
       `/content/api/v4/tafsirs/${resourceId}/by_rub/${rubNumber}`,
       options,

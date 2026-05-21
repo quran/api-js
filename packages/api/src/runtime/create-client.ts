@@ -426,9 +426,9 @@ const createContentFacade = (
         tafsir.findByManzil(resourceId, manzilNumber, query),
       byPage: (resourceId: string | number, page: PageNumber, query?: ApiParams) =>
         tafsir.findByPage(resourceId, page, query),
-      byRub: (resourceId: string | number, rubNumber: number | string, query?: ApiParams) =>
+      byRub: (resourceId: string | number, rubNumber: RubNumber, query?: ApiParams) =>
         tafsir.findByRub(resourceId, rubNumber, query),
-      byRubElHizb: (resourceId: string | number, rubElHizbNumber: number | string, query?: ApiParams) =>
+      byRubElHizb: (resourceId: string | number, rubElHizbNumber: RubNumber, query?: ApiParams) =>
         tafsir.findByRubElHizb(resourceId, rubElHizbNumber, query),
       byRuku: (resourceId: string | number, rukuNumber: number | string, query?: ApiParams) =>
         tafsir.findByRuku(resourceId, rukuNumber, query),

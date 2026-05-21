@@ -9,7 +9,7 @@ export interface TafsirMeta {
 export interface TafsirResponse {
   tafsirs: Tafsir[];
   meta?: TafsirMeta;
-  pagination?: Pagination & {
+  pagination?: Omit<Pagination, "nextPage"> & {
     nextPage: number | null;
   };
 }
