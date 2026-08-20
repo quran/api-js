@@ -31,6 +31,8 @@ for (const mutation of page.sync.mutations) {
 
 If `page.sync.hasMore` is true, fetch `page.sync.nextPageUrl` through your backend or call `sync` again with the cursor from that URL. Store `page.sync.nextSyncToken` from the final bootstrap page.
 
+Sync tokens are bound to the canonical resource filter. Use the same `resources` value for bootstrap and incremental requests.
+
 ### Poll Incremental Changes
 
 ```ts
@@ -51,6 +53,38 @@ for (const mutation of changes.sync.mutations) {
 ```
 
 Use `client.content.v4.resources.sync(...)` and `client.content.v4.resources.findSnapshot(...)` when working through the namespaced v4 client.
+
+### Sync Word-by-Word Translations
+
+Use the resource content ID with the `word_by_word_translations` group. Only approved, shareable, translation-only one-word resources are available; transliterations are excluded.
+
+```ts
+import type { WordByWordTranslationSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "word_by_word_translations:85",
+});
+
+const snapshot =
+  await client.resources.findSnapshot<WordByWordTranslationSnapshotRecord>(
+    "word_by_word_translations",
+    85,
+  );
+
+for (const record of snapshot.records) {
+  console.log(record.wordId, record.text);
+}
+```
+
+Snapshot records are returned in canonical `wordId`, `priority`, and `id` order. The SDK camel-cases their response fields.
+
+### WordByWordTranslationSnapshotRecord Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="WordByWordTranslationSnapshotRecord"
+/>
 
 ### ContentSyncResponse Type
 

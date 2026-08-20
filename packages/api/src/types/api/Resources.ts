@@ -85,7 +85,21 @@ export type ContentSyncResourceGroup =
   | "articles"
   | "recitations"
   | "tafsirs"
-  | "translations";
+  | "translations"
+  | "word_by_word_translations";
+
+export interface WordByWordTranslationSnapshotRecord
+  extends Record<string, unknown> {
+  id: number;
+  resourceContentId: number;
+  resourceId: number;
+  wordId: number;
+  languageId: number;
+  languageName: string | null;
+  text: string | null;
+  priority: number | null;
+  updatedAt: string;
+}
 
 export type ContentSyncMutationType =
   | "RESOURCE_CREATE"
@@ -97,7 +111,7 @@ export type ContentSyncMutationType =
   | "RESOURCE_INVALIDATE";
 
 export interface ContentSyncOptions extends ApiParams {
-  /** Resource filter, e.g. `articles:*;translations:1,6`. */
+  /** Resource filter, e.g. `articles:*;translations:1,6;word_by_word_translations:85`. */
   resources?: string;
   /** Set to true for the initial sync. */
   bootstrap?: boolean;

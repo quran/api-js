@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
+import type { WordByWordTranslationSnapshotRecord } from "../src/types";
 import { server } from "../mocks/server";
 import { testClient } from "./test-client";
 
@@ -206,6 +207,64 @@ describe("Resources API", () => {
   });
 
   describe("findSnapshot()", () => {
+    it("returns camel-cased word-by-word translation records", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/snapshots/word_by_word_translations/:id",
+          ({ request, params }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              resource_group: "word_by_word_translations",
+              resource_id: Number(params.id),
+              resource_content_id: Number(params.id),
+              schema_version: 1,
+              sync_sequence: 98101,
+              records: [
+                {
+                  id: 1,
+                  resource_content_id: 85,
+                  resource_id: 85,
+                  word_id: 1,
+                  language_id: 38,
+                  language_name: "english",
+                  text: "In",
+                  priority: 1,
+                  updated_at: "2026-08-19T02:43:00Z",
+                },
+              ],
+            });
+          },
+        ),
+      );
+
+      const snapshot =
+        await testClient.resources.findSnapshot<WordByWordTranslationSnapshotRecord>(
+          "word_by_word_translations",
+          85,
+        );
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.pathname).toBe(
+        "/content/api/v4/resources/snapshots/word_by_word_translations/85",
+      );
+      expect(snapshot.resourceGroup).toBe("word_by_word_translations");
+      expect(snapshot.records).toEqual([
+        {
+          id: 1,
+          resourceContentId: 85,
+          resourceId: 85,
+          wordId: 1,
+          languageId: 38,
+          languageName: "english",
+          text: "In",
+          priority: 1,
+          updatedAt: "2026-08-19T02:43:00Z",
+        },
+      ]);
+    });
+
     it("serializes snapshot path params", async () => {
       let requestUrl: URL | null = null;
 
