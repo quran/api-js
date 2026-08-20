@@ -26,7 +26,7 @@ const formatDiagnostics = (diagnostics: readonly ts.Diagnostic[]): string =>
     .join("\n");
 
 describe("@quranjs/api/public type surface", () => {
-  it("exports public session storage types", () => {
+  it("exports public session and content sync types", () => {
     const sourceFile = path.join(
       process.cwd(),
       "test",
@@ -34,6 +34,10 @@ describe("@quranjs/api/public type surface", () => {
     );
     const source = `
       import type { PublicClient, TokenStorage, UserSession } from "@quranjs/api/public";
+      import type {
+        ContentSyncResourceGroup,
+        WordByWordTranslationSnapshotRecord,
+      } from "@quranjs/api";
 
       const storage: TokenStorage = {
         getSession: async (): Promise<UserSession | null> => ({
@@ -43,9 +47,31 @@ describe("@quranjs/api/public type surface", () => {
         clearSession: async () => undefined,
       };
       const client: PublicClient | null = null;
+      const resourceGroup: ContentSyncResourceGroup = "word_by_word_translations";
+      const record: WordByWordTranslationSnapshotRecord = {
+        id: 1,
+        resourceContentId: 85,
+        resourceId: 85,
+        wordId: 1,
+        languageId: 38,
+        languageName: "english",
+        text: "In",
+        priority: 1,
+        updatedAt: "2026-08-19T02:43:00Z",
+      };
+      const genericRecord: Record<string, unknown> = record;
+      const nullableRecord: WordByWordTranslationSnapshotRecord = {
+        ...record,
+        languageName: null,
+        text: null,
+        priority: null,
+      };
 
       void storage;
       void client;
+      void resourceGroup;
+      void genericRecord;
+      void nullableRecord;
     `;
     const options: ts.CompilerOptions = {
       baseUrl: process.cwd(),
@@ -56,6 +82,7 @@ describe("@quranjs/api/public type surface", () => {
       noEmit: true,
       paths: {
         "@/*": ["src/*"],
+        "@quranjs/api": ["src/index.ts"],
         "@quranjs/api/public": ["src/public.ts"],
       },
       skipLibCheck: true,
@@ -72,7 +99,12 @@ describe("@quranjs/api/public type surface", () => {
       fileExists: (filePath) =>
         normalize(filePath) === normalizedSourceFile ||
         baseHost.fileExists(filePath),
-      getSourceFile: (filePath, languageVersion, onError, shouldCreateNewFile) =>
+      getSourceFile: (
+        filePath,
+        languageVersion,
+        onError,
+        shouldCreateNewFile,
+      ) =>
         normalize(filePath) === normalizedSourceFile
           ? ts.createSourceFile(filePath, source, languageVersion, true)
           : baseHost.getSourceFile(
