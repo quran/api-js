@@ -220,6 +220,11 @@
           "method": "post",
           "path": "/oauth2/introspect"
         },
+        "revokeOauth2Token": {
+          "auth": "none",
+          "method": "post",
+          "path": "/oauth2/revoke"
+        },
         "oAuth2Authorize": {
           "auth": "none",
           "method": "get",
@@ -428,6 +433,11 @@
           "method": "get",
           "path": "/v1/posts/{postId}/related"
         },
+        "postsControllerGetReReflections": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/{postId}/re-reflections"
+        },
         "postsControllerGetLoggedinUserPosts": {
           "auth": "user",
           "method": "get",
@@ -455,8 +465,13 @@
         },
         "postsControllerViewTracking": {
           "auth": "user",
-          "method": "get",
+          "method": "post",
           "path": "/v1/posts/viewed/{id}"
+        },
+        "postsControllerReadTracking": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/read/{id}"
         },
         "postsControllerCreate": {
           "auth": "user",
@@ -503,6 +518,11 @@
           "method": "get",
           "path": "/v1/posts/count-within-range"
         },
+        "postsControllerGetPublicPostCountByVerse": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/count-by-verse/{verseId}"
+        },
         "postsControllerGetMyPostsByVerse": {
           "auth": "user",
           "method": "get",
@@ -537,6 +557,11 @@
           "auth": "user",
           "method": "get",
           "path": "/v1/comments/{id}/replies"
+        },
+        "trendingHashtagsControllerFind": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/trending-hashtags"
         }
       },
       "service": "quranReflect",
