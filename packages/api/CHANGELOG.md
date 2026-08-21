@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.4.1
+
+### Patch Changes
+
+- f645635: Add typed content sync support for word-by-word translation resources.
+
 ## 3.4.0
 
 ### Minor Changes
