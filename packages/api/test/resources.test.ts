@@ -1,7 +1,10 @@
 import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
-import type { WordByWordTranslationSnapshotRecord } from "../src/types";
+import type {
+  MushafSnapshotRecord,
+  WordByWordTranslationSnapshotRecord,
+} from "../src/types";
 import { server } from "../mocks/server";
 import { testClient } from "./test-client";
 
@@ -207,6 +210,120 @@ describe("Resources API", () => {
   });
 
   describe("findSnapshot()", () => {
+    it("returns typed camel-cased Mushaf records", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/snapshots/mushafs/:id",
+          ({ request, params }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              resource_group: "mushafs",
+              resource_id: Number(params.id),
+              resource_content_id: 382,
+              schema_version: 1,
+              sync_sequence: 98102,
+              records: [
+                {
+                  record_type: "mushaf",
+                  id: 1,
+                  resource_content_id: 382,
+                  name: "QCF V2",
+                  description: null,
+                  pages_count: 604,
+                  lines_per_page: 15,
+                  default_font_name: "v2",
+                  mapping_mode: "reference",
+                  qirat: { id: 1, name: "Hafs" },
+                },
+                {
+                  record_type: "mushaf_page",
+                  id: 10,
+                  mushaf_id: 1,
+                  page_number: 1,
+                  first_verse_id: 1,
+                  last_verse_id: 7,
+                  first_word_id: 1,
+                  last_word_id: 29,
+                  verses_count: 7,
+                  verse_mapping: { "1": "1:1" },
+                  updated_at: "2026-08-19T02:43:00Z",
+                },
+                {
+                  record_type: "font_asset",
+                  id: 20,
+                  asset_key: "page-001",
+                  mushaf_id: 1,
+                  page_number: 1,
+                  font_family: "QCF_P001",
+                  format: "woff2",
+                  mime_type: "font/woff2",
+                  url: "https://verses.quran.foundation/fonts/qcf-v2/p1.woff2",
+                  sha256:
+                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  byte_size: 1234,
+                  version: "1",
+                  provider: "Quran Foundation",
+                  license_name: "Quran Foundation Font License",
+                  license_url: null,
+                  attribution: null,
+                  updated_at: "2026-08-19T02:43:00Z",
+                },
+                {
+                  record_type: "mushaf_word",
+                  id: 30,
+                  mushaf_id: 1,
+                  word_id: 1,
+                  verse_id: 1,
+                  source_verse_id: 1,
+                  text: "ﱁ",
+                  char_type_id: 1,
+                  char_type_name: "word",
+                  page_number: 1,
+                  line_number: 1,
+                  position_in_verse: 1,
+                  position_in_line: 1,
+                  position_in_page: 1,
+                  css_class: null,
+                  css_style: null,
+                },
+              ],
+            });
+          },
+        ),
+      );
+
+      const snapshot =
+        await testClient.resources.findSnapshot<MushafSnapshotRecord>(
+          "mushafs",
+          1,
+        );
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.pathname).toBe(
+        "/content/api/v4/resources/snapshots/mushafs/1",
+      );
+      expect(snapshot.resourceGroup).toBe("mushafs");
+      expect(snapshot.records[0]).toMatchObject({
+        recordType: "mushaf",
+        resourceContentId: 382,
+        defaultFontName: "v2",
+        mappingMode: "reference",
+      });
+      expect(snapshot.records[2]).toMatchObject({
+        recordType: "font_asset",
+        assetKey: "page-001",
+        mimeType: "font/woff2",
+        byteSize: 1234,
+      });
+      expect(snapshot.records[3]).toMatchObject({
+        recordType: "mushaf_word",
+        sourceVerseId: 1,
+        positionInPage: 1,
+      });
+    });
+
     it("returns camel-cased word-by-word translation records", async () => {
       let requestUrl: URL | null = null;
 

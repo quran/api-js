@@ -83,10 +83,83 @@ export interface ChapterReciterResource {
 
 export type ContentSyncResourceGroup =
   | "articles"
+  | "mushafs"
   | "recitations"
   | "tafsirs"
   | "translations"
   | "word_by_word_translations";
+
+export interface MushafMetadataSnapshotRecord extends Record<string, unknown> {
+  recordType: "mushaf";
+  id: number;
+  resourceContentId: number;
+  name: string;
+  description: string | null;
+  pagesCount: number;
+  linesPerPage: number;
+  defaultFontName: string;
+  mappingMode: string;
+  qirat: { id: number; name: string } | null;
+}
+
+export interface MushafPageSnapshotRecord extends Record<string, unknown> {
+  recordType: "mushaf_page";
+  id: number;
+  mushafId: number;
+  pageNumber: number;
+  firstVerseId: number | null;
+  lastVerseId: number | null;
+  firstWordId: number | null;
+  lastWordId: number | null;
+  versesCount: number | null;
+  verseMapping: Record<string, unknown> | null;
+  updatedAt: string;
+}
+
+export interface MushafFontAssetSnapshotRecord extends Record<string, unknown> {
+  recordType: "font_asset";
+  id: number;
+  assetKey: string;
+  mushafId: number;
+  pageNumber: number | null;
+  fontFamily: string;
+  format: string;
+  mimeType: string;
+  url: string;
+  sha256: string;
+  byteSize: number;
+  version: string;
+  provider: string;
+  licenseName: string;
+  licenseUrl: string | null;
+  attribution: string | null;
+  updatedAt: string;
+}
+
+export interface MushafWordSnapshotRecord extends Record<string, unknown> {
+  recordType: "mushaf_word";
+  id: number;
+  mushafId: number;
+  wordId: number;
+  verseId: number;
+  sourceVerseId: number | null;
+  text: string | null;
+  charTypeId: number | null;
+  charTypeName: string | null;
+  pageNumber: number | null;
+  lineNumber: number | null;
+  positionInVerse: number | null;
+  positionInLine: number | null;
+  positionInPage: number | null;
+  cssClass: string | null;
+  cssStyle: string | null;
+}
+
+export type MushafSnapshotRecord =
+  | MushafMetadataSnapshotRecord
+  | MushafPageSnapshotRecord
+  | MushafFontAssetSnapshotRecord
+  | MushafWordSnapshotRecord;
 
 export interface WordByWordTranslationSnapshotRecord
   extends Record<string, unknown> {
@@ -111,7 +184,7 @@ export type ContentSyncMutationType =
   | "RESOURCE_INVALIDATE";
 
 export interface ContentSyncOptions extends ApiParams {
-  /** Resource filter, e.g. `articles:*;translations:1,6;word_by_word_translations:85`. */
+  /** Resource filter, e.g. `articles:*;mushafs:1;translations:1,6;word_by_word_translations:85`. */
   resources?: string;
   /** Set to true for the initial sync. */
   bootstrap?: boolean;

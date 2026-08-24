@@ -14,7 +14,7 @@ Use content sync when your app needs to cache public resources locally and keep 
 ```ts
 const page = await client.resources.sync({
   bootstrap: true,
-  resources: "articles:*;tafsirs:151;translations:1,6",
+  resources: "articles:*;mushafs:1;tafsirs:151;translations:1,6",
   perPage: 100,
 });
 
@@ -37,7 +37,7 @@ Sync tokens are bound to the canonical resource filter. Use the same `resources`
 
 ```ts
 const changes = await client.resources.sync({
-  resources: "articles:*;tafsirs:151;translations:1,6",
+  resources: "articles:*;mushafs:1;tafsirs:151;translations:1,6",
   syncToken: savedSyncToken,
 });
 
@@ -53,6 +53,38 @@ for (const mutation of changes.sync.mutations) {
 ```
 
 Use `client.content.v4.resources.sync(...)` and `client.content.v4.resources.findSnapshot(...)` when working through the namespaced v4 client.
+
+### Sync Mushafs for Offline Use
+
+Use the Mushaf ID with the `mushafs` group. Snapshots contain Mushaf metadata,
+page mappings, publicly distributable font assets, and positioned word records.
+
+```ts
+import type { MushafSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "mushafs:1",
+});
+
+const snapshot = await client.resources.findSnapshot<MushafSnapshotRecord>(
+  "mushafs",
+  1,
+);
+
+for (const record of snapshot.records) {
+  if (record.recordType === "font_asset") {
+    console.log(record.fontFamily, record.url, record.sha256);
+  }
+}
+```
+
+### MushafSnapshotRecord Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="MushafSnapshotRecord"
+/>
 
 ### Sync Word-by-Word Translations
 
