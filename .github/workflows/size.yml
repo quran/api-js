@@ -12,17 +12,25 @@ env:
   FORCE_COLOR: 3
   HUSKY: 0
 
+permissions:
+  contents: read
+
 jobs:
   size:
     name: 📦 Size
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       CI_JOB_NUMBER: 1
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: ./.github/setup
-      - uses: andresz1/size-limit-action@v1.8.0
+      - uses: andresz1/size-limit-action@94bc357df29c36c8f8d50ea497c3e225c3c95d1d # v1.8.0
         with:
           directory: packages/api/
           skip_step: install
