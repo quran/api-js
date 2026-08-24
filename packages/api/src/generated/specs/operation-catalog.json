@@ -1041,6 +1041,11 @@
           "method": "get",
           "path": "/v1/comments/{id}/replies"
         },
+        "exploreControllerFind": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/explore"
+        },
         "trendingHashtagsControllerFind": {
           "auth": "user",
           "method": "get",
