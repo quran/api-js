@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.5.0
+
+### Minor Changes
+
+- 0d41742: Add typed Mushaf resources and snapshot records to Content Sync.
+
 ## 3.4.1
 
 ### Patch Changes
