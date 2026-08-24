@@ -80,6 +80,28 @@ For complete documentation, guides, and API reference, visit:
 - 🎧 Audio recitations
 - 🌍 Multiple verified translations and languages
 
+## Content Sync
+
+Bootstrap an approved public Mushaf, download its snapshot for offline use, and
+then poll the same resource filter for incremental changes:
+
+```ts
+import type { MushafSnapshotRecord } from "@quranjs/api";
+
+const changes = await client.resources.sync({
+  bootstrap: true,
+  resources: "mushafs:1",
+});
+const snapshot = await client.resources.findSnapshot<MushafSnapshotRecord>(
+  "mushafs",
+  1,
+);
+```
+
+Mushaf snapshots include layout metadata, pages, publicly distributable font
+assets, and words. Store the final `nextSyncToken` and use it with the same
+`resources` filter on subsequent sync calls.
+
 ## Links
 
 - [Quran Foundation](https://quran.foundation) — Our mission to make the Quran accessible to everyone

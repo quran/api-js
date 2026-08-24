@@ -36,6 +36,11 @@ describe("@quranjs/api/public type surface", () => {
       import type { PublicClient, TokenStorage, UserSession } from "@quranjs/api/public";
       import type {
         ContentSyncResourceGroup,
+        MushafFontAssetSnapshotRecord,
+        MushafMetadataSnapshotRecord,
+        MushafPageSnapshotRecord,
+        MushafSnapshotRecord,
+        MushafWordSnapshotRecord,
         WordByWordTranslationSnapshotRecord,
       } from "@quranjs/api";
 
@@ -48,6 +53,7 @@ describe("@quranjs/api/public type surface", () => {
       };
       const client: PublicClient | null = null;
       const resourceGroup: ContentSyncResourceGroup = "word_by_word_translations";
+      const mushafResourceGroup: ContentSyncResourceGroup = "mushafs";
       const record: WordByWordTranslationSnapshotRecord = {
         id: 1,
         resourceContentId: 85,
@@ -66,12 +72,83 @@ describe("@quranjs/api/public type surface", () => {
         text: null,
         priority: null,
       };
+      const mushafMetadata: MushafMetadataSnapshotRecord = {
+        recordType: "mushaf",
+        id: 1,
+        resourceContentId: 382,
+        name: "QCF V2",
+        description: null,
+        pagesCount: 604,
+        linesPerPage: 15,
+        defaultFontName: "v2",
+        mappingMode: "reference",
+        qirat: { id: 1, name: "Hafs" },
+      };
+      const mushafPage: MushafPageSnapshotRecord = {
+        recordType: "mushaf_page",
+        id: 10,
+        mushafId: 1,
+        pageNumber: 1,
+        firstVerseId: 1,
+        lastVerseId: 7,
+        firstWordId: 1,
+        lastWordId: 29,
+        versesCount: 7,
+        verseMapping: { "1": "1:1" },
+        updatedAt: "2026-08-19T02:43:00Z",
+      };
+      const fontAsset: MushafFontAssetSnapshotRecord = {
+        recordType: "font_asset",
+        id: 20,
+        assetKey: "page-001",
+        mushafId: 1,
+        pageNumber: 1,
+        fontFamily: "QCF_P001",
+        format: "woff2",
+        mimeType: "font/woff2",
+        url: "https://verses.quran.foundation/fonts/qcf-v2/p1.woff2",
+        sha256:
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        byteSize: 1234,
+        version: "1",
+        provider: "Quran Foundation",
+        licenseName: "Quran Foundation Font License",
+        licenseUrl: null,
+        attribution: null,
+        updatedAt: "2026-08-19T02:43:00Z",
+      };
+      const mushafWord: MushafWordSnapshotRecord = {
+        recordType: "mushaf_word",
+        id: 30,
+        mushafId: 1,
+        wordId: 1,
+        verseId: 1,
+        sourceVerseId: 1,
+        text: "ﱁ",
+        charTypeId: 1,
+        charTypeName: "word",
+        pageNumber: 1,
+        lineNumber: 1,
+        positionInVerse: 1,
+        positionInLine: 1,
+        positionInPage: 1,
+        cssClass: null,
+        cssStyle: null,
+      };
+      const mushafRecords: MushafSnapshotRecord[] = [
+        mushafMetadata,
+        mushafPage,
+        fontAsset,
+        mushafWord,
+      ];
 
       void storage;
       void client;
       void resourceGroup;
+      void mushafResourceGroup;
       void genericRecord;
       void nullableRecord;
+      void mushafRecords;
     `;
     const options: ts.CompilerOptions = {
       baseUrl: process.cwd(),

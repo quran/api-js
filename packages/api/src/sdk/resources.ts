@@ -215,7 +215,7 @@ export class QuranResources {
    * @example
    * client.resources.sync({
    *   bootstrap: true,
-   *   resources: "translations:19;word_by_word_translations:85"
+   *   resources: "mushafs:1;translations:19;word_by_word_translations:85"
    * })
    */
   async sync<TData extends Record<string, unknown> = Record<string, unknown>>(
@@ -233,7 +233,7 @@ export class QuranResources {
    * @param {string | number} id
    * @param {ContentResourceSnapshotOptions} options
    * @example
-   * client.resources.findSnapshot("word_by_word_translations", 85)
+   * client.resources.findSnapshot("mushafs", 1)
    */
   async findSnapshot<
     TRecord extends Record<string, unknown> = Record<string, unknown>,
