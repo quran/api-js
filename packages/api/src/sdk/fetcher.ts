@@ -34,6 +34,7 @@ const { camelizeKeys } = humps;
 type RuntimeClientConfig = PublicClientConfig | ServerClientConfig;
 
 const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
+  analytics: "analytics.events.write",
   content: "content",
   search: "search",
 };
@@ -43,6 +44,7 @@ const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
   "/all-comments",
 ] as const;
 const GATEWAY_SERVICES = [
+  "analytics",
   "auth",
   "content",
   "quranReflect",
@@ -659,15 +661,17 @@ export class QuranFetcher {
     }
 
     const directBaseUrl =
-      service === "content"
-        ? services?.contentBaseUrl
-        : service === "search"
-          ? services?.searchBaseUrl
-          : service === "auth"
-            ? services?.authBaseUrl
-            : service === "quranReflect"
-              ? services?.quranReflectBaseUrl
-              : (services?.oauth2BaseUrl ?? services?.tokenHost);
+      service === "analytics"
+        ? services?.analyticsBaseUrl
+        : service === "content"
+          ? services?.contentBaseUrl
+          : service === "search"
+            ? services?.searchBaseUrl
+            : service === "auth"
+              ? services?.authBaseUrl
+              : service === "quranReflect"
+                ? services?.quranReflectBaseUrl
+                : (services?.oauth2BaseUrl ?? services?.tokenHost);
 
     if (directBaseUrl) {
       return {

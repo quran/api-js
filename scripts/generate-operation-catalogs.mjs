@@ -18,6 +18,11 @@ const defaultOutputDir = path.join(
 );
 
 const inputSpecs = {
+  analytics: {
+    file: "analytics/v1.json",
+    service: "analytics",
+    version: "v1",
+  },
   content: {
     file: "content/v4.json",
     service: "content",
@@ -46,6 +51,7 @@ const createSection = (service, version) => ({
 });
 
 const createOperationCatalog = () => ({
+  analytics: { v1: createSection("analytics", "v1") },
   auth: { v1: createSection("auth", "v1") },
   content: { v4: createSection("content", "v4") },
   oauth2: { v1: createSection("oauth2", "v1") },
@@ -111,7 +117,7 @@ const ensureLeadingSlash = (value) =>
   value.startsWith("/") ? value : `/${value}`;
 
 const normalizePathTemplate = (route) => {
-  return route.replace(/:([A-Za-z_][\w]*)/g, "{$1}");
+  return route.replace(/(^|\/)\:([A-Za-z_][\w]*)/g, "$1{$2}");
 };
 
 const stripPrefix = (route, prefix, replacement = "") => {
@@ -231,6 +237,7 @@ const readSpecs = async ({
     : (relativePath) => readJsonFromSourceUrl(sourceUrl, relativePath);
 
   return {
+    analytics: await readJson(inputSpecs.analytics.file),
     content: await readJson(inputSpecs.content.file),
     oauth2: await readJson(inputSpecs.oauth2.file),
     search: await readJson(inputSpecs.search.file),
@@ -349,6 +356,13 @@ export const generateCatalogs = async (options = {}) => {
   const operationCatalog = createOperationCatalog();
   const publicOperationCatalog = createPublicOperationCatalog();
 
+  addSpecOperations({
+    auth: "app",
+    catalog: operationCatalog,
+    service: inputSpecs.analytics.service,
+    spec: specs.analytics,
+    version: inputSpecs.analytics.version,
+  });
   addSpecOperations({
     auth: "app",
     catalog: operationCatalog,

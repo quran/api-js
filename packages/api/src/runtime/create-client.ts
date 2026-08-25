@@ -1,4 +1,5 @@
 import type { AuthService } from "@/generated/public-contracts";
+import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import type {
   ApiParams,
   ChapterId,
@@ -20,8 +21,8 @@ import { operationCatalog } from "@/generated/contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
+import { createAnalyticsFacade } from "@/runtime/analytics";
 import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
-import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
 import { QuranChapters } from "@/sdk/chapters";
@@ -480,6 +481,9 @@ export const createRuntimeClient = (
   const searchClient = new QuranSearch(fetcher);
 
   const raw = {
+    analytics: {
+      v1: createRawClient(fetcher, operationCatalog.analytics.v1),
+    },
     auth: {
       v1: createRawClient(fetcher, operationCatalog.auth.v1),
     },
@@ -507,6 +511,7 @@ export const createRuntimeClient = (
     resources,
     raw.content.v4,
   );
+  const analyticsV1 = createAnalyticsFacade(raw.analytics.v1);
   const authV1 = createAuthFacade(fetcher);
   const quranReflectV1 = createQuranReflectFacade(fetcher);
   const oauth2V1 = createOAuth2Facade(fetcher, mode, config);
@@ -528,6 +533,10 @@ export const createRuntimeClient = (
   });
 
   return {
+    analytics: {
+      ...analyticsV1,
+      v1: analyticsV1,
+    },
     answers,
     audio,
     auth: {

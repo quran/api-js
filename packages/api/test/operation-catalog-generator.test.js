@@ -49,6 +49,18 @@ describe("operation catalog generator", () => {
       path.join(os.tmpdir(), "quranjs-openapi-"),
     );
 
+    await writeJson(path.join(sourceDir, "analytics", "v1.json"), {
+      paths: {
+        "/v1/events:batch": {
+          post: {
+            operationId: "submit_analytics_events",
+            security: [{ "x-auth-token": [] }],
+            tags: ["Analytics Events"],
+          },
+        },
+      },
+      servers: [{ url: "https://apis.quran.foundation/analytics" }],
+    });
     await writeJson(path.join(sourceDir, "content", "v4.json"), {
       paths: {
         "/chapters/{id}": operation("GET-chapter"),
@@ -92,6 +104,19 @@ describe("operation catalog generator", () => {
     const catalogs = await generateCatalogs({ sourceDir });
 
     expect(catalogs.operationCatalog).toMatchObject({
+      analytics: {
+        v1: {
+          operations: {
+            submitAnalyticsEvents: {
+              auth: "app",
+              method: "post",
+              path: "/v1/events:batch",
+            },
+          },
+          service: "analytics",
+          version: "v1",
+        },
+      },
       auth: {
         v1: {
           operations: {
@@ -192,6 +217,9 @@ describe("operation catalog generator", () => {
       path.join(os.tmpdir(), "quranjs-openapi-"),
     );
 
+    await writeJson(path.join(sourceDir, "analytics", "v1.json"), {
+      paths: {},
+    });
     await writeJson(path.join(sourceDir, "content", "v4.json"), {
       paths: {},
     });
