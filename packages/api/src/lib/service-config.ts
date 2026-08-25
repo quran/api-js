@@ -1,6 +1,7 @@
 export const API_BASE_URL = "https://apis.quran.foundation";
 
 export const DEFAULT_BASE_URLS = {
+  analytics: "https://apis.quran.foundation/analytics",
   auth: "https://apis.quran.foundation/auth",
   content: "https://apis.quran.foundation/content",
   oauth2: "https://oauth2.quran.foundation",
@@ -9,6 +10,7 @@ export const DEFAULT_BASE_URLS = {
 } as const;
 
 export const DIRECT_PATH_PREFIX = {
+  analytics: "/v1",
   auth: "/v1",
   content: "/api/v4",
   oauth2: "",
@@ -17,6 +19,7 @@ export const DIRECT_PATH_PREFIX = {
 } as const;
 
 export const GATEWAY_PATH_PREFIX = {
+  analytics: "/analytics/v1",
   auth: "/auth/v1",
   content: "/content/api/v4",
   oauth2: "",
@@ -25,6 +28,7 @@ export const GATEWAY_PATH_PREFIX = {
 } as const;
 
 export const LEGACY_PREFIXES = {
+  analytics: ["/analytics/v1", "/v1"] as const,
   auth: ["/auth/v1", "/v1"] as const,
   content: ["/content/api/v4", "/api/v4"] as const,
   oauth2: [] as const,

@@ -15,12 +15,18 @@ export interface QuranFetchClient {
   fetch<T = unknown>(url: string, params?: ApiParams): Promise<T>;
 }
 
-export type ApiService = "content" | "search" | AuthService | "oauth2";
+export type ApiService =
+  | "analytics"
+  | "content"
+  | "search"
+  | AuthService
+  | "oauth2";
 
 export interface ServiceEnvironmentConfig {
   gatewayUrl?: string;
   tokenHost?: string;
   oauth2BaseUrl?: string;
+  analyticsBaseUrl?: string;
   contentBaseUrl?: string;
   searchBaseUrl?: string;
   authBaseUrl?: string;

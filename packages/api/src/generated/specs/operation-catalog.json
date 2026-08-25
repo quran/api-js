@@ -1,4 +1,17 @@
 {
+  "analytics": {
+    "v1": {
+      "operations": {
+        "submitAnalyticsEvents": {
+          "auth": "app",
+          "method": "post",
+          "path": "/v1/events:batch"
+        }
+      },
+      "service": "analytics",
+      "version": "v1"
+    }
+  },
   "auth": {
     "v1": {
       "operations": {

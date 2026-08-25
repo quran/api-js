@@ -32,6 +32,7 @@ export interface ServiceOperationCatalog {
 }
 
 interface OperationCatalog {
+  analytics: { v1: ServiceOperationCatalog };
   auth: { v1: ServiceOperationCatalog };
   content: { v4: ServiceOperationCatalog };
   oauth2: { v1: ServiceOperationCatalog };

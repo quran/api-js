@@ -6,6 +6,7 @@ import {
 } from "../src/generated/contracts";
 
 const representativeOperations = [
+  ["analytics", "v1", "submitAnalyticsEvents", "post", "/v1/events:batch"],
   ["content", "v4", "getChapter", "get", "/chapters/{id}"],
   [
     "content",
@@ -49,5 +50,11 @@ describe("operation contracts", () => {
     ).find((operation) => operation.path.includes("/v1/notes/{noteId}"));
 
     expect(noteOperation).toBeDefined();
+  });
+
+  it("preserves literal colon action suffixes", () => {
+    expect(
+      operationCatalog.analytics.v1.operations.submitAnalyticsEvents.path,
+    ).toBe("/v1/events:batch");
   });
 });

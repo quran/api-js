@@ -47,6 +47,39 @@ const results = await client.search.v1.query({
 });
 ```
 
+### Analytics Events
+
+Analytics submission uses the `analytics.events.write` scope and is available
+only from the server entrypoint. The SDK obtains and caches the required
+client-credentials token. Keep `CLIENT_SECRET` in server-side environment
+variables.
+
+```typescript
+const result = await client.analytics.v1.events.submit({
+  events: [
+    {
+      eventId: crypto.randomUUID(),
+      name: "quran.reader.verse_viewed",
+      version: 1,
+      occurredAt: new Date(),
+      userId: "QURAN_FOUNDATION_USER_ID",
+      sessionId: "session-123",
+      properties: { verseKey: "2:255", surface: "reader" },
+    },
+    {
+      eventId: crypto.randomUUID(),
+      name: "quran.app.started",
+      version: 1,
+      occurredAt: new Date(),
+      anonymousId: "anonymous-123",
+    },
+  ],
+});
+```
+
+A successful response accepts the complete batch. Retry a failed batch with
+the same event IDs so downstream processing can identify duplicates.
+
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
 Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
