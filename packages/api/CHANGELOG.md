@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.6.0
+
+### Minor Changes
+
+- 0002234: Add a server-only typed client for submitting Analytics Events batches with the `analytics.events.write` client-credentials scope.
+
 ## 3.5.0
 
 ### Minor Changes
