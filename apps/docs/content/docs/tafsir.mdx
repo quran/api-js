@@ -1,0 +1,82 @@
+---
+title: Tafsir API
+description: Retrieve tafsir text by surah, page, juz, hizb, rub, manzil, ruku, or ayah.
+---
+
+The Tafsir API gives you direct access to tafsir content in the same style as the rest of the SDK.
+
+## Get a Single Tafsir
+
+```ts
+const tafsir = await client.tafsir.get("169", {
+  chapterNumber: 1,
+});
+
+console.log(tafsir.tafsirs[0]);
+```
+
+### TafsirResponse Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/TafsirResponse.ts"
+  name="TafsirResponse"
+/>
+
+## Get Tafsirs by Chapter
+
+```ts
+const surahTafsirs = await client.tafsir.findByChapter("169", "1", {
+  page: 1,
+  perPage: 10,
+});
+```
+
+## Get Tafsirs by Page
+
+```ts
+const pageTafsirs = await client.tafsir.findByPage("169", "1");
+```
+
+## Get Tafsirs by Juz
+
+```ts
+const juzTafsirs = await client.tafsir.findByJuz("169", "1");
+```
+
+## Get Tafsirs by Hizb
+
+```ts
+const hizbTafsirs = await client.tafsir.findByHizb("169", "1");
+```
+
+## Get Tafsirs by Rub El Hizb
+
+```ts
+const rubTafsirs = await client.tafsir.findByRubElHizb("169", "1");
+const rubAlias = await client.tafsir.findByRub("169", "1");
+```
+
+## Get Tafsirs by Manzil
+
+```ts
+const manzilTafsirs = await client.tafsir.findByManzil("169", "1");
+```
+
+## Get Tafsirs by Ruku
+
+```ts
+const rukuTafsirs = await client.tafsir.findByRuku("169", "1");
+```
+
+## Get Tafsirs by Ayah
+
+```ts
+const ayahTafsirs = await client.tafsir.findByAyah("169", "1:1");
+```
+
+## Tafsir and Resources
+
+```ts
+const availableTafsirs = await client.resources.findAllTafsirs();
+const tafsirInfo = await client.resources.findTafsirInfo("169");
+```
