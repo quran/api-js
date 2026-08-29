@@ -54,6 +54,7 @@ describe("@quranjs/api/public type surface", () => {
       const client: PublicClient | null = null;
       const resourceGroup: ContentSyncResourceGroup = "word_by_word_translations";
       const mushafResourceGroup: ContentSyncResourceGroup = "mushafs";
+      const chapterResourceGroup: ContentSyncResourceGroup = "chapter_recitations";
       const record: WordByWordTranslationSnapshotRecord = {
         id: 1,
         resourceContentId: 85,
@@ -146,6 +147,7 @@ describe("@quranjs/api/public type surface", () => {
       void client;
       void resourceGroup;
       void mushafResourceGroup;
+      void chapterResourceGroup;
       void genericRecord;
       void nullableRecord;
       void mushafRecords;

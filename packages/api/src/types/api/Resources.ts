@@ -83,6 +83,7 @@ export interface ChapterReciterResource {
 
 export type ContentSyncResourceGroup =
   | "articles"
+  | "chapter_recitations"
   | "mushafs"
   | "recitations"
   | "tafsirs"
@@ -184,7 +185,7 @@ export type ContentSyncMutationType =
   | "RESOURCE_INVALIDATE";
 
 export interface ContentSyncOptions extends ApiParams {
-  /** Resource filter, e.g. `articles:*;mushafs:1;translations:1,6;word_by_word_translations:85`. */
+  /** Resource filter, e.g. `articles:*;chapter_recitations:159;mushafs:1;translations:1,6`. */
   resources?: string;
   /** Set to true for the initial sync. */
   bootstrap?: boolean;

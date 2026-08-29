@@ -333,6 +333,36 @@
           "method": "get",
           "path": "/v1/rooms/{id}/members"
         },
+        "roomsControllerGetClosedGroupJoinRequestStatus": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{groupId}/join-request"
+        },
+        "roomsControllerRequestToJoinClosedGroup": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{groupId}/join-request"
+        },
+        "roomsControllerCancelClosedGroupJoinRequest": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/rooms/{groupId}/join-request"
+        },
+        "roomsControllerGetPendingClosedGroupJoinRequests": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{groupId}/join-requests"
+        },
+        "roomsControllerApproveClosedGroupJoinRequest": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/rooms/{groupId}/join-requests/{userId}/approve"
+        },
+        "roomsControllerRejectClosedGroupJoinRequest": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/rooms/{groupId}/join-requests/{userId}"
+        },
         "roomsControllerInviteUserToRoom": {
           "auth": "user",
           "method": "post",
@@ -443,6 +473,11 @@
           "method": "get",
           "path": "/v1/posts/my-posts"
         },
+        "postsControllerGetMyPostsCountWithinRange": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/posts/count-within-range"
+        },
         "postsControllerGetLikedState": {
           "auth": "user",
           "method": "get",
@@ -512,11 +547,6 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/posts/export/pdf"
-        },
-        "postsControllerGetMyPostsCountWithinRange": {
-          "auth": "user",
-          "method": "get",
-          "path": "/v1/posts/count-within-range"
         },
         "postsControllerGetPublicPostCountByVerse": {
           "auth": "user",
