@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.7.0
+
+### Minor Changes
+
+- 929940a: Add `chapter_recitations` to the Content Sync resource-group contract.
+
 ## 3.6.0
 
 ### Minor Changes
