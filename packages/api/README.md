@@ -82,6 +82,37 @@ the same event IDs so downstream processing can identify duplicates.
 
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
+### App State
+
+App State stores app-owned JSON documents for signed-in users. It is available
+from both runtime entrypoints under `client.auth.v1.appState`. Read the enabled
+data groups before writing, use a fresh high-entropy idempotency key for each
+logical mutation, and store quoted ETags unchanged.
+
+```typescript
+const config = await client.auth.v1.appState.getConfiguration();
+
+const created = await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "dark" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifNoneMatch: "*" },
+);
+
+const current = await client.auth.v1.appState.getDocument("settings", "theme");
+await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "light" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifMatch: current.etag! },
+);
+```
+
+For offline startup, page through `bootstrap()` until `hasMore` is false and
+then persist `nextSyncToken`. Apply each `getChanges()` page and its next token
+atomically. On HTTP 410, preserve pending writes, bootstrap and drain changes,
+replay pending writes with their original idempotency keys, then pull again.
+
 Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
 
 ```typescript

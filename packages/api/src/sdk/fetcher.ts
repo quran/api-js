@@ -13,6 +13,7 @@ import type {
 } from "@/types";
 import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
+import { QuranHttpError } from "@/sdk/http-error";
 import {
   API_BASE_URL,
   DEFAULT_BASE_URLS,
@@ -237,8 +238,13 @@ export class QuranFetcher {
     }
 
     if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
+      throw await QuranHttpError.fromResponse(response);
     }
+
+    request.onResponse?.({
+      headers: response.headers,
+      status: response.status,
+    });
 
     if (response.status === 204) {
       return undefined as T;
@@ -250,6 +256,9 @@ export class QuranFetcher {
     }
 
     const json = await response.json();
+    if (request.preserveResponseKeys) {
+      return json as T;
+    }
     return camelizeKeys(json as object) as T;
   }
 

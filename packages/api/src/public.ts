@@ -2,6 +2,7 @@ import type { PublicClientConfig } from "@/types";
 
 import { createPublicRuntimeClient } from "./runtime/create-public-client";
 
+export { QuranHttpError } from "./sdk/http-error";
 export type { TokenStorage, UserSession } from "@/types";
 
 export const createPublicClient = (config: PublicClientConfig) => {
