@@ -88,7 +88,7 @@ for (const record of snapshot.records) {
 
 ### Sync Word-by-Word Translations
 
-Use the resource content ID with the `word_by_word_translations` group. Only approved, shareable, translation-only one-word resources are available; transliterations are excluded.
+Use the resource content ID with the `word_by_word_translations` group. Only approved, shareable, translation-only one-word resources are available. Transliteration resources use the separate `word_by_word_transliterations` group documented below.
 
 ```ts
 import type { WordByWordTranslationSnapshotRecord } from "@quranjs/api";
@@ -116,6 +116,41 @@ Snapshot records are returned in canonical `wordId`, `priority`, and `id` order.
 <auto-type-table
   path="../../../../packages/api/src/types/api/Resources.ts"
   name="WordByWordTranslationSnapshotRecord"
+/>
+
+### Sync Word-by-Word Transliterations
+
+Use the resource content ID with the `word_by_word_transliterations` group for
+approved, shareable, one-word transliteration resources.
+
+```ts
+import type { WordByWordTransliterationSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "word_by_word_transliterations:60",
+});
+
+const snapshot =
+  await client.resources.findSnapshot<WordByWordTransliterationSnapshotRecord>(
+    "word_by_word_transliterations",
+    60,
+  );
+
+for (const record of snapshot.records) {
+  console.log(record.wordId, record.text);
+}
+```
+
+Incremental mutations use the `word_transliteration` record type. Snapshot
+records are returned in canonical `wordId` and `id` order, and the SDK
+camel-cases the exact eight-field payload.
+
+### WordByWordTransliterationSnapshotRecord Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="WordByWordTransliterationSnapshotRecord"
 />
 
 ### ContentSyncResponse Type

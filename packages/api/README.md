@@ -135,6 +135,24 @@ Mushaf snapshots include layout metadata, pages, publicly distributable font
 assets, and words. Store the final `nextSyncToken` and use it with the same
 `resources` filter on subsequent sync calls.
 
+Word-by-word transliterations use their resource content ID and expose a typed,
+camel-cased snapshot payload:
+
+```ts
+import type { WordByWordTransliterationSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "word_by_word_transliterations:60",
+});
+
+const transliterations =
+  await client.resources.findSnapshot<WordByWordTransliterationSnapshotRecord>(
+    "word_by_word_transliterations",
+    60,
+  );
+```
+
 ## Links
 
 - [Quran Foundation](https://quran.foundation) — Our mission to make the Quran accessible to everyone
