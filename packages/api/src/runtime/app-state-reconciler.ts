@@ -32,6 +32,7 @@ interface ReconcileContext {
 }
 
 const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_MAX_BOOTSTRAP_RESTART_ATTEMPTS = 3;
 const DEFAULT_MAX_REBASE_ATTEMPTS = 3;
 
 const defaultIdempotencyKey = (): string => {
@@ -129,80 +130,99 @@ export const createAppStateReconciler = ({
       syncToken: state.syncToken,
     }));
 
+  const resetBootstrap = (
+    reconcileContext: ReconcileContext,
+  ): Promise<boolean> =>
+    commit(reconcileContext, (state) => {
+      state.bootstrapCursor = null;
+      state.stagingBootstrap = {};
+      state.syncToken = null;
+    });
+
   const rebuildBootstrap = async (
     reconcileContext: ReconcileContext,
     reset: boolean,
   ): Promise<void> => {
-    if (reset) {
-      const resetCommitted = await commit(reconcileContext, (state) => {
-        state.bootstrapCursor = null;
-        state.stagingBootstrap = {};
-        state.syncToken = null;
-      });
-      if (!resetCommitted) return;
-    }
+    let restartAttempts = 0;
+    if (reset && !(await resetBootstrap(reconcileContext))) return;
 
     while (isCurrent(reconcileContext)) {
-      const progress = await readProgress(reconcileContext);
-      if (
-        progress.hasStaging &&
-        progress.bootstrapCursor === null &&
-        progress.syncToken !== null
-      ) {
-        break;
-      }
-
-      const response = await transport.bootstrap({
-        ...(progress.bootstrapCursor === null
-          ? {}
-          : { cursor: progress.bootstrapCursor }),
-        limit: pageSize,
-      });
-      if (!isCurrent(reconcileContext)) return;
-
-      const page = response.data;
-      if (page.hasMore && page.nextCursor === null) {
-        throw new AppStateProtocolError("bootstrap_cursor_missing");
-      }
-      if (!page.hasMore && page.nextSyncToken === null) {
-        throw new AppStateProtocolError("bootstrap_sync_token_missing");
-      }
-      const pageCommitted = await commit(reconcileContext, (state) => {
-        applyAppStateBootstrapPage(
-          state,
-          bootstrapItems(page.items),
-          page.nextCursor,
-        );
-        if (!page.hasMore) {
-          state.syncToken = page.nextSyncToken;
+      while (isCurrent(reconcileContext)) {
+        const progress = await readProgress(reconcileContext);
+        if (
+          progress.hasStaging &&
+          progress.bootstrapCursor === null &&
+          progress.syncToken !== null
+        ) {
+          break;
         }
-      });
-      if (!pageCommitted) return;
-      if (!page.hasMore) break;
-    }
 
-    while (isCurrent(reconcileContext)) {
-      const { syncToken } = await readProgress(reconcileContext);
-      if (syncToken === null) {
-        throw new AppStateProtocolError("bootstrap_sync_token_missing");
-      }
-      const response = await transport.getChanges(syncToken, {
-        limit: pageSize,
-      });
-      if (!isCurrent(reconcileContext)) return;
+        const response = await transport.bootstrap({
+          ...(progress.bootstrapCursor === null
+            ? {}
+            : { cursor: progress.bootstrapCursor }),
+          limit: pageSize,
+        });
+        if (!isCurrent(reconcileContext)) return;
 
-      const pageCommitted = await commit(reconcileContext, (state) => {
-        applyAppStateChangePage(
-          state,
-          response.data.changes,
-          response.data.nextSyncToken,
-          "stagingBootstrap",
-        );
-        if (!response.data.hasMore) {
-          promoteAppStateBootstrap(state);
+        const page = response.data;
+        if (page.hasMore && page.nextCursor === null) {
+          throw new AppStateProtocolError("bootstrap_cursor_missing");
         }
-      });
-      if (!pageCommitted || !response.data.hasMore) return;
+        if (!page.hasMore && page.nextSyncToken === null) {
+          throw new AppStateProtocolError("bootstrap_sync_token_missing");
+        }
+        const pageCommitted = await commit(reconcileContext, (state) => {
+          applyAppStateBootstrapPage(
+            state,
+            bootstrapItems(page.items),
+            page.nextCursor,
+          );
+          if (!page.hasMore) {
+            state.syncToken = page.nextSyncToken;
+          }
+        });
+        if (!pageCommitted) return;
+        if (!page.hasMore) break;
+      }
+
+      while (isCurrent(reconcileContext)) {
+        const { syncToken } = await readProgress(reconcileContext);
+        if (syncToken === null) {
+          throw new AppStateProtocolError("bootstrap_sync_token_missing");
+        }
+        let response: Awaited<ReturnType<typeof transport.getChanges>>;
+        try {
+          response = await transport.getChanges(syncToken, {
+            limit: pageSize,
+          });
+        } catch (error) {
+          if (!isRecoveryError(error)) throw error;
+          const resetCommitted = await resetBootstrap(reconcileContext);
+          if (!resetCommitted) return;
+          if (
+            restartAttempts >= DEFAULT_MAX_BOOTSTRAP_RESTART_ATTEMPTS
+          ) {
+            throw error;
+          }
+          restartAttempts += 1;
+          break;
+        }
+        if (!isCurrent(reconcileContext)) return;
+
+        const pageCommitted = await commit(reconcileContext, (state) => {
+          applyAppStateChangePage(
+            state,
+            response.data.changes,
+            response.data.nextSyncToken,
+            "stagingBootstrap",
+          );
+          if (!response.data.hasMore) {
+            promoteAppStateBootstrap(state);
+          }
+        });
+        if (!pageCommitted || !response.data.hasMore) return;
+      }
     }
   };
 

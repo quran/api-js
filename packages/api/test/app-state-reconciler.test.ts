@@ -52,7 +52,11 @@ const waitFor = async (predicate: () => boolean): Promise<void> => {
 
 const errorResponse = async (
   status: number,
-  code: "document_not_found" | "precondition_failed" | "sync_token_expired",
+  code:
+    | "bootstrap_required"
+    | "document_not_found"
+    | "precondition_failed"
+    | "sync_token_expired",
   currentETag?: string,
 ): Promise<QuranHttpError> =>
   QuranHttpError.fromResponse(
@@ -638,6 +642,180 @@ describe("App State reconciler", () => {
     expect(view.pendingMutations).toEqual([]);
     expect(view.visible["settings/theme"]?.value).toEqual({ mode: "night" });
     expect(view.syncToken).toBe("sync-4");
+  });
+
+  it("restarts bootstrap when recovery is required before the first drain page", async () => {
+    const store = createAppStateMemoryStore();
+    const bootstrapCursors: Array<string | undefined> = [];
+    const changeTokens: string[] = [];
+    const putValues: unknown[] = [];
+    const transport = createTransport({
+      bootstrap: (options = {}) => {
+        bootstrapCursors.push(options.cursor);
+        return Promise.resolve({
+          data: {
+            hasMore: false,
+            items: bootstrapCursors.length === 1 ? [THEME_V1] : [THEME_V3],
+            nextCursor: null,
+            nextSyncToken:
+              bootstrapCursors.length === 1
+                ? "rejected-bootstrap-sync"
+                : "fresh-bootstrap-sync",
+          },
+          success: true,
+        });
+      },
+      getChanges: async (since) => {
+        changeTokens.push(since);
+        if (since === "rejected-bootstrap-sync") {
+          throw await errorResponse(410, "bootstrap_required");
+        }
+        return {
+          data: {
+            changes: [],
+            hasMore: false,
+            nextSyncToken:
+              since === "fresh-bootstrap-sync"
+                ? "recovered-sync"
+                : "final-sync",
+          },
+          success: true,
+        };
+      },
+      putDocument: (_collection, _key, body) => {
+        putValues.push(body.value);
+        return Promise.resolve({
+          data: {
+            collection: "settings",
+            key: "font",
+            schemaVersion: 1,
+            updatedAt: "2026-08-27T00:15:00.000Z",
+            version: 1,
+          },
+          etag: '"font-etag-v1"',
+          status: 201,
+          success: true,
+        });
+      },
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "font-mutation-key-0001",
+      store,
+      transport,
+    });
+    await reconciler.putDocument("settings", "font", {
+      schemaVersion: 1,
+      value: { size: 18 },
+    });
+
+    const view = await reconciler.reconcile();
+
+    expect(bootstrapCursors).toEqual([undefined, undefined]);
+    expect(changeTokens).toEqual([
+      "rejected-bootstrap-sync",
+      "fresh-bootstrap-sync",
+      "recovered-sync",
+    ]);
+    expect(putValues).toEqual([{ size: 18 }]);
+    expect(view.pendingMutations).toEqual([]);
+    expect(view.stagingBootstrap).toBeNull();
+    expect(view.visible["settings/theme"]?.version).toBe(3);
+    expect(view.visible["settings/font"]?.value).toEqual({ size: 18 });
+    expect(view.syncToken).toBe("final-sync");
+  });
+
+  it("discards partial staging before restarting an expired bootstrap drain", async () => {
+    const store = createAppStateMemoryStore();
+    const partialOnlyChange: AppStateChange = {
+      ...THEME_V2,
+      etag: '"obsolete-etag-v1"',
+      key: "obsolete",
+      value: { enabled: true },
+      version: 1,
+    };
+    let bootstrapCalls = 0;
+    const changeTokens: string[] = [];
+    const transport = createTransport({
+      bootstrap: () => {
+        bootstrapCalls += 1;
+        return Promise.resolve({
+          data: {
+            hasMore: false,
+            items: bootstrapCalls === 1 ? [THEME_V1] : [THEME_V3],
+            nextCursor: null,
+            nextSyncToken:
+              bootstrapCalls === 1 ? "partial-sync-1" : "fresh-sync-1",
+          },
+          success: true,
+        });
+      },
+      getChanges: async (since) => {
+        changeTokens.push(since);
+        if (since === "partial-sync-1") {
+          return {
+            data: {
+              changes: [partialOnlyChange],
+              hasMore: true,
+              nextSyncToken: "partial-sync-2",
+            },
+            success: true,
+          };
+        }
+        if (since === "partial-sync-2") {
+          throw await errorResponse(410, "sync_token_expired");
+        }
+        return {
+          data: {
+            changes: [],
+            hasMore: false,
+            nextSyncToken:
+              since === "fresh-sync-1" ? "recovered-sync" : "final-sync",
+          },
+          success: true,
+        };
+      },
+      putDocument: () =>
+        Promise.resolve({
+          data: {
+            collection: "settings",
+            key: "font",
+            schemaVersion: 1,
+            updatedAt: "2026-08-27T00:15:00.000Z",
+            version: 1,
+          },
+          etag: '"font-etag-v1"',
+          status: 201,
+          success: true,
+        }),
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "font-mutation-key-0001",
+      store,
+      transport,
+    });
+    await reconciler.putDocument("settings", "font", {
+      schemaVersion: 1,
+      value: { size: 18 },
+    });
+
+    const view = await reconciler.reconcile();
+
+    expect(bootstrapCalls).toBe(2);
+    expect(changeTokens).toEqual([
+      "partial-sync-1",
+      "partial-sync-2",
+      "fresh-sync-1",
+      "recovered-sync",
+    ]);
+    expect(view.pendingMutations).toEqual([]);
+    expect(view.stagingBootstrap).toBeNull();
+    expect(view.shadow).not.toHaveProperty("settings/obsolete");
+    expect(view.visible).not.toHaveProperty("settings/obsolete");
+    expect(view.visible["settings/theme"]?.version).toBe(3);
+    expect(view.visible["settings/font"]?.value).toEqual({ size: 18 });
+    expect(view.syncToken).toBe("final-sync");
   });
 
   it("rejects a late response after switching accounts", async () => {
