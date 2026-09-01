@@ -25,13 +25,10 @@ export interface QuranHttpError extends Error {
   readonly status: number;
 }
 
-interface QuranHttpErrorConstructor {
-  [Symbol.hasInstance](value: unknown): value is QuranHttpError;
-  readonly prototype: QuranHttpError;
-  fromResponse(response: Response): Promise<QuranHttpError>;
-}
-
-class QuranHttpErrorImplementation extends Error implements QuranHttpError {
+const QuranHttpErrorClass = class QuranHttpError
+  extends Error
+  implements QuranHttpError
+{
   public readonly headers: Headers;
   public readonly payload: unknown;
   public readonly status: number;
@@ -47,12 +44,16 @@ class QuranHttpErrorImplementation extends Error implements QuranHttpError {
   public static async fromResponse(
     response: Response,
   ): Promise<QuranHttpError> {
-    return new QuranHttpErrorImplementation(
-      response,
-      await readErrorPayload(response),
-    );
+    return new QuranHttpError(response, await readErrorPayload(response));
   }
-}
+};
+
+type QuranHttpErrorConstructor = typeof QuranHttpErrorClass;
+
+Object.defineProperty(QuranHttpErrorClass, "name", {
+  configurable: true,
+  value: "QuranHttpError",
+});
 
 const QURAN_HTTP_ERROR_CONSTRUCTOR = Symbol.for(
   "@quranjs/api/QuranHttpError/v1",
@@ -62,7 +63,6 @@ const constructorRegistry = globalThis as typeof globalThis & {
 };
 
 export const QuranHttpError: QuranHttpErrorConstructor =
-  constructorRegistry[QURAN_HTTP_ERROR_CONSTRUCTOR] ??
-  (QuranHttpErrorImplementation as unknown as QuranHttpErrorConstructor);
+  constructorRegistry[QURAN_HTTP_ERROR_CONSTRUCTOR] ?? QuranHttpErrorClass;
 
 constructorRegistry[QURAN_HTTP_ERROR_CONSTRUCTOR] = QuranHttpError;

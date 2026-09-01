@@ -25,6 +25,10 @@ const main = async () => {
   }
 
   for (const entrypoint of entrypoints) {
+    assert.strictEqual(entrypoint.QuranHttpError.name, "QuranHttpError");
+  }
+
+  for (const entrypoint of entrypoints) {
     const error = await entrypoint.QuranHttpError.fromResponse(
       Response.json(
         {
@@ -36,6 +40,7 @@ const main = async () => {
         { status: 410, statusText: "Gone" },
       ),
     );
+    assert.strictEqual(error.constructor.name, "QuranHttpError");
     for (const observableEntrypoint of entrypoints) {
       assert.ok(error instanceof observableEntrypoint.QuranHttpError);
     }

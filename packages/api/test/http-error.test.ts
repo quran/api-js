@@ -177,6 +177,15 @@ it("exports one shared HTTP error type from every entrypoint", () => {
   expect(ServerQuranHttpError).toBe(QuranHttpError);
 });
 
+it("preserves the public HTTP error constructor name", async () => {
+  const error = await QuranHttpError.fromResponse(
+    new Response(null, { status: 500, statusText: "Internal Server Error" }),
+  );
+
+  expect(QuranHttpError.name).toBe("QuranHttpError");
+  expect(error.constructor.name).toBe("QuranHttpError");
+});
+
 it("narrows App State errors by their service code", async () => {
   const error = await QuranHttpError.fromResponse(
     Response.json(JSON_FAILURES[1].payload, {

@@ -15,7 +15,7 @@ describe("App State type surface", () => {
     const source = `
       import { createPublicClient } from "@quranjs/api/public";
       import { createServerClient } from "@quranjs/api/server";
-      import { isAppStateHttpError } from "@quranjs/api";
+      import { isAppStateHttpError, QuranHttpError } from "@quranjs/api";
       import type { AppStateTransport } from "@quranjs/api";
 
       const server = createServerClient({
@@ -40,6 +40,11 @@ describe("App State type surface", () => {
         }
       };
       void inspectError;
+
+      const constructorName: string = QuranHttpError.name;
+      const constructorPrototype: Error = QuranHttpError.prototype;
+      void constructorName;
+      void constructorPrototype;
 
       void server.auth.v1.appState.getChanges("opaque", { limit: 10 });
       void publicClient.auth.appState.putDocument(
