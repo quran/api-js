@@ -133,3 +133,86 @@ export interface AppStateTransport {
     options: AppStateMutationOptions,
   ): Promise<AppStateResponse<AppStateMutationResult>>;
 }
+
+export type AppStateStoredDocument = AppStateChange;
+
+export interface AppStatePendingMutationBase {
+  collection: string;
+  idempotencyKey: string;
+  ifMatch?: string;
+  ifNoneMatch?: string;
+  key: string;
+  localRevision: number;
+}
+
+export interface AppStatePendingPut extends AppStatePendingMutationBase {
+  body: AppStatePutBody;
+  method: "PUT";
+}
+
+export interface AppStatePendingDelete extends AppStatePendingMutationBase {
+  method: "DELETE";
+}
+
+export type AppStatePendingMutation =
+  | AppStatePendingDelete
+  | AppStatePendingPut;
+
+export interface AppStateAccountState {
+  bootstrapCursor: string | null;
+  localRevision: number;
+  pendingMutations: AppStatePendingMutation[];
+  shadow: Record<string, AppStateStoredDocument>;
+  stagingBootstrap: Record<string, AppStateStoredDocument> | null;
+  syncToken: string | null;
+}
+
+export interface AppStateVisibleDocument {
+  collection: string;
+  etag: string | null;
+  key: string;
+  pending: boolean;
+  schemaVersion: number;
+  updatedAt: string | null;
+  value: AppStateJsonValue;
+  version: number | null;
+}
+
+export interface AppStateStateView extends AppStateAccountState {
+  visible: Record<string, AppStateVisibleDocument>;
+}
+
+export type AppStateStoreReducer<T> = (state: AppStateAccountState) => T;
+
+/**
+ * Account-scoped durable storage for the reconciliation engine. Implementations
+ * must initialize missing accounts and commit a reducer's complete synchronous
+ * state transition atomically. If the reducer throws, no state may be changed.
+ */
+export interface AppStateStore {
+  transaction<T>(
+    accountId: string,
+    reducer: AppStateStoreReducer<T>,
+  ): Promise<T>;
+}
+
+export interface AppStateReconcilerOptions {
+  accountId: string;
+  createIdempotencyKey?: () => string;
+  maxRebaseAttempts?: number;
+  pageSize?: number;
+  store: AppStateStore;
+  transport: AppStateTransport;
+}
+
+export interface AppStateReconciler {
+  deleteDocument(collection: string, key: string): Promise<AppStateStateView>;
+  getState(): Promise<AppStateStateView>;
+  putDocument(
+    collection: string,
+    key: string,
+    body: AppStatePutBody,
+  ): Promise<AppStateStateView>;
+  reconcile(): Promise<AppStateStateView>;
+  switchAccount(accountId: string): Promise<AppStateStateView>;
+}

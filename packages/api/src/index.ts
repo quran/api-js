@@ -9,6 +9,11 @@ export type {
   AppStateErrorPayload,
   AppStateHttpError,
 } from "./sdk/app-state-errors";
+export { createAppStateReconciler } from "./runtime/app-state-reconciler";
+export {
+  AppStateProtocolError,
+  createAppStateMemoryStore,
+} from "./runtime/app-state-state";
 
 export * from "./types";
 export * from "./utils";

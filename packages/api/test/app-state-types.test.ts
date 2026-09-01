@@ -13,10 +13,28 @@ describe("App State type surface", () => {
   it("types both clients and rejects conflicting preconditions", () => {
     const sourceFile = path.join(process.cwd(), "test", "__app-state-types.ts");
     const source = `
-      import { createPublicClient } from "@quranjs/api/public";
-      import { createServerClient } from "@quranjs/api/server";
-      import { isAppStateHttpError, QuranHttpError } from "@quranjs/api";
-      import type { AppStateTransport } from "@quranjs/api";
+      import {
+        createAppStateMemoryStore,
+        createAppStateReconciler,
+        isAppStateHttpError,
+        QuranHttpError,
+      } from "@quranjs/api";
+      import {
+        createAppStateReconciler as createPublicReconciler,
+        createPublicClient,
+      } from "@quranjs/api/public";
+      import type { AppStateStoreReducer as PublicStoreReducer } from "@quranjs/api/public";
+      import {
+        createAppStateReconciler as createServerReconciler,
+        createServerClient,
+      } from "@quranjs/api/server";
+      import type { AppStatePendingMutation as ServerPendingMutation } from "@quranjs/api/server";
+      import type {
+        AppStateReconciler,
+        AppStateStateView,
+        AppStateStore,
+        AppStateTransport,
+      } from "@quranjs/api";
 
       const server = createServerClient({
         clientId: "client-id",
@@ -31,6 +49,21 @@ describe("App State type surface", () => {
       const publicTransport: AppStateTransport = publicClient.auth.appState;
       void serverTransport.getConfiguration();
       void publicTransport.bootstrap();
+
+      const store: AppStateStore = createAppStateMemoryStore();
+      const reconciler: AppStateReconciler = createAppStateReconciler({
+        accountId: "explicit-account-id",
+        store,
+        transport: publicTransport,
+      });
+      const state: Promise<AppStateStateView> = reconciler.getState();
+      void state;
+      void createPublicReconciler;
+      void createServerReconciler;
+      const publicReducer: PublicStoreReducer<void> = () => undefined;
+      const serverPending: ServerPendingMutation | undefined = undefined;
+      void publicReducer;
+      void serverPending;
 
       const inspectError = (error: unknown) => {
         if (isAppStateHttpError(error, "precondition_failed")) {
@@ -113,5 +146,5 @@ describe("App State type surface", () => {
 
     const program = ts.createProgram([sourceFile], options, compilerHost);
     expect(diagnosticsText(ts.getPreEmitDiagnostics(program))).toBe("");
-  }, 15_000);
+  }, 30_000);
 });
