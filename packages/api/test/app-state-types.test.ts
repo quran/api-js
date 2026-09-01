@@ -15,6 +15,8 @@ describe("App State type surface", () => {
     const source = `
       import { createPublicClient } from "@quranjs/api/public";
       import { createServerClient } from "@quranjs/api/server";
+      import { isAppStateHttpError } from "@quranjs/api";
+      import type { AppStateTransport } from "@quranjs/api";
 
       const server = createServerClient({
         clientId: "client-id",
@@ -24,6 +26,20 @@ describe("App State type surface", () => {
         clientId: "client-id",
         clientType: "confidential-proxy",
       });
+
+      const serverTransport: AppStateTransport = server.auth.v1.appState;
+      const publicTransport: AppStateTransport = publicClient.auth.appState;
+      void serverTransport.getConfiguration();
+      void publicTransport.bootstrap();
+
+      const inspectError = (error: unknown) => {
+        if (isAppStateHttpError(error, "precondition_failed")) {
+          const currentETag: string | null | undefined =
+            error.payload.details.currentETag;
+          void currentETag;
+        }
+      };
+      void inspectError;
 
       void server.auth.v1.appState.getChanges("opaque", { limit: 10 });
       void publicClient.auth.appState.putDocument(
@@ -53,6 +69,7 @@ describe("App State type surface", () => {
       noEmit: true,
       paths: {
         "@/*": ["src/*"],
+        "@quranjs/api": ["src/index.ts"],
         "@quranjs/api/public": ["src/public.ts"],
         "@quranjs/api/server": ["src/server.ts"],
       },
@@ -61,14 +78,20 @@ describe("App State type surface", () => {
       target: ts.ScriptTarget.ES2022,
     };
     const baseHost = ts.createCompilerHost(options);
-    const normalize = (filePath: string) => path.resolve(filePath).toLowerCase();
+    const normalize = (filePath: string) =>
+      path.resolve(filePath).toLowerCase();
     const normalizedSourceFile = normalize(sourceFile);
     const compilerHost: ts.CompilerHost = {
       ...baseHost,
       fileExists: (filePath) =>
         normalize(filePath) === normalizedSourceFile ||
         baseHost.fileExists(filePath),
-      getSourceFile: (filePath, languageVersion, onError, shouldCreateNewFile) =>
+      getSourceFile: (
+        filePath,
+        languageVersion,
+        onError,
+        shouldCreateNewFile,
+      ) =>
         normalize(filePath) === normalizedSourceFile
           ? ts.createSourceFile(filePath, source, languageVersion, true)
           : baseHost.getSourceFile(

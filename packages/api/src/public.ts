@@ -3,6 +3,16 @@ import type { PublicClientConfig } from "@/types";
 import { createPublicRuntimeClient } from "./runtime/create-public-client";
 
 export { QuranHttpError } from "./sdk/http-error";
+export {
+  getAppStateErrorCode,
+  isAppStateHttpError,
+} from "./sdk/app-state-errors";
+export type {
+  AppStateErrorCode,
+  AppStateErrorPayload,
+  AppStateHttpError,
+} from "./sdk/app-state-errors";
+export type { AppStateTransport } from "@/types";
 export type { TokenStorage, UserSession } from "@/types";
 
 export const createPublicClient = (config: PublicClientConfig) => {

@@ -16,6 +16,88 @@ const publicClient = () =>
   });
 
 describe("App State facade", () => {
+  it("snapshots mutation inputs before awaiting server authentication", async () => {
+    let releaseSession: (() => void) | undefined;
+    const sessionReady = new Promise<void>((resolve) => {
+      releaseSession = resolve;
+    });
+    let sentRequest: Request | undefined;
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      fetch: (input, init) => {
+        sentRequest = new Request(input, init);
+        return Promise.resolve(
+          HttpResponse.json(
+            { success: true, data: { version: 2 } },
+            { headers: { ETag: ETAG } },
+          ),
+        );
+      },
+      storage: {
+        getSession: async () => {
+          await sessionReady;
+          return { accessToken: "server-user-token" };
+        },
+      },
+    });
+    const body = {
+      schemaVersion: 1,
+      value: { font_size: 18, nested: { enabled: true } },
+    };
+    const options = {
+      idempotencyKey: "01HZX4EXAMPLE8J4K7M2PQ9RST",
+      ifMatch: ETAG,
+    };
+
+    const response = client.auth.appState.putDocument(
+      "settings",
+      "theme",
+      body,
+      options,
+    );
+    body.schemaVersion = 99;
+    body.value.font_size = 99;
+    body.value.nested.enabled = false;
+    options.idempotencyKey = "mutated-idempotency-key";
+    options.ifMatch = '"mutated-etag"';
+    releaseSession?.();
+
+    await response;
+    expect(sentRequest).toBeDefined();
+    expect(await sentRequest!.text()).toBe(
+      '{"schemaVersion":1,"value":{"font_size":18,"nested":{"enabled":true}}}',
+    );
+    expect(sentRequest!.headers.get("idempotency-key")).toBe(
+      "01HZX4EXAMPLE8J4K7M2PQ9RST",
+    );
+    expect(sentRequest!.headers.get("if-match")).toBe(ETAG);
+  });
+
+  it("rejects conflicting mutation preconditions before network I/O", async () => {
+    let fetchCalls = 0;
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      fetch: () => {
+        fetchCalls += 1;
+        return Promise.resolve(new HttpResponse(null, { status: 204 }));
+      },
+      userSession: { accessToken: "server-user-token" },
+    });
+
+    await expect(
+      client.auth.v1.appState.deleteDocument("settings", "theme", {
+        idempotencyKey: "01HZX4EXAMPLE8J4K7M2PQ9RST",
+        ifMatch: ETAG,
+        ifNoneMatch: "*",
+      } as never),
+    ).rejects.toThrow(
+      "App State mutations accept only one of ifMatch or ifNoneMatch.",
+    );
+    expect(fetchCalls).toBe(0);
+  });
+
   it("uses literal action paths, exact queries, and user auth", async () => {
     const requests: Request[] = [];
     const respond = ({ request }: { request: Request }) => {

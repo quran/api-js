@@ -99,5 +99,37 @@ type AppStatePrecondition =
   | { ifMatch?: never; ifNoneMatch: string }
   | { ifMatch?: never; ifNoneMatch?: never };
 
-export type AppStateMutationOptions = { idempotencyKey: string } &
-  AppStatePrecondition;
+export type AppStateMutationOptions = {
+  idempotencyKey: string;
+} & AppStatePrecondition;
+
+/** Structural low-level transport used by App State reconciliation clients. */
+export interface AppStateTransport {
+  bootstrap(
+    options?: AppStatePageOptions,
+  ): Promise<AppStateSuccess<AppStateBootstrapPage>>;
+  deleteDocument(
+    collection: string,
+    key: string,
+    options: AppStateMutationOptions,
+  ): Promise<void>;
+  getChanges(
+    since: string,
+    options?: AppStateChangesOptions,
+  ): Promise<AppStateSuccess<AppStateChangesPage>>;
+  getConfiguration(): Promise<AppStateSuccess<AppStateConfiguration>>;
+  getDocument(
+    collection: string,
+    key: string,
+  ): Promise<AppStateResponse<AppStateDocument>>;
+  listDocuments(
+    collection: string,
+    options?: AppStatePageOptions,
+  ): Promise<AppStateSuccess<AppStatePage>>;
+  putDocument(
+    collection: string,
+    key: string,
+    body: AppStatePutBody,
+    options: AppStateMutationOptions,
+  ): Promise<AppStateResponse<AppStateMutationResult>>;
+}
