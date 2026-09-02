@@ -381,6 +381,7 @@ export const createAppStateReconciler = ({
         }
         return;
       } catch (error) {
+        if (!isCurrent(reconcileContext)) return;
         const errorCode = getAppStateErrorCode(error);
         if (
           mutation.method === "DELETE" &&

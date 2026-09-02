@@ -870,6 +870,54 @@ describe("App State reconciler", () => {
     expect((await reconciler.getState()).visible).toEqual({});
   });
 
+  it("does not refresh a stale mutation conflict after switching accounts", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "a-sync-1");
+    });
+    const conflict = deferred<QuranHttpError>();
+    let putStarted = false;
+    let documentReads = 0;
+    const transport = createTransport({
+      getDocument: () => {
+        documentReads += 1;
+        return Promise.resolve({
+          data: THEME_V2,
+          etag: THEME_V2.etag,
+          status: 200,
+          success: true,
+        });
+      },
+      putDocument: async () => {
+        putStarted = true;
+        throw await conflict.promise;
+      },
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "stale-conflict-key-0001",
+      store,
+      transport,
+    });
+    await reconciler.putDocument("settings", "theme", {
+      schemaVersion: 1,
+      value: { mode: "night" },
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => putStarted);
+    await reconciler.switchAccount("account-b");
+    conflict.resolve(await errorResponse(412, "precondition_failed"));
+    await oldReconciliation;
+
+    expect(documentReads).toBe(0);
+    expect(
+      (await store.transaction("account-a", deriveAppStateStateView))
+        .pendingMutations,
+    ).toHaveLength(1);
+    expect((await reconciler.getState()).visible).toEqual({});
+  });
+
   it("serializes concurrent reconcile calls", async () => {
     const store = createAppStateMemoryStore();
     await store.transaction("account-a", (state) => {
