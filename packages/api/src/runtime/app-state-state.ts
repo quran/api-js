@@ -14,6 +14,7 @@ import type {
 export type AppStateProtocolErrorCode =
   | "bootstrap_cursor_missing"
   | "bootstrap_sync_token_missing"
+  | "put_response_etag_missing"
   | "same_version_conflict";
 
 export class AppStateProtocolError extends Error {

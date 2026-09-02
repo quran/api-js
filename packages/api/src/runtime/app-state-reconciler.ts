@@ -277,11 +277,15 @@ export const createAppStateReconciler = ({
       version: number;
     }>,
   ): Promise<void> => {
+    const etag = response.etag;
+    if (etag === null) {
+      throw new AppStateProtocolError("put_response_etag_missing");
+    }
     await commit(reconcileContext, (state) => {
-      if (response.etag !== null && state.syncToken !== null) {
+      if (state.syncToken !== null) {
         const change: AppStateChange = {
           ...response.data,
-          etag: response.etag,
+          etag,
           operation: "upsert",
           value: mutation.body.value,
         };
@@ -322,9 +326,7 @@ export const createAppStateReconciler = ({
     }
 
     if (current === null && mutation.method === "DELETE") {
-      await commit(reconcileContext, (state) => {
-        removeAppStateMutation(state, mutation.localRevision);
-      });
+      await acknowledgeDelete(reconcileContext, mutation);
       return null;
     }
 

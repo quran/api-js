@@ -401,6 +401,87 @@ describe("App State reconciler", () => {
     expect(view.visible).not.toHaveProperty("settings/missing");
   });
 
+  it("keeps a conflicted delete hidden when refresh finds it absent and the final pull fails", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "sync-1");
+    });
+    let changeReads = 0;
+    const transport = createTransport({
+      deleteDocument: () =>
+        errorResponse(412, "precondition_failed").then((error) =>
+          Promise.reject(error),
+        ),
+      getChanges: (since) => {
+        changeReads += 1;
+        if (changeReads === 2) {
+          return Promise.reject(new Error("final pull failed"));
+        }
+        return Promise.resolve({
+          data: { changes: [], hasMore: false, nextSyncToken: since },
+          success: true,
+        });
+      },
+      getDocument: () =>
+        errorResponse(404, "document_not_found").then((error) =>
+          Promise.reject(error),
+        ),
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "delete-key-0001",
+      store,
+      transport,
+    });
+    await reconciler.deleteDocument("settings", "theme");
+
+    await expect(reconciler.reconcile()).rejects.toThrow("final pull failed");
+
+    const state = await reconciler.getState();
+    expect(state.pendingMutations).toEqual([]);
+    expect(state.shadow["settings/theme"]?.operation).toBe("delete");
+    expect(state.visible).not.toHaveProperty("settings/theme");
+  });
+
+  it("retains an optimistic PUT when a successful response omits its ETag", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "sync-1");
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "put-key-0001",
+      store,
+      transport: createTransport({
+        putDocument: () =>
+          Promise.resolve({
+            data: {
+              collection: "settings",
+              key: "theme",
+              schemaVersion: 1,
+              updatedAt: "2026-08-27T00:15:00.000Z",
+              version: 2,
+            },
+            etag: null,
+            status: 200,
+            success: true,
+          }),
+      }),
+    });
+    await reconciler.putDocument("settings", "theme", {
+      schemaVersion: 1,
+      value: { mode: "night" },
+    });
+
+    await expect(reconciler.reconcile()).rejects.toMatchObject({
+      code: "put_response_etag_missing",
+    });
+
+    const state = await reconciler.getState();
+    expect(state.pendingMutations).toHaveLength(1);
+    expect(state.visible["settings/theme"]?.value).toEqual({ mode: "night" });
+  });
+
   it("rebases complete PUT replacement intent with a new precondition and idempotency key", async () => {
     const store = createAppStateMemoryStore();
     await store.transaction("account-a", (state) => {
