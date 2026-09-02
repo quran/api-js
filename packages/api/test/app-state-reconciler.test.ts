@@ -43,10 +43,12 @@ const GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE =
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((resolvePromise) => {
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
+    reject = rejectPromise;
   });
-  return { promise, resolve };
+  return { promise, reject, resolve };
 };
 
 const waitFor = async (predicate: () => boolean): Promise<void> => {
@@ -953,6 +955,89 @@ describe("App State reconciler", () => {
     expect(accountA.visible["settings/theme"]?.version).toBe(1);
     expect(accountA.syncToken).toBe("a-sync-1");
     expect((await reconciler.getState()).visible).toEqual({});
+  });
+
+  it("discards a stale normal pull failure after switching accounts", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "a-sync-1");
+    });
+    const staleFailure =
+      deferred<Awaited<ReturnType<AppStateTransport["getChanges"]>>>();
+    let requestStarted = false;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store,
+      transport: createTransport({
+        getChanges: () => {
+          requestStarted = true;
+          return staleFailure.promise;
+        },
+      }),
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => requestStarted);
+    await reconciler.switchAccount("account-b");
+    staleFailure.reject(new Error("stale normal pull failed"));
+
+    await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
+  });
+
+  it("discards a stale bootstrap request failure after switching accounts", async () => {
+    const staleFailure =
+      deferred<Awaited<ReturnType<AppStateTransport["bootstrap"]>>>();
+    let requestStarted = false;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store: createAppStateMemoryStore(),
+      transport: createTransport({
+        bootstrap: () => {
+          requestStarted = true;
+          return staleFailure.promise;
+        },
+      }),
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => requestStarted);
+    await reconciler.switchAccount("account-b");
+    staleFailure.reject(new Error("stale bootstrap failed"));
+
+    await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
+  });
+
+  it("discards a stale bootstrap drain failure after switching accounts", async () => {
+    const staleFailure =
+      deferred<Awaited<ReturnType<AppStateTransport["getChanges"]>>>();
+    let drainStarted = false;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store: createAppStateMemoryStore(),
+      transport: createTransport({
+        bootstrap: () =>
+          Promise.resolve({
+            data: {
+              hasMore: false,
+              items: [THEME_V1],
+              nextCursor: null,
+              nextSyncToken: "bootstrap-sync",
+            },
+            success: true,
+          }),
+        getChanges: () => {
+          drainStarted = true;
+          return staleFailure.promise;
+        },
+      }),
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => drainStarted);
+    await reconciler.switchAccount("account-b");
+    staleFailure.reject(new Error("stale bootstrap drain failed"));
+
+    await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
   });
 
   it("does not refresh a stale mutation conflict after switching accounts", async () => {

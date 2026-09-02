@@ -159,12 +159,18 @@ export const createAppStateReconciler = ({
           break;
         }
 
-        const response = await transport.bootstrap({
-          ...(progress.bootstrapCursor === null
-            ? {}
-            : { cursor: progress.bootstrapCursor }),
-          limit: pageSize,
-        });
+        let response: Awaited<ReturnType<typeof transport.bootstrap>>;
+        try {
+          response = await transport.bootstrap({
+            ...(progress.bootstrapCursor === null
+              ? {}
+              : { cursor: progress.bootstrapCursor }),
+            limit: pageSize,
+          });
+        } catch (error) {
+          if (!isCurrent(reconcileContext)) return;
+          throw error;
+        }
         if (!isCurrent(reconcileContext)) return;
 
         const page = response.data;
@@ -200,6 +206,7 @@ export const createAppStateReconciler = ({
             limit: pageSize,
           });
         } catch (error) {
+          if (!isCurrent(reconcileContext)) return;
           if (!isRecoveryError(error)) throw error;
           const resetCommitted = await resetBootstrap(reconcileContext);
           if (!resetCommitted) return;
@@ -259,6 +266,7 @@ export const createAppStateReconciler = ({
         });
         if (!pageCommitted || !response.data.hasMore) return;
       } catch (error) {
+        if (!isCurrent(reconcileContext)) return;
         if (!isRecoveryError(error)) throw error;
         await rebuildBootstrap(reconcileContext, true);
         return;
