@@ -17,10 +17,20 @@ export type AppStateErrorCode =
   | "precondition_required"
   | "sync_token_expired";
 
+export interface AppStateServiceError {
+  code: AppStateErrorCode;
+  details?: {
+    currentETag?: string | null;
+    [key: string]: unknown;
+  };
+  message?: string;
+  [key: string]: unknown;
+}
+
 export interface AppStateErrorPayload {
   details: {
     currentETag?: string | null;
-    error: AppStateErrorCode;
+    error: AppStateErrorCode | AppStateServiceError;
     [key: string]: unknown;
   };
   message: string;
@@ -67,7 +77,13 @@ export const getAppStateErrorCode = (
     return undefined;
   }
 
-  const code = (details as { error?: unknown }).error;
+  const serviceError = (details as { error?: unknown }).error;
+  const code =
+    typeof serviceError === "string"
+      ? serviceError
+      : typeof serviceError === "object" && serviceError !== null
+        ? (serviceError as { code?: unknown }).code
+        : undefined;
   return typeof code === "string" && APP_STATE_ERROR_CODES.has(code)
     ? (code as AppStateErrorCode)
     : undefined;

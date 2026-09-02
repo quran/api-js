@@ -28,6 +28,9 @@ const CLIENTS = {
     }),
 } as const;
 
+const GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE =
+  '{"message":"The sync token has expired.","type":"gone","success":false,"details":{"success":false,"error":{"code":"sync_token_expired","message":"The sync token has expired."}}}';
+
 const JSON_FAILURES = [
   {
     payload: {
@@ -199,4 +202,24 @@ it("narrows App State errors by their service code", async () => {
   expect(isAppStateHttpError(error, "precondition_failed")).toBe(false);
   expect(getAppStateErrorCode(error)).toBe("bootstrap_required");
   expect(getAppStateErrorCode(new Error("private failure"))).toBeUndefined();
+});
+
+it("narrows the frozen nested Gateway envelope and retains the legacy flat fallback", async () => {
+  const nestedError = await QuranHttpError.fromResponse(
+    new Response(GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE, {
+      headers: { "content-type": "application/json" },
+      status: 410,
+      statusText: "Gone",
+    }),
+  );
+  const legacyError = await QuranHttpError.fromResponse(
+    Response.json(JSON_FAILURES[1].payload, {
+      status: JSON_FAILURES[1].status,
+      statusText: JSON_FAILURES[1].statusText,
+    }),
+  );
+
+  expect(getAppStateErrorCode(nestedError)).toBe("sync_token_expired");
+  expect(isAppStateHttpError(nestedError, "sync_token_expired")).toBe(true);
+  expect(getAppStateErrorCode(legacyError)).toBe("bootstrap_required");
 });

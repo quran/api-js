@@ -34,6 +34,9 @@ const THEME_V3: AppStateChange = {
   version: 3,
 };
 
+const GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE =
+  '{"message":"The sync token has expired.","type":"gone","success":false,"details":{"success":false,"error":{"code":"sync_token_expired","message":"The sync token has expired."}}}';
+
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((resolvePromise) => {
@@ -61,12 +64,23 @@ const errorResponse = async (
 ): Promise<QuranHttpError> =>
   QuranHttpError.fromResponse(
     new Response(
-      JSON.stringify({
-        details: { error: code, currentETag },
-        message: "request failed",
-        success: false,
-        type: "app_state_error",
-      }),
+      code === "sync_token_expired" && currentETag === undefined
+        ? GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE
+        : JSON.stringify({
+            details: {
+              success: false,
+              error: {
+                code,
+                message: "request failed",
+                ...(currentETag === undefined
+                  ? {}
+                  : { details: { currentETag } }),
+              },
+            },
+            message: "request failed",
+            success: false,
+            type: "app_state_error",
+          }),
       {
         headers: { "content-type": "application/json" },
         status,
