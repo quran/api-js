@@ -200,6 +200,51 @@ describe("App State reconciler", () => {
     expect(view.syncToken).toBe("sync-4");
   });
 
+  it("clears a terminal cursor when persisting the final bootstrap page", async () => {
+    const store = createAppStateMemoryStore();
+    const drainPage =
+      deferred<Awaited<ReturnType<AppStateTransport["getChanges"]>>>();
+    let drainStarted = false;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store,
+      transport: createTransport({
+        bootstrap: () =>
+          Promise.resolve({
+            data: {
+              hasMore: false,
+              items: [THEME_V1],
+              nextCursor: "terminal-cursor",
+              nextSyncToken: "bootstrap-sync",
+            },
+            success: true,
+          }),
+        getChanges: () => {
+          drainStarted = true;
+          return drainPage.promise;
+        },
+      }),
+    });
+
+    const reconciliation = reconciler.reconcile();
+    await waitFor(() => drainStarted);
+
+    const staged = await reconciler.getState();
+    expect(staged.bootstrapCursor).toBeNull();
+    expect(staged.stagingBootstrap).toHaveProperty("settings/theme");
+    expect(staged.syncToken).toBe("bootstrap-sync");
+
+    drainPage.resolve({
+      data: {
+        changes: [],
+        hasMore: false,
+        nextSyncToken: "drained-sync",
+      },
+      success: true,
+    });
+    await reconciliation;
+  });
+
   it("rejects a final bootstrap page without a sync token before committing it", async () => {
     const store = createAppStateMemoryStore();
     const reconciler = createAppStateReconciler({

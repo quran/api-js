@@ -184,7 +184,7 @@ export const createAppStateReconciler = ({
           applyAppStateBootstrapPage(
             state,
             bootstrapItems(page.items),
-            page.nextCursor,
+            page.hasMore ? page.nextCursor : null,
           );
           if (!page.hasMore) {
             state.syncToken = page.nextSyncToken;
