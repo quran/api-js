@@ -10,6 +10,7 @@ import type {
   UserSession,
 } from "@/types";
 import { prepareBody } from "@/lib/http-utils";
+import { QuranHttpError } from "@/sdk/http-error";
 import {
   DEFAULT_BASE_URLS,
   DIRECT_PATH_PREFIX,
@@ -151,8 +152,13 @@ export class PublicQuranFetcher {
     });
 
     if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
+      throw await QuranHttpError.fromResponse(response);
     }
+
+    request.onResponse?.({
+      headers: response.headers,
+      status: response.status,
+    });
 
     if (response.status === 204) {
       return undefined as T;
@@ -164,6 +170,9 @@ export class PublicQuranFetcher {
     }
 
     const json = await response.json();
+    if (request.preserveResponseKeys) {
+      return json as T;
+    }
     return camelizeKeys(json as object) as T;
   }
 

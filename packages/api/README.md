@@ -82,6 +82,74 @@ the same event IDs so downstream processing can identify duplicates.
 
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
+### App State
+
+App State stores app-owned JSON documents for signed-in users. It is available
+from both runtime entrypoints under `client.auth.v1.appState`. Read the enabled
+data groups before writing, use a fresh high-entropy idempotency key for each
+logical mutation, and store quoted ETags unchanged.
+
+```typescript
+const config = await client.auth.v1.appState.getConfiguration();
+
+const created = await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "dark" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifNoneMatch: "*" },
+);
+
+const current = await client.auth.v1.appState.getDocument("settings", "theme");
+await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "light" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifMatch: current.etag! },
+);
+```
+
+For offline startup, page through `bootstrap()` until `hasMore` is false and
+then persist `nextSyncToken`. Apply each `getChanges()` page and its next token
+atomically. On HTTP 410, preserve pending writes, bootstrap and drain changes,
+replay pending writes, and then pull again. An unchanged replay request retains
+its idempotency key; a conflict rebase rotates it with the changed fingerprint.
+
+For transactional offline reconciliation, provide an account-scoped durable
+`AppStateStore`. Its `transaction(accountId, reducer)` implementation must
+initialize missing accounts, run the reducer synchronously, and atomically
+commit the complete draft only when the reducer returns successfully. Reducers
+must not perform network I/O. The reconciler stages bootstrap pages separately,
+applies change pages with their tokens atomically, replays immutable local
+replacements, and rejects responses from an account that is no longer active.
+
+```typescript
+import { createAppStateReconciler } from "@quranjs/api/public";
+
+const appState = createAppStateReconciler({
+  accountId: signedInAccountId, // Explicit identity; never derive it from a token.
+  store: durableAppStateStore,
+  transport: client.auth.v1.appState,
+});
+
+await appState.putDocument("settings", "theme", {
+  schemaVersion: 1,
+  value: { mode: "dark" },
+});
+await appState.reconcile();
+
+const state = await appState.getState();
+const theme = state.visible["settings/theme"];
+
+await appState.switchAccount(nextSignedInAccountId);
+```
+
+`putDocument()` and `deleteDocument()` only queue local mutations. Call
+`reconcile()` to pull, replay the captured pending set, and pull again. Calls to
+`reconcile()` are serialized, while local queue writes remain available. On a
+strict `412` conflict, the complete replacement is rebased onto the refreshed
+ETag with a new idempotency key. `createAppStateMemoryStore()` is available for
+tests and short-lived sessions; it is not durable across process restarts.
+
 Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
 
 ```typescript

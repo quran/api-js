@@ -22,6 +22,7 @@ import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
 import { createAnalyticsFacade } from "@/runtime/analytics";
+import { createAppStateFacade } from "@/runtime/app-state";
 import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
@@ -73,6 +74,7 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
 
   return {
     ...generatedGroups,
+    appState: createAppStateFacade(fetcher),
     collections: {
       ...generatedGroups.collections,
       addBookmark: (collectionId: string, body: Record<string, unknown>) =>
