@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { AppStateChange, AppStateTransport } from "../src/types/app-state";
+import type {
+  AppStateChange,
+  AppStateStore,
+  AppStateTransport,
+} from "../src/types/app-state";
 import { createAppStateReconciler } from "../src/runtime/app-state-reconciler";
 import {
   applyAppStateChangePage,
@@ -916,6 +920,83 @@ describe("App State reconciler", () => {
         .pendingMutations,
     ).toHaveLength(1);
     expect((await reconciler.getState()).visible).toEqual({});
+  });
+
+  it("does not send changes after a delayed progress read switches accounts", async () => {
+    const baseStore = createAppStateMemoryStore();
+    await baseStore.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "a-sync-1");
+    });
+    const releaseProgress = deferred<void>();
+    let accountATransactions = 0;
+    let progressBlocked = false;
+    const store: AppStateStore = {
+      transaction: async (accountId, reducer) => {
+        if (accountId === "account-a") {
+          accountATransactions += 1;
+          if (accountATransactions === 2) {
+            progressBlocked = true;
+            await releaseProgress.promise;
+          }
+        }
+        return baseStore.transaction(accountId, reducer);
+      },
+    };
+    let changeReads = 0;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store,
+      transport: createTransport({
+        getChanges: (since) => {
+          changeReads += 1;
+          return Promise.resolve({
+            data: { changes: [], hasMore: false, nextSyncToken: since },
+            success: true,
+          });
+        },
+      }),
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => progressBlocked);
+    await reconciler.switchAccount("account-b");
+    releaseProgress.resolve();
+    await oldReconciliation;
+
+    expect(changeReads).toBe(0);
+    expect((await reconciler.getState()).visible).toEqual({});
+  });
+
+  it("keeps an acknowledged delete hidden if the final pull fails", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "sync-1");
+    });
+    let changeReads = 0;
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "delete-key-0001",
+      store,
+      transport: createTransport({
+        deleteDocument: () => Promise.resolve(),
+        getChanges: (since) => {
+          changeReads += 1;
+          if (changeReads === 2) return Promise.reject(new Error("final pull failed"));
+          return Promise.resolve({
+            data: { changes: [], hasMore: false, nextSyncToken: since },
+            success: true,
+          });
+        },
+      }),
+    });
+    await reconciler.deleteDocument("settings", "theme");
+
+    await expect(reconciler.reconcile()).rejects.toThrow("final pull failed");
+
+    const state = await reconciler.getState();
+    expect(state.pendingMutations).toEqual([]);
+    expect(state.shadow["settings/theme"]?.operation).toBe("delete");
+    expect(state.visible).not.toHaveProperty("settings/theme");
   });
 
   it("serializes concurrent reconcile calls", async () => {

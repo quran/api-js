@@ -16,6 +16,7 @@ import { getAppStateErrorCode } from "@/sdk/app-state-errors";
 import {
   applyAppStateBootstrapPage,
   applyAppStateChangePage,
+  appStateDocumentId,
   AppStateProtocolError,
   deriveAppStateStateView,
   promoteAppStateBootstrap,
@@ -149,6 +150,7 @@ export const createAppStateReconciler = ({
     while (isCurrent(reconcileContext)) {
       while (isCurrent(reconcileContext)) {
         const progress = await readProgress(reconcileContext);
+        if (!isCurrent(reconcileContext)) return;
         if (
           progress.hasStaging &&
           progress.bootstrapCursor === null &&
@@ -188,6 +190,7 @@ export const createAppStateReconciler = ({
 
       while (isCurrent(reconcileContext)) {
         const { syncToken } = await readProgress(reconcileContext);
+        if (!isCurrent(reconcileContext)) return;
         if (syncToken === null) {
           throw new AppStateProtocolError("bootstrap_sync_token_missing");
         }
@@ -228,6 +231,7 @@ export const createAppStateReconciler = ({
 
   const pull = async (reconcileContext: ReconcileContext): Promise<void> => {
     const initial = await readProgress(reconcileContext);
+    if (!isCurrent(reconcileContext)) return;
     if (initial.syncToken === null || initial.hasStaging) {
       await rebuildBootstrap(reconcileContext, false);
       return;
@@ -235,6 +239,7 @@ export const createAppStateReconciler = ({
 
     while (isCurrent(reconcileContext)) {
       const { syncToken } = await readProgress(reconcileContext);
+      if (!isCurrent(reconcileContext)) return;
       if (syncToken === null) {
         await rebuildBootstrap(reconcileContext, false);
         return;
@@ -281,6 +286,20 @@ export const createAppStateReconciler = ({
           value: mutation.body.value,
         };
         applyAppStateChangePage(state, [change], state.syncToken);
+      }
+      removeAppStateMutation(state, mutation.localRevision);
+    });
+  };
+
+  const acknowledgeDelete = async (
+    reconcileContext: ReconcileContext,
+    mutation: AppStatePendingMutation,
+  ): Promise<void> => {
+    await commit(reconcileContext, (state) => {
+      const id = appStateDocumentId(mutation.collection, mutation.key);
+      const current = state.shadow[id];
+      if (current) {
+        state.shadow[id] = { ...current, operation: "delete", value: null };
       }
       removeAppStateMutation(state, mutation.localRevision);
     });
@@ -375,9 +394,7 @@ export const createAppStateReconciler = ({
             mutationOptions(mutation),
           );
           if (!isCurrent(reconcileContext)) return;
-          await commit(reconcileContext, (state) => {
-            removeAppStateMutation(state, mutation.localRevision);
-          });
+          await acknowledgeDelete(reconcileContext, mutation);
         }
         return;
       } catch (error) {
@@ -387,9 +404,7 @@ export const createAppStateReconciler = ({
           mutation.method === "DELETE" &&
           errorCode === "document_not_found"
         ) {
-          await commit(reconcileContext, (state) => {
-            removeAppStateMutation(state, mutation.localRevision);
-          });
+          await acknowledgeDelete(reconcileContext, mutation);
           return;
         }
         if (
