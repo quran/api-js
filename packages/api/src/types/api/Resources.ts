@@ -88,6 +88,7 @@ export type ContentSyncResourceGroup =
   | "recitations"
   | "tafsirs"
   | "translations"
+  | "word_by_word_transliterations"
   | "word_by_word_translations";
 
 export interface MushafMetadataSnapshotRecord extends Record<string, unknown> {
@@ -175,6 +176,18 @@ export interface WordByWordTranslationSnapshotRecord
   updatedAt: string;
 }
 
+export interface WordByWordTransliterationSnapshotRecord
+  extends Record<string, unknown> {
+  id: number;
+  resourceContentId: number;
+  resourceId: number;
+  wordId: number;
+  languageId: number;
+  languageName: string | null;
+  text: string | null;
+  updatedAt: string;
+}
+
 export type ContentSyncMutationType =
   | "RESOURCE_CREATE"
   | "RESOURCE_UPDATE"
@@ -185,7 +198,7 @@ export type ContentSyncMutationType =
   | "RESOURCE_INVALIDATE";
 
 export interface ContentSyncOptions extends ApiParams {
-  /** Resource filter, e.g. `articles:*;chapter_recitations:159;mushafs:1;translations:1,6`. */
+  /** Resource filter, e.g. `articles:*;mushafs:1;translations:1,6;word_by_word_transliterations:60`. */
   resources?: string;
   /** Set to true for the initial sync. */
   bootstrap?: boolean;

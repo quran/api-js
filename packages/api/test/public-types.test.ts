@@ -41,6 +41,7 @@ describe("@quranjs/api/public type surface", () => {
         MushafPageSnapshotRecord,
         MushafSnapshotRecord,
         MushafWordSnapshotRecord,
+        WordByWordTransliterationSnapshotRecord,
         WordByWordTranslationSnapshotRecord,
       } from "@quranjs/api";
 
@@ -55,6 +56,17 @@ describe("@quranjs/api/public type surface", () => {
       const resourceGroup: ContentSyncResourceGroup = "word_by_word_translations";
       const mushafResourceGroup: ContentSyncResourceGroup = "mushafs";
       const chapterResourceGroup: ContentSyncResourceGroup = "chapter_recitations";
+      const transliterationResourceGroup: ContentSyncResourceGroup = "word_by_word_transliterations";
+      const transliterationRecord: WordByWordTransliterationSnapshotRecord = {
+        id: 1,
+        resourceContentId: 60,
+        resourceId: 60,
+        wordId: 1,
+        languageId: 38,
+        languageName: "english",
+        text: "bis'mi",
+        updatedAt: "2026-08-30T02:43:00Z",
+      };
       const record: WordByWordTranslationSnapshotRecord = {
         id: 1,
         resourceContentId: 85,
@@ -148,6 +160,8 @@ describe("@quranjs/api/public type surface", () => {
       void resourceGroup;
       void mushafResourceGroup;
       void chapterResourceGroup;
+      void transliterationResourceGroup;
+      void transliterationRecord;
       void genericRecord;
       void nullableRecord;
       void mushafRecords;

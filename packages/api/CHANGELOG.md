@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.8.0
+
+### Minor Changes
+
+- b7cc01a: Add typed Content Sync support for word-by-word transliteration resources.
+
 ## 3.7.0
 
 ### Minor Changes

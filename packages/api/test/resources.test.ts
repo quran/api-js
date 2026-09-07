@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import type {
   MushafSnapshotRecord,
   WordByWordTranslationSnapshotRecord,
+  WordByWordTransliterationSnapshotRecord,
 } from "../src/types";
 import { server } from "../mocks/server";
 import { testClient } from "./test-client";
@@ -199,6 +200,70 @@ describe("Resources API", () => {
       expect(mutation?.data?.verseKey).toBe("26:153");
     });
 
+    it("returns word transliteration mutation metadata and data", async () => {
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/sync",
+          () =>
+            HttpResponse.json({
+              sync: {
+                sync_until_sequence: 98103,
+                has_more: false,
+                next_page_url: null,
+                next_sync_token: "sync-token-98103",
+                mutations: [
+                  {
+                    sequence: 98103,
+                    type: "ROW_UPDATE",
+                    resource_group: "word_by_word_transliterations",
+                    resource_id: 60,
+                    resource_content_id: 60,
+                    record_type: "word_transliteration",
+                    record_key: "1",
+                    source_record_id: 1,
+                    changed_at: "2026-08-30T02:43:00Z",
+                    data: {
+                      id: 1,
+                      resource_content_id: 60,
+                      resource_id: 60,
+                      word_id: 1,
+                      language_id: 38,
+                      language_name: "english",
+                      text: "bis'mi",
+                      updated_at: "2026-08-30T02:43:00Z",
+                    },
+                    snapshot_url: null,
+                    unavailable_reason: null,
+                  },
+                ],
+              },
+            }),
+        ),
+      );
+
+      const response =
+        await testClient.resources.sync<WordByWordTransliterationSnapshotRecord>(
+          {
+            resources: "word_by_word_transliterations:60",
+            syncToken: "sync-token-98102",
+          },
+        );
+
+      const mutation = response.sync.mutations[0];
+      expect(mutation?.resourceGroup).toBe("word_by_word_transliterations");
+      expect(mutation?.recordType).toBe("word_transliteration");
+      expect(mutation?.data).toEqual({
+        id: 1,
+        resourceContentId: 60,
+        resourceId: 60,
+        wordId: 1,
+        languageId: 38,
+        languageName: "english",
+        text: "bis'mi",
+        updatedAt: "2026-08-30T02:43:00Z",
+      });
+    });
+
     it("exposes sync through content.v4.resources", async () => {
       const response = await testClient.content.v4.resources.sync({
         resources: "translations:19",
@@ -378,6 +443,62 @@ describe("Resources API", () => {
           text: "In",
           priority: 1,
           updatedAt: "2026-08-19T02:43:00Z",
+        },
+      ]);
+    });
+
+    it("returns typed camel-cased word-by-word transliteration records", async () => {
+      let requestUrl: URL | null = null;
+
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/snapshots/word_by_word_transliterations/:id",
+          ({ request, params }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              resource_group: "word_by_word_transliterations",
+              resource_id: Number(params.id),
+              resource_content_id: Number(params.id),
+              schema_version: 1,
+              sync_sequence: 98103,
+              records: [
+                {
+                  id: 1,
+                  resource_content_id: 60,
+                  resource_id: 60,
+                  word_id: 1,
+                  language_id: 38,
+                  language_name: "english",
+                  text: "bis'mi",
+                  updated_at: "2026-08-30T02:43:00Z",
+                },
+              ],
+            });
+          },
+        ),
+      );
+
+      const snapshot =
+        await testClient.resources.findSnapshot<WordByWordTransliterationSnapshotRecord>(
+          "word_by_word_transliterations",
+          60,
+        );
+
+      const url = expectCapturedUrl(requestUrl);
+      expect(url.pathname).toBe(
+        "/content/api/v4/resources/snapshots/word_by_word_transliterations/60",
+      );
+      expect(snapshot.resourceGroup).toBe("word_by_word_transliterations");
+      expect(snapshot.records).toEqual([
+        {
+          id: 1,
+          resourceContentId: 60,
+          resourceId: 60,
+          wordId: 1,
+          languageId: 38,
+          languageName: "english",
+          text: "bis'mi",
+          updatedAt: "2026-08-30T02:43:00Z",
         },
       ]);
     });
