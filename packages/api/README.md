@@ -47,6 +47,36 @@ const results = await client.search.v1.query({
 });
 ```
 
+### Content scopes
+
+By default the SDK requests the `content` scope for every content call. That is the pre-existing
+behaviour and it keeps working unchanged for credentials that were granted `content`.
+
+Quran Foundation is splitting `content` into nine narrower read scopes (`content.quran.read`,
+`content.audio.read`, and so on). Those scopes are **not issued to any client yet**. When your
+credentials are issued with them, opt in:
+
+```typescript
+const client = createServerClient({
+  clientId: process.env.CLIENT_ID!,
+  clientSecret: process.env.CLIENT_SECRET!,
+  contentScopeMode: "granular",
+});
+```
+
+In `granular` mode the SDK requests the single scope each operation needs, taken from the pinned
+operation catalog, so a call for chapters asks only for `content.quran.read`. Notes:
+
+- Use it only with credentials granted the granular scopes. With older credentials the token
+  endpoint will reject the request with `invalid_scope`; the SDK reports that and names the
+  scopes rather than retrying with a broader one.
+- Untyped calls through `client.fetch(url)` carry no operation, so granular mode cannot know which
+  scope they need and will tell you so instead of guessing. Use the typed operations, or pass an
+  explicit `accessToken`.
+- `search` and `analytics.events.write` are separate permissions and are unaffected in both modes.
+  A content call never requests them.
+- The default will only change in a deliberately versioned release.
+
 ### Analytics Events
 
 Analytics submission uses the `analytics.events.write` scope and is available

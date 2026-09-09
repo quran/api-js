@@ -4,8 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
-const DEFAULT_SOURCE_URL =
-  "https://raw.githubusercontent.com/quran/qf-api-docs/main/openAPI";
+const SOURCE_REPO_RAW_BASE =
+  "https://raw.githubusercontent.com/quran/qf-api-docs";
+const DEFAULT_SOURCE_REF = "main";
+const DEFAULT_SOURCE_URL = `${SOURCE_REPO_RAW_BASE}/${DEFAULT_SOURCE_REF}/openAPI`;
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const defaultOutputDir = path.join(
@@ -232,6 +234,17 @@ const readSpecs = async ({
     throw new Error("Use either --source-dir or --source-url, not both.");
   }
 
+  // The generated catalog is a published artifact: the scopes and paths in it are what the SDK
+  // will request at runtime. Reading it from a moving branch means a rebuild can change client
+  // behavior with no corresponding change in this repository, so a release build should pin a
+  // ref with --source-ref (or read a checkout with --source-dir).
+  if (!sourceDir && sourceUrl === DEFAULT_SOURCE_URL) {
+    console.warn(
+      `Reading OpenAPI specs from the mutable ${DEFAULT_SOURCE_REF} branch of qf-api-docs. ` +
+        "For a release build, pass --source-ref <commit-sha> to pin the source revision.",
+    );
+  }
+
   const readJson = sourceDir
     ? (relativePath) => readJsonFromSourceDir(sourceDir, relativePath)
     : (relativePath) => readJsonFromSourceUrl(sourceUrl, relativePath);
@@ -258,6 +271,37 @@ const visitOperations = (spec, callback) => {
   }
 };
 
+/**
+ * Lift the `x-qf-scopes` extension from an OpenAPI operation into catalog metadata.
+ *
+ * Only the fields the SDK needs at request time are carried over, so the generated catalog
+ * shipped in the bundle stays small. `quotaBuckets` deliberately stays out: rate limiting is the
+ * gateway's business and the SDK must never treat it as an authorization input.
+ *
+ * @param {object} operation - OpenAPI operation object.
+ * @returns {object | undefined} scope metadata, when the operation declares any.
+ */
+const extractOperationScopes = (operation) => {
+  const scopes = operation["x-qf-scopes"];
+  if (!scopes) {
+    return undefined;
+  }
+
+  const legacyAnyOf = scopes.legacyAnyOf ?? [];
+  const granularAnyOf = scopes.granularAnyOf ?? [];
+  if (legacyAnyOf.length === 0 || granularAnyOf.length === 0) {
+    throw new Error(
+      `x-qf-scopes on ${operation.operationId} must list both legacyAnyOf and granularAnyOf`,
+    );
+  }
+
+  return {
+    contractVersion: scopes.contractVersion,
+    granularAnyOf,
+    legacyAnyOf,
+  };
+};
+
 const addSpecOperations = ({
   auth,
   catalog,
@@ -274,10 +318,12 @@ const addSpecOperations = ({
       service,
     );
     const section = getCatalogSection(catalog, service, version);
+    const scopes = extractOperationScopes(operation);
     const catalogOperation = {
       auth,
       method,
       path: normalizeOperationPath(route, service),
+      ...(scopes ? { scopes } : {}),
     };
 
     addOperation(section, operationName, catalogOperation);
@@ -462,6 +508,16 @@ const parseArgs = (args) => {
 
     if (arg === "--source-url") {
       options.sourceUrl = args[++index];
+      continue;
+    }
+
+    // Convenience for the common case: pin the docs revision without spelling out the raw URL.
+    if (arg === "--source-ref") {
+      const ref = args[++index];
+      if (!ref) {
+        throw new Error("--source-ref requires a git ref, for example a commit SHA.");
+      }
+      options.sourceUrl = `${SOURCE_REPO_RAW_BASE}/${ref}/openAPI`;
       continue;
     }
 
