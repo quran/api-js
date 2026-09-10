@@ -15,9 +15,17 @@
     "",
     "TODO: this currently points at the head of qf-api-docs `feat/content-scope-split-v1`,",
     "which is the revision carrying the `x-qf-scopes` content scope metadata. Once",
-    "quran/qf-api-docs#207 merges, move this to the resulting commit on `main`."
+    "quran/qf-api-docs#207 merges, move this to the resulting commit on `main`.",
+    "",
+    "The contract that revision carries is sha256 ecfced4348e5, which added",
+    "`appCredentialsOnlyScopes`. Regenerating against it produces byte-identical catalogs: the",
+    "field records that `content.reflections.read` must not authorize a user-bound token, and",
+    "the gateway is what enforces it. This SDK cannot reach that case anyway -- content scopes",
+    "are resolved only on the `client_credentials` branch of `applyAuthHeaders`, where `sub`",
+    "equals the client id, and the `user` branch sends the session's existing token without",
+    "choosing scopes at all."
   ],
   "repository": "quran/qf-api-docs",
-  "ref": "63de0591c7336b73108932505fc2d09c35a07e0e",
+  "ref": "5b21946d29a5b75c90c8012ae5e1a3630ec12c9b",
   "path": "openAPI"
 }
