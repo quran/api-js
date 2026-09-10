@@ -12,6 +12,7 @@ import type {
   TokenResponse,
   UserSession,
 } from "@/types";
+import { lookupContentScopes } from "@/lib/content-scope-lookup";
 import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
 import {
@@ -268,7 +269,7 @@ export class QuranFetcher {
       throw new Error(
         `${response.status} ${response.statusText}. ` +
           `The app token did not carry a scope this endpoint accepts. ` +
-          `Requested scope: ${this.describeRequestedAppScope(service, url, operation)}. ` +
+          `Requested scope: ${this.describeRequestedAppScope(service, url, operation, request.method ?? "GET")}. ` +
           `Check the scopes granted to client ${this.config.clientId}` +
           (this.contentScopeMode() === "legacy"
             ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
@@ -482,7 +483,12 @@ export class QuranFetcher {
     }
 
     if (auth === "app") {
-      const token = await this.getAppAccessToken(service, resourceUrl, operation);
+      const token = await this.getAppAccessToken(
+        service,
+        resourceUrl,
+        operation,
+        request.method ?? "GET",
+      );
       this.setTokenHeaders(service, headers, token);
       return;
     }
@@ -606,6 +612,7 @@ export class QuranFetcher {
     service: ApiService,
     resourceUrl?: string,
     operation?: OperationDefinition,
+    method = "GET",
   ): Promise<string> {
     if (this.mode !== "server") {
       throw new Error(
@@ -613,7 +620,7 @@ export class QuranFetcher {
       );
     }
 
-    const scopes = this.resolveAppScopes(service, resourceUrl, operation);
+    const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
     if (scopes.length === 0) {
       throw new Error(
         `No client-credentials scope is configured for ${service}.`,
@@ -749,9 +756,10 @@ export class QuranFetcher {
     service: ApiService,
     resourceUrl?: string,
     operation?: OperationDefinition,
+    method = "GET",
   ): string {
     try {
-      const scopes = this.resolveAppScopes(service, resourceUrl, operation);
+      const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
       return scopes.length > 0 ? this.canonicalizeScopes(scopes) : "none";
     } catch {
       return "unknown";
@@ -773,6 +781,7 @@ export class QuranFetcher {
     service: ApiService,
     resourceUrl?: string,
     operation?: OperationDefinition,
+    method = "GET",
   ): string[] {
     if (service !== "content") {
       const serviceScope = APP_SERVICE_SCOPES[service];
@@ -780,7 +789,17 @@ export class QuranFetcher {
     }
 
     if (this.contentScopeMode() === "granular") {
-      const granular = operation?.scopes?.granularAnyOf ?? [];
+      // A generated raw operation carries its descriptor. The typed convenience facades
+      // (client.content.v4.chapters.list() and friends) call fetch() with a plain URL and carry
+      // none, so fall back to a deterministic path lookup against the same pinned catalog.
+      // Without this, granular mode throws on the documented public API.
+      const granular =
+        operation?.scopes?.granularAnyOf ??
+        (resourceUrl
+          ? lookupContentScopes(service, method, new URL(resourceUrl).pathname)
+              ?.granularAnyOf
+          : undefined) ??
+        [];
       if (granular.length > 0) {
         return granular;
       }

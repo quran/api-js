@@ -188,13 +188,25 @@ describe("granular mode requests the operation's own scope", () => {
     }
   });
 
-  it("refuses to guess when no operation scope is known", async () => {
+  it("resolves an untyped fetch through the pinned contract", async () => {
     const { fetchImpl, tokenScopes } = makeFetch();
     const fetcher = granular({}, fetchImpl as never);
 
-    // The untyped facade carries no operation. Falling back to `content` here would defeat
-    // granular mode and would fail anyway for credentials never granted it.
-    await expect(fetcher.fetch("/api/v4/chapters")).rejects.toThrow(
+    // No operation descriptor here, so the scope comes from a path lookup against the contract.
+    // This is what the typed convenience facades rely on: they all call fetch() with a plain URL.
+    await fetcher.fetch("/api/v4/chapters");
+
+    expect(tokenScopes()).toEqual(["content.quran.read"]);
+  });
+
+  it("still refuses to guess for a path the contract does not cover", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const fetcher = granular({}, fetchImpl as never);
+
+    // resources/changes is deliberately left unassigned, so there is no scope to resolve.
+    // Falling back to `content` would defeat granular mode and would fail anyway for
+    // credentials never granted it.
+    await expect(fetcher.fetch("/api/v4/resources/changes")).rejects.toThrow(
       /no content scope is known/iu,
     );
     expect(tokenScopes()).toEqual([]);

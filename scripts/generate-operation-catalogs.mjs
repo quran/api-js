@@ -1,14 +1,60 @@
 #!/usr/bin/env node
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
-const SOURCE_REPO_RAW_BASE =
-  "https://raw.githubusercontent.com/quran/qf-api-docs";
-const DEFAULT_SOURCE_REF = "main";
-const DEFAULT_SOURCE_URL = `${SOURCE_REPO_RAW_BASE}/${DEFAULT_SOURCE_REF}/openAPI`;
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
+const RAW_HOST = "https://raw.githubusercontent.com";
+
+const SOURCE_REPOSITORY = "quran/qf-api-docs";
+const SOURCE_REPO_RAW_BASE = `${RAW_HOST}/${SOURCE_REPOSITORY}`;
+const UNPINNED_REF = "main";
+
+/**
+ * Pinned source revision, from scripts/openapi-source.json.
+ *
+ * Generation, `--check` and CI all resolve their default from this one committed file, so a
+ * rebuild cannot silently pick up a different upstream state. `--source-ref`, `--source-url` and
+ * `--source-dir` still override it for local work.
+ *
+ * Read lazily and tolerantly: the module is copied and imported standalone by
+ * test/operation-catalog-generator.test.js, where the pin file is not present. A missing pin
+ * falls back to the unpinned branch and says so, rather than failing at import time. CI runs from
+ * a full checkout, so CI is always pinned.
+ */
+let sourcePinCache;
+
+const getSourcePin = () => {
+  if (sourcePinCache) return sourcePinCache;
+
+  const pinPath = path.join(scriptDir, "openapi-source.json");
+  let pin;
+  try {
+    pin = JSON.parse(fsSync.readFileSync(pinPath, "utf8"));
+  } catch {
+    sourcePinCache = {
+      available: false,
+      isCommitSha: false,
+      ref: UNPINNED_REF,
+      url: `${SOURCE_REPO_RAW_BASE}/${UNPINNED_REF}/openAPI`,
+    };
+    return sourcePinCache;
+  }
+
+  if (!pin.repository || !pin.ref) {
+    throw new Error(`${pinPath} must set "repository" and "ref"`);
+  }
+
+  sourcePinCache = {
+    available: true,
+    isCommitSha: /^[0-9a-f]{40}$/u.test(pin.ref),
+    ref: pin.ref,
+    url: `${RAW_HOST}/${pin.repository}/${pin.ref}/${pin.path ?? "openAPI"}`,
+  };
+  return sourcePinCache;
+};
 const repoRoot = path.resolve(scriptDir, "..");
 const defaultOutputDir = path.join(
   repoRoot,
@@ -226,28 +272,30 @@ const readJsonFromSourceUrl = async (sourceUrl, relativePath) => {
   return response.json();
 };
 
-const readSpecs = async ({
-  sourceDir,
-  sourceUrl = DEFAULT_SOURCE_URL,
-} = {}) => {
-  if (sourceDir && sourceUrl !== DEFAULT_SOURCE_URL) {
+const readSpecs = async ({ sourceDir, sourceUrl } = {}) => {
+  if (sourceDir && sourceUrl) {
     throw new Error("Use either --source-dir or --source-url, not both.");
   }
 
+  const pin = getSourcePin();
+  const resolvedUrl = sourceUrl ?? pin.url;
+
   // The generated catalog is a published artifact: the scopes and paths in it are what the SDK
-  // will request at runtime. Reading it from a moving branch means a rebuild can change client
-  // behavior with no corresponding change in this repository, so a release build should pin a
-  // ref with --source-ref (or read a checkout with --source-dir).
-  if (!sourceDir && sourceUrl === DEFAULT_SOURCE_URL) {
+  // requests at runtime. A moving ref means a rebuild can change client behaviour with no
+  // corresponding change here, so only a full commit SHA counts as reproducible.
+  if (!sourceDir && !sourceUrl && !pin.isCommitSha) {
     console.warn(
-      `Reading OpenAPI specs from the mutable ${DEFAULT_SOURCE_REF} branch of qf-api-docs. ` +
-        "For a release build, pass --source-ref <commit-sha> to pin the source revision.",
+      pin.available
+        ? `scripts/openapi-source.json pins ref "${pin.ref}", which is not a commit SHA. ` +
+            "A branch is not a reproducible input: set it to a full 40-character commit SHA."
+        : `No scripts/openapi-source.json found; falling back to the mutable ${UNPINNED_REF} ` +
+            "branch. This build is not reproducible.",
     );
   }
 
   const readJson = sourceDir
     ? (relativePath) => readJsonFromSourceDir(sourceDir, relativePath)
-    : (relativePath) => readJsonFromSourceUrl(sourceUrl, relativePath);
+    : (relativePath) => readJsonFromSourceUrl(resolvedUrl, relativePath);
 
   return {
     analytics: await readJson(inputSpecs.analytics.file),
