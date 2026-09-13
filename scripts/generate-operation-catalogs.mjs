@@ -33,7 +33,10 @@ const getSourcePin = () => {
   let pin;
   try {
     pin = JSON.parse(fsSync.readFileSync(pinPath, "utf8"));
-  } catch {
+  } catch (error) {
+    // Only standalone imports without a pin may use the compatibility fallback.
+    // A broken committed pin must never silently select a moving upstream revision.
+    if (error.code !== "ENOENT") throw error;
     sourcePinCache = {
       available: false,
       isCommitSha: false,
