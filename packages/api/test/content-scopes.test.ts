@@ -47,7 +47,9 @@ const contentOperation = (name: string) => {
 };
 
 /** Fake fetch that hands out tokens and empty JSON bodies, recording every call. */
-const makeFetch = (options: { grantedScope?: string; apiStatus?: number } = {}) => {
+const makeFetch = (
+  options: { grantedScope?: string; apiStatus?: number; tokenError?: string } = {},
+) => {
   const calls: Recorded[] = [];
 
   const fetchImpl = vi.fn((url: string | URL | Request, init?: RequestInit) => {
@@ -57,6 +59,14 @@ const makeFetch = (options: { grantedScope?: string; apiStatus?: number } = {}) 
 
     if (href === TOKEN_URL) {
       const requested = body.get("scope") ?? "";
+      if (options.tokenError) {
+        return Promise.resolve(
+          new Response(JSON.stringify({ error: options.tokenError }), {
+            headers: { "content-type": "application/json" },
+            status: 400,
+          }),
+        );
+      }
       return Promise.resolve(
         new Response(
           JSON.stringify({
@@ -287,6 +297,55 @@ describe("token cache keys", () => {
     expect(tokenScopes()).toEqual(["content.quran.read"]);
   });
 
+  it("does not let an in-flight request restore a cleared token", async () => {
+    let releaseFirstToken!: () => void;
+    let markFirstTokenStarted!: () => void;
+    const firstTokenGate = new Promise<void>((resolve) => {
+      releaseFirstToken = resolve;
+    });
+    const firstTokenStarted = new Promise<void>((resolve) => {
+      markFirstTokenStarted = resolve;
+    });
+    let tokenRequests = 0;
+    const fetchImpl = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+      if (asHref(url) === TOKEN_URL) {
+        tokenRequests += 1;
+        if (tokenRequests === 1) {
+          markFirstTokenStarted();
+          await firstTokenGate;
+        }
+        const scope = parseFormBody(init?.body).get("scope") ?? "";
+        return new Response(
+          JSON.stringify({
+            access_token: `token-${tokenRequests}`,
+            expires_in: 3600,
+            scope,
+            token_type: "Bearer",
+          }),
+          { headers: { "content-type": "application/json" }, status: 200 },
+        );
+      }
+
+      return new Response(JSON.stringify({}), {
+        headers: { "content-type": "application/json" },
+        status: 200,
+      });
+    });
+    const fetcher = new QuranFetcher(
+      "server",
+      serverConfig({ contentScopeMode: "granular" }, fetchImpl as never),
+    );
+
+    const firstCall = fetcher.requestOperation(contentOperation("listChapters"));
+    await firstTokenStarted;
+    fetcher.clearCachedTokens();
+    releaseFirstToken();
+    await firstCall;
+    await fetcher.requestOperation(contentOperation("listChapters"));
+
+    expect(tokenRequests).toBe(2);
+  });
+
   it("isolates the cache by issuer, so one issuer's token is not reused at another", async () => {
     const { fetchImpl, calls } = makeFetch();
     const first = new QuranFetcher(
@@ -352,6 +411,23 @@ describe("failures are reported, never widened", () => {
     await expect(
       fetcher.requestOperation(contentOperation("listChapters")),
     ).rejects.toThrow(/none of the requested scopes/iu);
+  });
+
+  it("does not suggest a content mode for a non-content invalid_scope", async () => {
+    const { fetchImpl } = makeFetch({ tokenError: "invalid_scope" });
+    const fetcher = new QuranFetcher(
+      "server",
+      serverConfig({ contentScopeMode: "legacy" }, fetchImpl as never),
+    );
+
+    const failure = await fetcher.request("search", "/search").then(
+      () => null,
+      (error: unknown) => error,
+    );
+
+    expect(failure).toBeInstanceOf(Error);
+    expect((failure as Error).message).toContain('invalid_scope for "search"');
+    expect((failure as Error).message).not.toContain("contentScopeMode");
   });
 
   it("accepts a legitimately narrowed grant", async () => {

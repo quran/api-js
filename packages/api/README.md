@@ -70,9 +70,11 @@ operation catalog, so a call for chapters asks only for `content.quran.read`. No
 - Use it only with credentials granted the granular scopes. With older credentials the token
   endpoint will reject the request with `invalid_scope`; the SDK reports that and names the
   scopes rather than retrying with a broader one.
-- Untyped calls through `client.fetch(url)` use the same pinned catalog to resolve known paths;
-  for example, `client.fetch("/api/v4/chapters")` requests `content.quran.read`. Paths absent from
-  that catalog fail instead of guessing a scope; pass an explicit `accessToken` for those calls.
+- Operations without a typed convenience method remain available through `client.raw`; for
+  example, `client.raw.listChapters()` requests `content.quran.read` from the same pinned catalog.
+  The public client has no arbitrary `client.fetch(url)` facade. For a path absent from the catalog,
+  call your fetch implementation directly and pass an explicit access token rather than guessing a
+  scope.
 - `search` and `analytics.events.write` are separate permissions and are unaffected in both modes.
   A content call never requests them.
 - The default will only change in a deliberately versioned release.

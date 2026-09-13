@@ -97,6 +97,9 @@ export class QuranFetcher {
   // Concurrent calls needing the same scope set share one token request, so code that fires
   // several requests at once does not open several identical client-credentials exchanges.
   private appTokenRequests = new Map<string, Promise<CachedToken>>();
+  // Invalidating the maps cannot cancel a request already in flight. Its captured generation
+  // prevents that older request from repopulating the cache after credential rotation.
+  private appTokenCacheGeneration = 0;
   private userSession: UserSession | null | undefined;
   private userSessionRefreshPromise: Promise<UserSession> | null = null;
 
@@ -120,6 +123,7 @@ export class QuranFetcher {
   }
 
   public clearCachedTokens(): void {
+    this.appTokenCacheGeneration += 1;
     this.appTokens.clear();
     this.appTokenRequests.clear();
   }
@@ -271,7 +275,7 @@ export class QuranFetcher {
           `The app token did not carry a scope this endpoint accepts. ` +
           `Requested scope: ${this.describeRequestedAppScope(service, url, operation, request.method ?? "GET")}. ` +
           `Check the scopes granted to client ${this.config.clientId}` +
-          (this.contentScopeMode() === "legacy"
+          (service === "content" && this.contentScopeMode() === "legacy"
             ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
             : `.`),
       );
@@ -648,12 +652,15 @@ export class QuranFetcher {
       return (await inFlight).value;
     }
 
+    const generation = this.appTokenCacheGeneration;
     const pending = this.fetchAppAccessToken(scope);
     this.appTokenRequests.set(cacheKey, pending);
 
     try {
       const token = await pending;
-      this.appTokens.set(cacheKey, token);
+      if (this.appTokenCacheGeneration === generation) {
+        this.appTokens.set(cacheKey, token);
+      }
       return token.value;
     } finally {
       if (this.appTokenRequests.get(cacheKey) === pending) {
@@ -699,12 +706,17 @@ export class QuranFetcher {
       // requested scopes turns an opaque 400 into something actionable, and retrying with a
       // broader set would be exactly the wrong response.
       if (responseBody.toLowerCase().includes("invalid_scope")) {
+        const isContentScope = scope
+          .split(/\s+/u)
+          .some((requested) => requested === "content" || requested.startsWith("content."));
         throw new Error(
           `Token request rejected with invalid_scope for "${scope}". Client ` +
             `${this.config.clientId} is not approved for those scopes.` +
-            (this.contentScopeMode() === "granular"
-              ? ` These credentials may predate the granular content scopes; try contentScopeMode: "legacy".`
-              : ` If these credentials were issued with granular content scopes, set contentScopeMode: "granular".`),
+            (isContentScope
+              ? this.contentScopeMode() === "granular"
+                ? ` These credentials may predate the granular content scopes; try contentScopeMode: "legacy".`
+                : ` If these credentials were issued with granular content scopes, set contentScopeMode: "granular".`
+              : ""),
         );
       }
 
