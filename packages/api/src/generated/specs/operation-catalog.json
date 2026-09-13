@@ -226,477 +226,1429 @@
         "audioReciterTimestamp": {
           "auth": "app",
           "method": "get",
-          "path": "/audio/reciters/{reciter_id}/timestamp"
+          "path": "/audio/reciters/{reciter_id}/timestamp",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "audioReciterLookup": {
           "auth": "app",
           "method": "get",
-          "path": "/audio/reciters/{reciter_id}/lookup"
+          "path": "/audio/reciters/{reciter_id}/lookup",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listChapters": {
           "auth": "app",
           "method": "get",
-          "path": "/chapters"
+          "path": "/chapters",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getChapter": {
           "auth": "app",
           "method": "get",
-          "path": "/chapters/{id}"
+          "path": "/chapters/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getChapterInfo": {
           "auth": "app",
           "method": "get",
-          "path": "/chapters/{id}/info"
+          "path": "/chapters/{id}/info",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "hadithReferencesByAyah": {
           "auth": "app",
           "method": "get",
-          "path": "/hadith_references/by_ayah/{ayah_key}"
+          "path": "/hadith_references/by_ayah/{ayah_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.hadith.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "hadithsByAyah": {
           "auth": "app",
           "method": "get",
-          "path": "/hadith_references/by_ayah/{ayah_key}/hadiths"
+          "path": "/hadith_references/by_ayah/{ayah_key}/hadiths",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.hadith.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "hadithCountWithinRange": {
           "auth": "app",
           "method": "get",
-          "path": "/hadith_references/count_within_range"
+          "path": "/hadith_references/count_within_range",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.hadith.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listPages": {
           "auth": "app",
           "method": "get",
-          "path": "/pages"
+          "path": "/pages",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getPagesLookup": {
           "auth": "app",
           "method": "get",
-          "path": "/pages/lookup"
+          "path": "/pages/lookup",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getPagesPageNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/pages/{page_number}"
+          "path": "/pages/{page_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByChapterNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_chapter/{chapter_number}"
+          "path": "/verses/by_chapter/{chapter_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByPageNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_page/{page_number}"
+          "path": "/verses/by_page/{page_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByJuzNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_juz/{juz_number}"
+          "path": "/verses/by_juz/{juz_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByHizbNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_hizb/{hizb_number}"
+          "path": "/verses/by_hizb/{hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByRubElHizbNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_rub/{rub_el_hizb_number}"
+          "path": "/verses/by_rub/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByManzilNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_manzil/{manzil_number}"
+          "path": "/verses/by_manzil/{manzil_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByRukuNumber": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_ruku/{ruku_number}"
+          "path": "/verses/by_ruku/{ruku_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByRange": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_range"
+          "path": "/verses/by_range",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByVerseKey": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_key/{verse_key}"
+          "path": "/verses/by_key/{verse_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "randomVerse": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/random"
+          "path": "/verses/random",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listJuzs": {
           "auth": "app",
           "method": "get",
-          "path": "/juzs"
+          "path": "/juzs",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesByScript": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/{script}"
+          "path": "/quran/verses/{script}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesIndopak": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/indopak"
+          "path": "/quran/verses/indopak",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesIndopakNastaleeq": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/indopak_nastaleeq"
+          "path": "/quran/verses/indopak_nastaleeq",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesUthmaniTajweed": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/uthmani_tajweed"
+          "path": "/quran/verses/uthmani_tajweed",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesUthmani": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/uthmani"
+          "path": "/quran/verses/uthmani",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesUthmaniSimple": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/uthmani_simple"
+          "path": "/quran/verses/uthmani_simple",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesImlaei": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/imlaei"
+          "path": "/quran/verses/imlaei",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "recitations": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/recitations"
+          "path": "/resources/recitations",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "recitationAudioFiles": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/recitations/{recitation_id}"
+          "path": "/quran/recitations/{recitation_id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "translation": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/translations/{translation_id}"
+          "path": "/quran/translations/{translation_id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "chapterReciters": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/chapter_reciters"
+          "path": "/resources/chapter_reciters",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "tafsir": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/tafsirs/{tafsir_id}"
+          "path": "/quran/tafsirs/{tafsir_id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesCodeV1": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/code_v1"
+          "path": "/quran/verses/code_v1",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "quranVersesCodeV2": {
           "auth": "app",
           "method": "get",
-          "path": "/quran/verses/code_v2"
+          "path": "/quran/verses/code_v2",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listSurahRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_chapter/{chapter_number}"
+          "path": "/recitations/{recitation_id}/by_chapter/{chapter_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listJuzRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_juz/{juz_number}"
+          "path": "/recitations/{recitation_id}/by_juz/{juz_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listPageRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_page/{page_number}"
+          "path": "/recitations/{recitation_id}/by_page/{page_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_rub/{rub_el_hizb_number}"
+          "path": "/recitations/{recitation_id}/by_rub/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listHizbRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_hizb/{hizb_number}"
+          "path": "/recitations/{recitation_id}/by_hizb/{hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listAyahRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_ayah/{ayah_key}"
+          "path": "/recitations/{recitation_id}/by_ayah/{ayah_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "recitationInfo": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/recitations/{recitation_id}/info"
+          "path": "/resources/recitations/{recitation_id}/info",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "translationInfo": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/translations/{translation_id}/info"
+          "path": "/resources/translations/{translation_id}/info",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "translations": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/translations"
+          "path": "/resources/translations",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "tafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/tafsirs"
+          "path": "/resources/tafsirs",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "tafsirInfo": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/tafsirs/{tafsir_id}/info"
+          "path": "/resources/tafsirs/{tafsir_id}/info",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "recitationStyles": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/recitation_styles"
+          "path": "/resources/recitation_styles",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "languages": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/languages"
+          "path": "/resources/languages",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.metadata.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "chapterInfo": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/chapter_infos"
+          "path": "/resources/chapter_infos",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "verseMedia": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/verse_media"
+          "path": "/resources/verse_media",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.metadata.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listManzilRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_manzil/{manzil_number}"
+          "path": "/recitations/{recitation_id}/by_manzil/{manzil_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRukuRecitation": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_ruku/{ruku_number}"
+          "path": "/recitations/{recitation_id}/by_ruku/{ruku_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listSurahTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_chapter/{chapter_number}"
+          "path": "/translations/{resource_id}/by_chapter/{chapter_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listPageTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_page/{page_number}"
+          "path": "/translations/{resource_id}/by_page/{page_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listJuzTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_juz/{juz_number}"
+          "path": "/translations/{resource_id}/by_juz/{juz_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}"
+          "path": "/translations/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listHizbTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_hizb/{hizb_number}"
+          "path": "/translations/{resource_id}/by_hizb/{hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listManzilTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_manzil/{manzil_number}"
+          "path": "/translations/{resource_id}/by_manzil/{manzil_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRukuTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_ruku/{ruku_number}"
+          "path": "/translations/{resource_id}/by_ruku/{ruku_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listAyahTranslations": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_ayah/{ayah_key}"
+          "path": "/translations/{resource_id}/by_ayah/{ayah_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listSurahTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_chapter/{chapter_number}"
+          "path": "/tafsirs/{resource_id}/by_chapter/{chapter_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listPageTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_page/{page_number}"
+          "path": "/tafsirs/{resource_id}/by_page/{page_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listJuzTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_juz/{juz_number}"
+          "path": "/tafsirs/{resource_id}/by_juz/{juz_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}"
+          "path": "/tafsirs/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listHizbTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_hizb/{hizb_number}"
+          "path": "/tafsirs/{resource_id}/by_hizb/{hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listManzilTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_manzil/{manzil_number}"
+          "path": "/tafsirs/{resource_id}/by_manzil/{manzil_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRukuTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_ruku/{ruku_number}"
+          "path": "/tafsirs/{resource_id}/by_ruku/{ruku_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listAyahTafsirs": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_ayah/{ayah_key}"
+          "path": "/tafsirs/{resource_id}/by_ayah/{ayah_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getJuz": {
           "auth": "app",
           "method": "get",
-          "path": "/juzs/{id}"
+          "path": "/juzs/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listHizbs": {
           "auth": "app",
           "method": "get",
-          "path": "/hizbs"
+          "path": "/hizbs",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getHizb": {
           "auth": "app",
           "method": "get",
-          "path": "/hizbs/{id}"
+          "path": "/hizbs/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbs": {
           "auth": "app",
           "method": "get",
-          "path": "/rub_el_hizbs"
+          "path": "/rub_el_hizbs",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getRubElHizb": {
           "auth": "app",
           "method": "get",
-          "path": "/rub_el_hizbs/{id}"
+          "path": "/rub_el_hizbs/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRukus": {
           "auth": "app",
           "method": "get",
-          "path": "/rukus"
+          "path": "/rukus",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getRuku": {
           "auth": "app",
           "method": "get",
-          "path": "/rukus/{id}"
+          "path": "/rukus/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listManzils": {
           "auth": "app",
           "method": "get",
-          "path": "/manzils"
+          "path": "/manzils",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getManzil": {
           "auth": "app",
           "method": "get",
-          "path": "/manzils/{id}"
+          "path": "/manzils/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getFootNote": {
           "auth": "app",
           "method": "get",
-          "path": "/foot_notes/{id}"
+          "path": "/foot_notes/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "postsControllerFeed": {
           "auth": "app",
           "method": "get",
-          "path": "/quran-reflect/v1/posts/feed"
+          "path": "/quran-reflect/v1/posts/feed",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.reflections.read"
+            ],
+            "legacyAnyOf": [
+              "post.read",
+              "post"
+            ]
+          }
         },
         "postsControllerFindOne": {
           "auth": "app",
           "method": "get",
-          "path": "/quran-reflect/v1/posts/{id}"
+          "path": "/quran-reflect/v1/posts/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.reflections.read"
+            ],
+            "legacyAnyOf": [
+              "post.read",
+              "post"
+            ]
+          }
         },
         "postsControllerGetUserPost": {
           "auth": "app",
           "method": "get",
-          "path": "/quran-reflect/v1/posts/user-posts/{id}"
+          "path": "/quran-reflect/v1/posts/user-posts/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.reflections.read"
+            ],
+            "legacyAnyOf": [
+              "post.read",
+              "post"
+            ]
+          }
         },
         "postsControllerGetComments": {
           "auth": "app",
           "method": "get",
-          "path": "/quran-reflect/v1/posts/{id}/comments"
+          "path": "/quran-reflect/v1/posts/{id}/comments",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.reflections.read"
+            ],
+            "legacyAnyOf": [
+              "comment.read",
+              "comment",
+              "post"
+            ]
+          }
         },
         "postsControllerGetAllComment": {
           "auth": "app",
           "method": "get",
-          "path": "/quran-reflect/v1/posts/{id}/all-comments"
+          "path": "/quran-reflect/v1/posts/{id}/all-comments",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.reflections.read"
+            ],
+            "legacyAnyOf": [
+              "comment.read",
+              "comment",
+              "post"
+            ]
+          }
         },
         "chapterReciterAudioFiles": {
           "auth": "app",
           "method": "get",
-          "path": "/chapter_recitations/{reciter_id}"
+          "path": "/chapter_recitations/{reciter_id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "chapterReciterAudioFile": {
           "auth": "app",
           "method": "get",
-          "path": "/chapter_recitations/{reciter_id}/{chapter_number}"
+          "path": "/chapter_recitations/{reciter_id}/{chapter_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "versesByRubElHizbNumberRubElHizb": {
           "auth": "app",
           "method": "get",
-          "path": "/verses/by_rub_el_hizb/{rub_el_hizb_number}"
+          "path": "/verses/by_rub_el_hizb/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.quran.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbTranslationsRub": {
           "auth": "app",
           "method": "get",
-          "path": "/translations/{resource_id}/by_rub/{rub_el_hizb_number}"
+          "path": "/translations/{resource_id}/by_rub/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.translations.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbTafsirsRub": {
           "auth": "app",
           "method": "get",
-          "path": "/tafsirs/{resource_id}/by_rub/{rub_el_hizb_number}"
+          "path": "/tafsirs/{resource_id}/by_rub/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.tafsirs.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listRubElHizbRecitationRubElHizb": {
           "auth": "app",
           "method": "get",
-          "path": "/recitations/{recitation_id}/by_rub_el_hizb/{rub_el_hizb_number}"
+          "path": "/recitations/{recitation_id}/by_rub_el_hizb/{rub_el_hizb_number}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.audio.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "listAyahAnswers": {
           "auth": "app",
           "method": "get",
-          "path": "/answers/by_ayah/{ayah_key}"
+          "path": "/answers/by_ayah/{ayah_key}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.answers.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "getAnswerById": {
           "auth": "app",
           "method": "get",
-          "path": "/answers/{question_id}"
+          "path": "/answers/{question_id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.answers.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "countAnswersWithinRange": {
           "auth": "app",
           "method": "get",
-          "path": "/answers/count_within_range"
+          "path": "/answers/count_within_range",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.answers.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "resourcesSync": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/sync"
+          "path": "/resources/sync",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.sync.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         },
         "resourcesSnapshot": {
           "auth": "app",
           "method": "get",
-          "path": "/resources/snapshots/{resource_group}/{id}"
+          "path": "/resources/snapshots/{resource_group}/{id}",
+          "scopes": {
+            "contractVersion": "content-scopes/v1",
+            "granularAnyOf": [
+              "content.sync.read"
+            ],
+            "legacyAnyOf": [
+              "content.read",
+              "content"
+            ]
+          }
         }
       },
       "service": "content",

@@ -3,6 +3,7 @@ import type {
   ApiParams,
   ApiService,
   CachedToken,
+  ContentScopeMode,
   CustomFetcher,
   OperationRequest,
   PublicClientConfig,
@@ -11,6 +12,7 @@ import type {
   TokenResponse,
   UserSession,
 } from "@/types";
+import { lookupContentScopes } from "@/lib/content-scope-lookup";
 import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
 import {
@@ -43,6 +45,8 @@ const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
   "/comments",
   "/all-comments",
 ] as const;
+const DEFAULT_CONTENT_SCOPE_MODE: ContentScopeMode = "legacy";
+const INSUFFICIENT_SCOPE_STATUSES = new Set([401, 403]);
 const GATEWAY_SERVICES = [
   "analytics",
   "auth",
@@ -90,6 +94,12 @@ const formatRefreshFailureMessage = (
 
 export class QuranFetcher {
   private appTokens = new Map<string, CachedToken>();
+  // Concurrent calls needing the same scope set share one token request, so code that fires
+  // several requests at once does not open several identical client-credentials exchanges.
+  private appTokenRequests = new Map<string, Promise<CachedToken>>();
+  // Invalidating the maps cannot cancel a request already in flight. Its captured generation
+  // prevents that older request from repopulating the cache after credential rotation.
+  private appTokenCacheGeneration = 0;
   private userSession: UserSession | null | undefined;
   private userSessionRefreshPromise: Promise<UserSession> | null = null;
 
@@ -113,7 +123,9 @@ export class QuranFetcher {
   }
 
   public clearCachedTokens(): void {
+    this.appTokenCacheGeneration += 1;
     this.appTokens.clear();
+    this.appTokenRequests.clear();
   }
 
   public async getUserSession(): Promise<UserSession | null> {
@@ -178,7 +190,7 @@ export class QuranFetcher {
     operation: OperationDefinition,
     request?: OperationRequest,
   ): Promise<T> {
-    return this.request<T>(
+    return this.requestInternal<T>(
       operation.service,
       replacePathParams(operation.path, request?.path),
       request?.query,
@@ -193,6 +205,9 @@ export class QuranFetcher {
           (operation.method.toUpperCase() as OperationRequest["method"]),
         path: undefined,
       },
+      // Carrying the operation through is what lets granular mode ask for the one scope this
+      // call needs instead of a service-wide scope.
+      operation,
     );
   }
 
@@ -201,6 +216,16 @@ export class QuranFetcher {
     path: string,
     query?: ApiParams,
     request: OperationRequest = {},
+  ): Promise<T> {
+    return this.requestInternal<T>(service, path, query, request);
+  }
+
+  private async requestInternal<T = unknown>(
+    service: ApiService,
+    path: string,
+    query?: ApiParams,
+    request: OperationRequest = {},
+    operation?: OperationDefinition,
   ): Promise<T> {
     const effectiveAuth = this.resolveAuthMode(service, request.auth);
 
@@ -221,6 +246,7 @@ export class QuranFetcher {
       request,
       effectiveAuth,
       userSession?.accessToken,
+      operation,
     );
 
     if (
@@ -233,6 +259,25 @@ export class QuranFetcher {
         request,
         effectiveAuth,
         refreshedSession.accessToken,
+        operation,
+      );
+    }
+
+    // A missing permission is never retried with a broader scope. Widening the request would
+    // paper over a misconfigured client and hand it more access than it was granted; the caller
+    // needs to see the failure and fix the scope or the client's approvals.
+    if (
+      INSUFFICIENT_SCOPE_STATUSES.has(response.status) &&
+      effectiveAuth === "app"
+    ) {
+      throw new Error(
+        `${response.status} ${response.statusText}. ` +
+          `The app token did not carry a scope this endpoint accepts. ` +
+          `Requested scope: ${this.describeRequestedAppScope(service, url, operation, request.method ?? "GET")}. ` +
+          `Check the scopes granted to client ${this.config.clientId}` +
+          (service === "content" && this.contentScopeMode() === "legacy"
+            ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
+            : `.`),
       );
     }
 
@@ -267,6 +312,7 @@ export class QuranFetcher {
     request: OperationRequest,
     auth: "app" | "none" | "user",
     accessToken?: string,
+    operation?: OperationDefinition,
   ): Promise<Response> {
     const headers = new Headers(request.headers);
     const body = prepareBody(request, headers);
@@ -284,6 +330,7 @@ export class QuranFetcher {
         accessToken: accessToken ?? request.accessToken,
       },
       url,
+      operation,
     );
 
     return this.getFetch()(url, {
@@ -418,6 +465,7 @@ export class QuranFetcher {
     headers: Headers,
     request: OperationRequest,
     resourceUrl?: string,
+    operation?: OperationDefinition,
   ): Promise<void> {
     if (request.basicAuth) {
       headers.set(
@@ -439,7 +487,12 @@ export class QuranFetcher {
     }
 
     if (auth === "app") {
-      const token = await this.getAppAccessToken(service, resourceUrl);
+      const token = await this.getAppAccessToken(
+        service,
+        resourceUrl,
+        operation,
+        request.method ?? "GET",
+      );
       this.setTokenHeaders(service, headers, token);
       return;
     }
@@ -547,9 +600,23 @@ export class QuranFetcher {
     headers.set("x-auth-token", accessToken);
   }
 
+  private contentScopeMode(): ContentScopeMode {
+    return this.config.contentScopeMode ?? DEFAULT_CONTENT_SCOPE_MODE;
+  }
+
+  private tokenEndpoint(): string {
+    return `${removeTrailingSlash(
+      this.config.services?.tokenHost ??
+        this.config.services?.oauth2BaseUrl ??
+        DEFAULT_BASE_URLS.oauth2,
+    )}/oauth2/token`;
+  }
+
   private async getAppAccessToken(
     service: ApiService,
     resourceUrl?: string,
+    operation?: OperationDefinition,
+    method = "GET",
   ): Promise<string> {
     if (this.mode !== "server") {
       throw new Error(
@@ -557,40 +624,68 @@ export class QuranFetcher {
       );
     }
 
-    const scope = this.resolveAppScope(service, resourceUrl);
-    if (!scope) {
+    const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
+    if (scopes.length === 0) {
       throw new Error(
         `No client-credentials scope is configured for ${service}.`,
       );
     }
 
-    const cacheKey = `${service}:${scope}`;
-    const cachedToken = this.appTokens.get(cacheKey);
+    // Scope order must not create a second cache entry for the same permission set, and one
+    // issuer's token is not valid at another. The key therefore covers the token endpoint, the
+    // client, the audience and the canonical scope set.
+    const scope = this.canonicalizeScopes(scopes);
+    const cacheKey = [
+      this.tokenEndpoint(),
+      this.config.clientId,
+      this.config.audience ?? "",
+      scope,
+    ].join("|");
 
+    const cachedToken = this.appTokens.get(cacheKey);
     if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
       return cachedToken.value;
     }
 
+    const inFlight = this.appTokenRequests.get(cacheKey);
+    if (inFlight) {
+      return (await inFlight).value;
+    }
+
+    const generation = this.appTokenCacheGeneration;
+    const pending = this.fetchAppAccessToken(scope);
+    this.appTokenRequests.set(cacheKey, pending);
+
+    try {
+      const token = await pending;
+      if (this.appTokenCacheGeneration === generation) {
+        this.appTokens.set(cacheKey, token);
+      }
+      return token.value;
+    } finally {
+      if (this.appTokenRequests.get(cacheKey) === pending) {
+        this.appTokenRequests.delete(cacheKey);
+      }
+    }
+  }
+
+  private async fetchAppAccessToken(scope: string): Promise<CachedToken> {
     if (!("clientSecret" in this.config)) {
       throw new Error("client_secret is server-only. Use @quranjs/api/server.");
     }
 
     const clientSecret = this.config.clientSecret;
-
-    const tokenUrl = `${removeTrailingSlash(
-      this.config.services?.tokenHost ??
-        this.config.services?.oauth2BaseUrl ??
-        DEFAULT_BASE_URLS.oauth2,
-    )}/oauth2/token`;
-
     const body = new URLSearchParams({
       grant_type: "client_credentials",
       scope,
     });
+    if (this.config.audience) {
+      body.set("audience", this.config.audience);
+    }
 
     const response = await retry(
       () =>
-        this.getFetch()(tokenUrl, {
+        this.getFetch()(this.tokenEndpoint(), {
           body,
           headers: {
             Accept: "application/json",
@@ -606,32 +701,144 @@ export class QuranFetcher {
     );
 
     if (!response.ok) {
+      const responseBody = await readResponseBody(response);
+      // invalid_scope means the client was never approved for what was asked. Reporting the
+      // requested scopes turns an opaque 400 into something actionable, and retrying with a
+      // broader set would be exactly the wrong response.
+      if (responseBody.toLowerCase().includes("invalid_scope")) {
+        const isContentScope = scope
+          .split(/\s+/u)
+          .some((requested) => requested === "content" || requested.startsWith("content."));
+        throw new Error(
+          `Token request rejected with invalid_scope for "${scope}". Client ` +
+            `${this.config.clientId} is not approved for those scopes.` +
+            (isContentScope
+              ? this.contentScopeMode() === "granular"
+                ? ` These credentials may predate the granular content scopes; try contentScopeMode: "legacy".`
+                : ` If these credentials were issued with granular content scopes, set contentScopeMode: "granular".`
+              : ""),
+        );
+      }
+
       throw new Error(
         `Token request failed: ${response.status} ${response.statusText}`,
       );
     }
 
     const json = (await response.json()) as TokenResponse;
-    const cached = {
+    const grantedScopes = json.scope
+      ? json.scope.split(" ").filter(Boolean)
+      : undefined;
+
+    // When the server reports what it granted, check the token can serve this call at all.
+    //
+    // RFC 6749 section 3.3 lets an authorization server issue a token with a narrower scope than
+    // was requested, so a partial grant is legitimate protocol behavior and must not fail here.
+    // A grant sharing nothing with the request is different: that token cannot authorize the call
+    // it was fetched for, and failing now with the scopes named is far more useful than the
+    // confusing 403 it would produce at the API.
+    if (grantedScopes) {
+      const requested = scope.split(" ");
+      const usable = requested.some((requestedScope) =>
+        grantedScopes.includes(requestedScope),
+      );
+      if (!usable) {
+        throw new Error(
+          `Token was granted "${grantedScopes.join(" ") || "no scopes"}" but none of the ` +
+            `requested scopes "${scope}". Check the scopes approved for client ` +
+            `${this.config.clientId}.`,
+        );
+      }
+    }
+
+    return {
       expiresAt: Date.now() + json.expires_in * 1000,
+      grantedScopes,
       value: json.access_token,
     };
-
-    this.appTokens.set(cacheKey, cached);
-    return cached.value;
   }
 
-  private resolveAppScope(
+  /** Deduplicate and sort, so scope order never produces a second cache entry. */
+  private canonicalizeScopes(scopes: string[]): string {
+    return [...new Set(scopes)].sort().join(" ");
+  }
+
+  /** Requested scope list for an error message, or a marker when it cannot be determined. */
+  private describeRequestedAppScope(
     service: ApiService,
     resourceUrl?: string,
-  ): string | undefined {
-    if (service !== "content" || !resourceUrl) {
-      return APP_SERVICE_SCOPES[service];
+    operation?: OperationDefinition,
+    method = "GET",
+  ): string {
+    try {
+      const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
+      return scopes.length > 0 ? this.canonicalizeScopes(scopes) : "none";
+    } catch {
+      return "unknown";
+    }
+  }
+
+  /**
+   * Scopes to request for an app-authenticated call.
+   *
+   * In `legacy` mode this reproduces the pre-split behavior exactly, including the special
+   * handling of the public QuranReflect reads that are served out of the content spec.
+   *
+   * In `granular` mode a content call asks for the single scope the operation declares in the
+   * pinned catalog. Non-content services are untouched in both modes: `search` and
+   * `analytics.events.write` are separately approved permissions and are never requested for a
+   * content call.
+   */
+  private resolveAppScopes(
+    service: ApiService,
+    resourceUrl?: string,
+    operation?: OperationDefinition,
+    method = "GET",
+  ): string[] {
+    if (service !== "content") {
+      const serviceScope = APP_SERVICE_SCOPES[service];
+      return serviceScope ? [serviceScope] : [];
+    }
+
+    if (this.contentScopeMode() === "granular") {
+      // A generated raw operation carries its descriptor. The typed convenience facades
+      // (client.content.v4.chapters.list() and friends) call fetch() with a plain URL and carry
+      // none, so fall back to a deterministic path lookup against the same pinned catalog.
+      // Without this, granular mode throws on the documented public API.
+      const granular =
+        operation?.scopes?.granularAnyOf ??
+        (resourceUrl
+          ? lookupContentScopes(service, method, new URL(resourceUrl).pathname)
+              ?.granularAnyOf
+          : undefined) ??
+        [];
+      if (granular.length > 0) {
+        return granular;
+      }
+
+      // No blanket fallback. Quietly asking for `content` here would defeat granular mode, and
+      // would fail anyway for credentials that were never granted it. Point the caller at the
+      // explicit escape hatch instead.
+      throw new Error(
+        `contentScopeMode is "granular" but no content scope is known for this call` +
+          (resourceUrl ? ` (${new URL(resourceUrl).pathname})` : "") +
+          `. Call it through a generated operation, or pass an explicit accessToken.`,
+      );
+    }
+
+    return this.resolveLegacyContentScopes(resourceUrl);
+  }
+
+  /** Pre-split content scope selection, behavior preserved exactly. */
+  private resolveLegacyContentScopes(resourceUrl?: string): string[] {
+    const contentScope = APP_SERVICE_SCOPES.content;
+    if (!resourceUrl) {
+      return contentScope ? [contentScope] : [];
     }
 
     const pathname = new URL(resourceUrl).pathname;
     if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
-      return APP_SERVICE_SCOPES.content;
+      return contentScope ? [contentScope] : [];
     }
 
     if (
@@ -639,10 +846,10 @@ export class QuranFetcher {
         pathname.endsWith(suffix),
       )
     ) {
-      return "comment.read";
+      return ["comment.read"];
     }
 
-    return "post.read";
+    return ["post.read"];
   }
 
   private resolveServiceBaseUrl(
