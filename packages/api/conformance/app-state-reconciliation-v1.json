@@ -1,0 +1,298 @@
+{
+  "fixtureVersion": "1.0.0",
+  "stateShape": [
+    "shadow",
+    "stagingBootstrap",
+    "syncToken",
+    "bootstrapCursor",
+    "pendingMutations",
+    "localRevision"
+  ],
+  "rules": {
+    "versionOrdering": "Apply only a greater server version. Ignore byte-identical duplicates. A same-version conflicting payload is a protocol error.",
+    "pageCommit": "Apply each complete page and its returned token in one local transaction.",
+    "bootstrapPromotion": "Build in staging, drain changes, and promote only after hasMore is false.",
+    "mutationRetry": "Reuse an idempotency key only while method, path, body, and preconditions are byte-identical.",
+    "accountIsolation": "Persist state per explicit account ID and reject late results whose account generation is stale."
+  },
+  "documents": {
+    "themeV1": {
+      "collection": "settings",
+      "key": "theme",
+      "schemaVersion": 1,
+      "version": 1,
+      "value": { "mode": "dark" },
+      "updatedAt": "2026-08-27T00:00:00.000Z",
+      "etag": "\"eW7U8NZHzJktl6gMZSl7ro20wHzI1iF7XhhgzMItkMQ\"",
+      "operation": "upsert"
+    },
+    "themeV2": {
+      "collection": "settings",
+      "key": "theme",
+      "schemaVersion": 1,
+      "version": 2,
+      "value": { "mode": "light" },
+      "updatedAt": "2026-08-27T00:05:00.000Z",
+      "etag": "\"ak2fpQSEh9rjZqM_vw2Ep9pmZW8JS6OfpVY5KPxdQI8\"",
+      "operation": "upsert"
+    },
+    "themeV3": {
+      "collection": "settings",
+      "key": "theme",
+      "schemaVersion": 1,
+      "version": 3,
+      "value": { "mode": "sepia" },
+      "updatedAt": "2026-08-27T00:10:00.000Z",
+      "etag": "\"s_6UYAfR2WOsf0gHaRMUXBw2kP1S-kRXyCmbCl6yZpk\"",
+      "operation": "upsert"
+    }
+  },
+  "scenarios": [
+    {
+      "name": "duplicate_change_is_idempotent",
+      "initial": {
+        "shadow": {},
+        "syncToken": "sync-0",
+        "pendingMutations": [],
+        "localRevision": 0
+      },
+      "pages": [
+        {
+          "changes": ["themeV1"],
+          "nextSyncToken": "sync-1",
+          "hasMore": true
+        },
+        {
+          "changes": ["themeV1"],
+          "nextSyncToken": "sync-2",
+          "hasMore": false
+        }
+      ],
+      "expected": {
+        "themeVersion": 1,
+        "themeValue": { "mode": "dark" },
+        "syncToken": "sync-2",
+        "protocolError": null
+      }
+    },
+    {
+      "name": "out_of_order_pages_keep_newest_document",
+      "initial": {
+        "shadow": {},
+        "syncToken": "sync-0",
+        "pendingMutations": [],
+        "localRevision": 0
+      },
+      "pages": [
+        {
+          "changes": ["themeV3"],
+          "nextSyncToken": "sync-3",
+          "hasMore": true
+        },
+        {
+          "changes": ["themeV2"],
+          "nextSyncToken": "sync-4",
+          "hasMore": false
+        }
+      ],
+      "expected": {
+        "themeVersion": 3,
+        "themeValue": { "mode": "sepia" },
+        "syncToken": "sync-4",
+        "protocolError": null
+      }
+    },
+    {
+      "name": "same_version_conflicting_payload_is_protocol_error",
+      "initial": {
+        "shadow": { "settings/theme": "themeV3" },
+        "syncToken": "sync-3",
+        "pendingMutations": [],
+        "localRevision": 0
+      },
+      "page": {
+        "changes": [
+          {
+            "collection": "settings",
+            "key": "theme",
+            "schemaVersion": 1,
+            "version": 3,
+            "value": { "mode": "conflicting" },
+            "updatedAt": "2026-08-27T00:10:00.000Z",
+            "etag": "\"s_6UYAfR2WOsf0gHaRMUXBw2kP1S-kRXyCmbCl6yZpk\"",
+            "operation": "upsert"
+          }
+        ],
+        "nextSyncToken": "sync-4",
+        "hasMore": false
+      },
+      "expected": {
+        "transactionCommitted": false,
+        "syncToken": "sync-3",
+        "protocolError": "same_version_conflict"
+      }
+    },
+    {
+      "name": "strict_conflict_rebases_complete_replacement",
+      "initial": {
+        "shadow": { "settings/theme": "themeV2" },
+        "syncToken": "sync-2",
+        "pendingMutations": [
+          {
+            "localRevision": 1,
+            "method": "PUT",
+            "collection": "settings",
+            "key": "theme",
+            "body": { "value": { "mode": "night" }, "schemaVersion": 1 },
+            "ifMatch": "\"ak2fpQSEh9rjZqM_vw2Ep9pmZW8JS6OfpVY5KPxdQI8\"",
+            "idempotencyKey": "strict-conflict-key-0001"
+          }
+        ],
+        "localRevision": 1
+      },
+      "transport": [
+        {
+          "operation": "putDocument",
+          "result": {
+            "status": 412,
+            "errorCode": "precondition_failed",
+            "currentETag": "\"s_6UYAfR2WOsf0gHaRMUXBw2kP1S-kRXyCmbCl6yZpk\""
+          }
+        },
+        { "operation": "getDocument", "result": "themeV3" },
+        {
+          "operation": "putDocument",
+          "request": {
+            "body": { "value": { "mode": "night" }, "schemaVersion": 1 },
+            "ifMatch": "\"s_6UYAfR2WOsf0gHaRMUXBw2kP1S-kRXyCmbCl6yZpk\"",
+            "idempotencyKey": "strict-conflict-key-0002"
+          },
+          "result": {
+            "status": 200,
+            "version": 4,
+            "etag": "\"PUtKJndaxQZjkoyHmKa7VV6SEmAF8qwN80ThvZe6-jI\""
+          }
+        }
+      ],
+      "expected": {
+        "replacementIntentPreserved": true,
+        "idempotencyKeyRotated": true,
+        "pendingMutations": [],
+        "themeVersion": 4,
+        "themeValue": { "mode": "night" }
+      }
+    },
+    {
+      "name": "crash_points_preserve_atomicity",
+      "cases": [
+        {
+          "crashPoint": "before_page_transaction_commit",
+          "initialToken": "sync-1",
+          "returnedToken": "sync-2",
+          "expectedTokenAfterRestart": "sync-1",
+          "expectedPageApplied": false
+        },
+        {
+          "crashPoint": "after_page_transaction_commit",
+          "initialToken": "sync-1",
+          "returnedToken": "sync-2",
+          "expectedTokenAfterRestart": "sync-2",
+          "expectedPageApplied": true
+        },
+        {
+          "crashPoint": "after_bootstrap_final_page_before_change_drain",
+          "expectedShadowPromoted": false,
+          "expectedStagingRetained": true
+        },
+        {
+          "crashPoint": "after_mutation_response_before_local_commit",
+          "retryUsesSameRequestBytes": true,
+          "retryUsesSameIdempotencyKey": true,
+          "expectedDuplicateServerMutation": false
+        }
+      ]
+    },
+    {
+      "name": "account_switch_rejects_late_response",
+      "initial": {
+        "activeAccountId": "account-a",
+        "accountGeneration": 1,
+        "accounts": {
+          "account-a": { "shadow": { "settings/theme": "themeV1" }, "syncToken": "a-sync-1" },
+          "account-b": { "shadow": {}, "syncToken": null }
+        }
+      },
+      "events": [
+        { "type": "start_reconcile", "accountId": "account-a", "generation": 1 },
+        { "type": "switch_account", "accountId": "account-b", "generation": 2 },
+        {
+          "type": "receive_page",
+          "accountId": "account-a",
+          "generation": 1,
+          "changes": ["themeV2"],
+          "nextSyncToken": "a-sync-2"
+        }
+      ],
+      "expected": {
+        "activeAccountId": "account-b",
+        "accountGeneration": 2,
+        "lateResponseCommitted": false,
+        "accountAThemeVersion": 1,
+        "accountASyncToken": "a-sync-1",
+        "accountBVisibleDocuments": []
+      }
+    },
+    {
+      "name": "put_delete_consume_prune_recreate_is_monotonic",
+      "identity": { "collection": "settings", "key": "lineage" },
+      "events": [
+        {
+          "type": "PUT",
+          "serverVersion": 1,
+          "value": { "enabled": true },
+          "syncToken": "lineage-sync-1"
+        },
+        {
+          "type": "DELETE",
+          "serverVersion": 2,
+          "value": null,
+          "syncToken": "lineage-sync-2"
+        },
+        {
+          "type": "consume_tombstone",
+          "storedTombstone": {
+            "version": 2,
+            "schemaVersion": 1,
+            "updatedAt": "2026-08-27T01:00:00.000Z"
+          },
+          "syncToken": "lineage-sync-2"
+        },
+        {
+          "type": "prune",
+          "validWatermark": 2,
+          "payloadPruned": true,
+          "lineageVersionRetained": 2
+        },
+        {
+          "type": "PUT",
+          "serverVersion": 3,
+          "value": { "enabled": false },
+          "syncToken": "lineage-sync-3"
+        },
+        {
+          "type": "consume_upsert",
+          "serverVersion": 3,
+          "syncToken": "lineage-sync-3"
+        }
+      ],
+      "expected": {
+        "tombstoneVersion": 2,
+        "recreatedVersion": 3,
+        "recreatedVersionGreaterThanTombstone": true,
+        "visibleValue": { "enabled": false },
+        "syncToken": "lineage-sync-3",
+        "tokenAdvancedOnlyAfterApply": true
+      }
+    }
+  ]
+}
