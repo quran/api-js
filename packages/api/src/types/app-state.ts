@@ -214,5 +214,13 @@ export interface AppStateReconciler {
     body: AppStatePutBody,
   ): Promise<AppStateStateView>;
   reconcile(): Promise<AppStateStateView>;
-  switchAccount(accountId: string): Promise<AppStateStateView>;
+  /**
+   * Atomically switch the local account boundary and the transport whose
+   * credentials are bound to that account. The transport must not read a
+   * mutable cross-account session at request time.
+   */
+  switchAccount(
+    accountId: string,
+    transport: AppStateTransport,
+  ): Promise<AppStateStateView>;
 }

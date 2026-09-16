@@ -23,12 +23,22 @@ describe("App State type surface", () => {
         createAppStateReconciler as createPublicReconciler,
         createPublicClient,
       } from "@quranjs/api/public";
-      import type { AppStateStoreReducer as PublicStoreReducer } from "@quranjs/api/public";
+      import type {
+        AppStateBootstrapPage as PublicBootstrapPage,
+        AppStateConfiguration as PublicConfiguration,
+        AppStateMutationOptions as PublicMutationOptions,
+        AppStatePutBody as PublicPutBody,
+        AppStateStoreReducer as PublicStoreReducer,
+      } from "@quranjs/api/public";
       import {
         createAppStateReconciler as createServerReconciler,
         createServerClient,
       } from "@quranjs/api/server";
-      import type { AppStatePendingMutation as ServerPendingMutation } from "@quranjs/api/server";
+      import type {
+        AppStateChangesPage as ServerChangesPage,
+        AppStateDocument as ServerDocument,
+        AppStatePendingMutation as ServerPendingMutation,
+      } from "@quranjs/api/server";
       import type {
         AppStateReconciler,
         AppStateStateView,
@@ -61,9 +71,24 @@ describe("App State type surface", () => {
       void createPublicReconciler;
       void createServerReconciler;
       const publicReducer: PublicStoreReducer<void> = () => undefined;
+      const publicBody: PublicPutBody = { value: null, schemaVersion: 1 };
+      const publicOptions: PublicMutationOptions = {
+        idempotencyKey: "idempotency-key-0003",
+      };
+      const publicBootstrap: PublicBootstrapPage | undefined = undefined;
+      const publicConfiguration: PublicConfiguration | undefined = undefined;
+      const serverChanges: ServerChangesPage | undefined = undefined;
+      const serverDocument: ServerDocument | undefined = undefined;
       const serverPending: ServerPendingMutation | undefined = undefined;
       void publicReducer;
+      void publicBody;
+      void publicOptions;
+      void publicBootstrap;
+      void publicConfiguration;
+      void serverChanges;
+      void serverDocument;
       void serverPending;
+      void reconciler.switchAccount("next-account", server.auth.v1.appState);
 
       const inspectError = (error: unknown) => {
         if (isAppStateHttpError(error, "precondition_failed")) {

@@ -981,7 +981,7 @@ describe("App State reconciler", () => {
     });
 
     const oldReconciliation = reconciler.reconcile();
-    const accountB = await reconciler.switchAccount("account-b");
+    const accountB = await reconciler.switchAccount("account-b", transport);
     oldAccountPage.resolve({
       data: {
         changes: [THEME_V2],
@@ -999,6 +999,63 @@ describe("App State reconciler", () => {
     expect(accountB.visible).toEqual({});
     expect(accountA.visible["settings/theme"]?.version).toBe(1);
     expect(accountA.syncToken).toBe("a-sync-1");
+    expect((await reconciler.getState()).visible).toEqual({});
+  });
+
+  it("keeps in-flight mutations bound to the transport captured for their account", async () => {
+    const store = createAppStateMemoryStore();
+    await store.transaction("account-a", (state) => {
+      applyAppStateChangePage(state, [THEME_V1], "a-sync-1");
+    });
+    const oldPut =
+      deferred<Awaited<ReturnType<AppStateTransport["putDocument"]>>>();
+    let oldTransportPuts = 0;
+    let newTransportPuts = 0;
+    const oldTransport = createTransport({
+      putDocument: () => {
+        oldTransportPuts += 1;
+        return oldPut.promise;
+      },
+    });
+    const newTransport = createTransport({
+      putDocument: () => {
+        newTransportPuts += 1;
+        return Promise.resolve({
+          data: THEME_V2,
+          etag: THEME_V2.etag,
+          status: 200,
+          success: true,
+        });
+      },
+    });
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      createIdempotencyKey: () => "account-bound-key-0001",
+      store,
+      transport: oldTransport,
+    });
+    await reconciler.putDocument("settings", "theme", {
+      schemaVersion: 1,
+      value: { mode: "night" },
+    });
+
+    const oldReconciliation = reconciler.reconcile();
+    await waitFor(() => oldTransportPuts === 1);
+    await reconciler.switchAccount("account-b", newTransport);
+    oldPut.resolve({
+      data: THEME_V2,
+      etag: THEME_V2.etag,
+      status: 200,
+      success: true,
+    });
+    await oldReconciliation;
+
+    expect(oldTransportPuts).toBe(1);
+    expect(newTransportPuts).toBe(0);
+    expect(
+      (await store.transaction("account-a", deriveAppStateStateView))
+        .pendingMutations,
+    ).toHaveLength(1);
     expect((await reconciler.getState()).visible).toEqual({});
   });
 
@@ -1023,7 +1080,7 @@ describe("App State reconciler", () => {
 
     const oldReconciliation = reconciler.reconcile();
     await waitFor(() => requestStarted);
-    await reconciler.switchAccount("account-b");
+    await reconciler.switchAccount("account-b", createTransport());
     staleFailure.reject(new Error("stale normal pull failed"));
 
     await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
@@ -1046,7 +1103,7 @@ describe("App State reconciler", () => {
 
     const oldReconciliation = reconciler.reconcile();
     await waitFor(() => requestStarted);
-    await reconciler.switchAccount("account-b");
+    await reconciler.switchAccount("account-b", createTransport());
     staleFailure.reject(new Error("stale bootstrap failed"));
 
     await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
@@ -1079,7 +1136,7 @@ describe("App State reconciler", () => {
 
     const oldReconciliation = reconciler.reconcile();
     await waitFor(() => drainStarted);
-    await reconciler.switchAccount("account-b");
+    await reconciler.switchAccount("account-b", createTransport());
     staleFailure.reject(new Error("stale bootstrap drain failed"));
 
     await expect(oldReconciliation).resolves.toMatchObject({ visible: {} });
@@ -1121,7 +1178,7 @@ describe("App State reconciler", () => {
 
     const oldReconciliation = reconciler.reconcile();
     await waitFor(() => putStarted);
-    await reconciler.switchAccount("account-b");
+    await reconciler.switchAccount("account-b", createTransport());
     conflict.resolve(await errorResponse(412, "precondition_failed"));
     await oldReconciliation;
 
@@ -1170,7 +1227,7 @@ describe("App State reconciler", () => {
 
     const oldReconciliation = reconciler.reconcile();
     await waitFor(() => progressBlocked);
-    await reconciler.switchAccount("account-b");
+    await reconciler.switchAccount("account-b", createTransport());
     releaseProgress.resolve();
     await oldReconciliation;
 
@@ -1192,7 +1249,8 @@ describe("App State reconciler", () => {
         deleteDocument: () => Promise.resolve(),
         getChanges: (since) => {
           changeReads += 1;
-          if (changeReads === 2) return Promise.reject(new Error("final pull failed"));
+          if (changeReads === 2)
+            return Promise.reject(new Error("final pull failed"));
           return Promise.resolve({
             data: { changes: [], hasMore: false, nextSyncToken: since },
             success: true,

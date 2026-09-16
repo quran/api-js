@@ -140,8 +140,16 @@ await appState.reconcile();
 const state = await appState.getState();
 const theme = state.visible["settings/theme"];
 
-await appState.switchAccount(nextSignedInAccountId);
+await appState.switchAccount(
+  nextSignedInAccountId,
+  nextAccountClient.auth.v1.appState,
+);
 ```
+
+Account switching replaces the local account boundary and transport atomically. Create a separate
+client/transport whose immutable session belongs to the target account; do not pass a facade that
+reads a mutable cross-account session at request time. An in-flight request retains the transport
+captured for its original account, and its late result cannot commit after the generation changes.
 
 `putDocument()` and `deleteDocument()` only queue local mutations. Call
 `reconcile()` to pull, replay the captured pending set, and pull again. Calls to

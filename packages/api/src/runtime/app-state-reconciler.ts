@@ -10,6 +10,7 @@ import type {
   AppStateResponse,
   AppStateStateView,
   AppStateStoredDocument,
+  AppStateTransport,
 } from "@/types";
 import { getAppStateErrorCode } from "@/sdk/app-state-errors";
 
@@ -30,6 +31,7 @@ import {
 interface ReconcileContext {
   accountId: string;
   generation: number;
+  transport: AppStateTransport;
 }
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -89,7 +91,7 @@ export const createAppStateReconciler = ({
   maxRebaseAttempts = DEFAULT_MAX_REBASE_ATTEMPTS,
   pageSize = DEFAULT_PAGE_SIZE,
   store,
-  transport,
+  transport: initialTransport,
 }: AppStateReconcilerOptions): AppStateReconciler => {
   if (!initialAccountId) {
     throw new TypeError("App State reconciliation requires an account ID.");
@@ -100,6 +102,7 @@ export const createAppStateReconciler = ({
   }
 
   let activeAccountId = initialAccountId;
+  let activeTransport = initialTransport;
   let accountGeneration = 0;
   let reconcileQueue = Promise.resolve();
 
@@ -110,6 +113,7 @@ export const createAppStateReconciler = ({
   const context = (): ReconcileContext => ({
     accountId: activeAccountId,
     generation: accountGeneration,
+    transport: activeTransport,
   });
 
   const commit = async (
@@ -159,9 +163,9 @@ export const createAppStateReconciler = ({
           break;
         }
 
-        let response: Awaited<ReturnType<typeof transport.bootstrap>>;
+        let response: Awaited<ReturnType<AppStateTransport["bootstrap"]>>;
         try {
-          response = await transport.bootstrap({
+          response = await reconcileContext.transport.bootstrap({
             ...(progress.bootstrapCursor === null
               ? {}
               : { cursor: progress.bootstrapCursor }),
@@ -200,9 +204,9 @@ export const createAppStateReconciler = ({
         if (syncToken === null) {
           throw new AppStateProtocolError("bootstrap_sync_token_missing");
         }
-        let response: Awaited<ReturnType<typeof transport.getChanges>>;
+        let response: Awaited<ReturnType<AppStateTransport["getChanges"]>>;
         try {
-          response = await transport.getChanges(syncToken, {
+          response = await reconcileContext.transport.getChanges(syncToken, {
             limit: pageSize,
           });
         } catch (error) {
@@ -210,9 +214,7 @@ export const createAppStateReconciler = ({
           if (!isRecoveryError(error)) throw error;
           const resetCommitted = await resetBootstrap(reconcileContext);
           if (!resetCommitted) return;
-          if (
-            restartAttempts >= DEFAULT_MAX_BOOTSTRAP_RESTART_ATTEMPTS
-          ) {
+          if (restartAttempts >= DEFAULT_MAX_BOOTSTRAP_RESTART_ATTEMPTS) {
             throw error;
           }
           restartAttempts += 1;
@@ -253,9 +255,12 @@ export const createAppStateReconciler = ({
       }
 
       try {
-        const response = await transport.getChanges(syncToken, {
-          limit: pageSize,
-        });
+        const response = await reconcileContext.transport.getChanges(
+          syncToken,
+          {
+            limit: pageSize,
+          },
+        );
         if (!isCurrent(reconcileContext)) return;
         const pageCommitted = await commit(reconcileContext, (state) => {
           applyAppStateChangePage(
@@ -321,9 +326,12 @@ export const createAppStateReconciler = ({
     reconcileContext: ReconcileContext,
     mutation: AppStatePendingMutation,
   ): Promise<AppStatePendingMutation | null> => {
-    let current: Awaited<ReturnType<typeof transport.getDocument>> | null;
+    let current: Awaited<ReturnType<AppStateTransport["getDocument"]>> | null;
     try {
-      current = await transport.getDocument(mutation.collection, mutation.key);
+      current = await reconcileContext.transport.getDocument(
+        mutation.collection,
+        mutation.key,
+      );
     } catch (error) {
       if (getAppStateErrorCode(error) !== "document_not_found") throw error;
       current = null;
@@ -389,7 +397,7 @@ export const createAppStateReconciler = ({
     while (isCurrent(reconcileContext)) {
       try {
         if (mutation.method === "PUT") {
-          const response = await transport.putDocument(
+          const response = await reconcileContext.transport.putDocument(
             mutation.collection,
             mutation.key,
             mutation.body,
@@ -398,7 +406,7 @@ export const createAppStateReconciler = ({
           if (!isCurrent(reconcileContext)) return;
           await applySuccessfulPut(reconcileContext, mutation, response);
         } else {
-          await transport.deleteDocument(
+          await reconcileContext.transport.deleteDocument(
             mutation.collection,
             mutation.key,
             mutationOptions(mutation),
@@ -491,7 +499,7 @@ export const createAppStateReconciler = ({
       );
       return operation.then(() => getStateFor(activeAccountId));
     },
-    switchAccount: (accountId) => {
+    switchAccount: (accountId, transport) => {
       if (!accountId) {
         return Promise.reject(
           new TypeError("App State reconciliation requires an account ID."),
@@ -499,6 +507,7 @@ export const createAppStateReconciler = ({
       }
       accountGeneration += 1;
       activeAccountId = accountId;
+      activeTransport = transport;
       return getStateFor(accountId);
     },
   };
