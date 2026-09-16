@@ -41,7 +41,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:package",
+    "test:package": "npm run build && node ./test/smoke/app-state-package.cjs",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",
     "smoke:local:server": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-server.cjs",

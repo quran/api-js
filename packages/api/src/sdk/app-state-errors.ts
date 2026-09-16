@@ -4,17 +4,28 @@ export type AppStateErrorCode =
   | "app_state_data_deleted"
   | "app_state_disabled"
   | "app_state_policy_changed"
+  | "app_state_unavailable"
   | "bootstrap_required"
   | "collection_not_allowed"
   | "document_not_found"
+  | "document_too_large"
   | "idempotency_key_reused"
+  | "internal_server_error"
   | "insufficient_scope"
+  | "invalid_collection"
   | "invalid_etag"
+  | "invalid_idempotency_key"
   | "invalid_json"
   | "invalid_key"
+  | "invalid_precondition"
   | "invalid_sync_token"
+  | "invalid_token"
+  | "namespace_resolution_unavailable"
+  | "payload_too_large"
   | "precondition_failed"
   | "precondition_required"
+  | "quota_exceeded"
+  | "rate_limit_exceeded"
   | "sync_token_expired";
 
 export interface AppStateServiceError {
@@ -46,17 +57,28 @@ const APP_STATE_ERROR_CODES: ReadonlySet<string> = new Set<AppStateErrorCode>([
   "app_state_data_deleted",
   "app_state_disabled",
   "app_state_policy_changed",
+  "app_state_unavailable",
   "bootstrap_required",
   "collection_not_allowed",
   "document_not_found",
+  "document_too_large",
   "idempotency_key_reused",
+  "internal_server_error",
   "insufficient_scope",
+  "invalid_collection",
   "invalid_etag",
+  "invalid_idempotency_key",
   "invalid_json",
   "invalid_key",
+  "invalid_precondition",
   "invalid_sync_token",
+  "invalid_token",
+  "namespace_resolution_unavailable",
+  "payload_too_large",
   "precondition_failed",
   "precondition_required",
+  "quota_exceeded",
+  "rate_limit_exceeded",
   "sync_token_expired",
 ]);
 

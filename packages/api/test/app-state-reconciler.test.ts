@@ -320,6 +320,40 @@ describe("App State reconciler", () => {
     expect(view.syncToken).toBe("sync-4");
   });
 
+  it("snapshots a put body before waiting for durable storage", async () => {
+    const delegate = createAppStateMemoryStore();
+    const gate = deferred<void>();
+    let firstTransaction = true;
+    const store: AppStateStore = {
+      transaction: async (accountId, reducer) => {
+        if (firstTransaction) {
+          firstTransaction = false;
+          await gate.promise;
+        }
+        return delegate.transaction(accountId, reducer);
+      },
+    };
+    const reconciler = createAppStateReconciler({
+      accountId: "account-a",
+      store,
+      transport: createTransport(),
+    });
+    const body = {
+      schemaVersion: 1,
+      value: { mode: "sepia" },
+    };
+
+    const put = reconciler.putDocument("settings", "theme", body);
+    body.value.mode = "light";
+    gate.resolve();
+
+    const view = await put;
+    expect(view.pendingMutations[0]).toMatchObject({
+      body: { schemaVersion: 1, value: { mode: "sepia" } },
+      method: "PUT",
+    });
+  });
+
   it("captures replay work before awaiting and removes only the completed revision", async () => {
     const store = createAppStateMemoryStore();
     await store.transaction("account-a", (state) => {

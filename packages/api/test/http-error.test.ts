@@ -204,6 +204,30 @@ it("narrows App State errors by their service code", async () => {
   expect(getAppStateErrorCode(new Error("private failure"))).toBeUndefined();
 });
 
+it.each([
+  "document_too_large",
+  "invalid_collection",
+  "invalid_idempotency_key",
+  "invalid_precondition",
+  "invalid_token",
+  "payload_too_large",
+  "quota_exceeded",
+  "rate_limit_exceeded",
+  "internal_server_error",
+  "namespace_resolution_unavailable",
+  "app_state_unavailable",
+] as const)("recognizes the documented App State error code %s", async (code) => {
+  const error = await QuranHttpError.fromResponse(
+    Response.json({ success: false, message: "App State request failed", details: { error: { code } } }, {
+      status: 400,
+      statusText: "Bad Request",
+    }),
+  );
+
+  expect(getAppStateErrorCode(error)).toBe(code);
+  expect(isAppStateHttpError(error, code)).toBe(true);
+});
+
 it("narrows the frozen nested Gateway envelope and retains the legacy flat fallback", async () => {
   const nestedError = await QuranHttpError.fromResponse(
     new Response(GATEWAY_SYNC_TOKEN_EXPIRED_ENVELOPE, {

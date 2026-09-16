@@ -483,8 +483,15 @@ export const createAppStateReconciler = ({
     putDocument: async (collection, key, body: AppStatePutBody) => {
       const mutationContext = context();
       const idempotencyKey = createIdempotencyKey();
+      const bodySnapshot = JSON.parse(JSON.stringify(body)) as AppStatePutBody;
       await store.transaction(mutationContext.accountId, (state) => {
-        queueAppStatePut(state, collection, key, body, idempotencyKey);
+        queueAppStatePut(
+          state,
+          collection,
+          key,
+          bodySnapshot,
+          idempotencyKey,
+        );
       });
       return getStateFor(activeAccountId);
     },
