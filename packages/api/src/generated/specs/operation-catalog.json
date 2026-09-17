@@ -15,6 +15,56 @@
   "auth": {
     "v1": {
       "operations": {
+        "getUserCsrfToken": {
+          "auth": "user",
+          "method": "get",
+          "path": "/users/csrf-token"
+        },
+        "listUserConnectedApps": {
+          "auth": "user",
+          "method": "get",
+          "path": "/users/connected-apps"
+        },
+        "runUserConnectedAppLifecycle": {
+          "auth": "user",
+          "method": "post",
+          "path": "/users/connected-apps/{appId}/lifecycle"
+        },
+        "getAppStateConfiguration": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:config"
+        },
+        "bootstrapAppState": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:bootstrap"
+        },
+        "getAppStateChanges": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:changes"
+        },
+        "listAppStateDocuments": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state/{collection}"
+        },
+        "getAppStateDocument": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
+        "putAppStateDocument": {
+          "auth": "user",
+          "method": "put",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
+        "deleteAppStateDocument": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
         "getV1Collections": {
           "auth": "user",
           "method": "get",
