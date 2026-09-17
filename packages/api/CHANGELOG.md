@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.9.0
+
+### Minor Changes
+
+- 19146fc: Add typed App State configuration, document, bootstrap, and changes APIs for public and server clients, including a structural transport contract, typed error narrowing, immutable mutation snapshots, and shared error identity across package entrypoints.
+
 ## 3.8.0
 
 ### Minor Changes
