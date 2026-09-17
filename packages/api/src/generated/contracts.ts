@@ -5,12 +5,26 @@ import operationCatalogJson from "./specs/operation-catalog.json";
 export type HttpMethod = "get" | "post" | "put" | "patch" | "delete";
 export type OperationAuthMode = "none" | "app" | "user";
 
+/**
+ * OAuth scopes an operation accepts, from the pinned content scope contract.
+ *
+ * `legacyAnyOf` is what the API accepts today; `granularAnyOf` is the successor. The API accepts
+ * ANY ONE of the two lists combined, so a token carrying either is authorized. The SDK requests
+ * one of them depending on `contentScopeMode`, and never requests both.
+ */
+export interface OperationScopes {
+  contractVersion: string;
+  legacyAnyOf: string[];
+  granularAnyOf: string[];
+}
+
 export interface OperationDefinition {
   auth: OperationAuthMode;
   method: HttpMethod;
   operationId?: string;
   operationName: string;
   path: string;
+  scopes?: OperationScopes;
   serverUrl?: string;
   service: ApiService;
   tags: string[];
