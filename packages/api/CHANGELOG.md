@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.10.0
+
+### Minor Changes
+
+- 6bcf98a: Add typed `quran_core:1` Content Sync snapshot records for canonical Quran text, chapter metadata, and navigation boundaries.
+
 ## 3.9.0
 
 ### Minor Changes
