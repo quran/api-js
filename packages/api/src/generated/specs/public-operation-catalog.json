@@ -628,6 +628,11 @@
           "method": "get",
           "path": "/v1/comments/{id}/delete"
         },
+        "commentsControllerReportAbuse": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/report"
+        },
         "commentsControllerToggleLike": {
           "auth": "user",
           "method": "post",

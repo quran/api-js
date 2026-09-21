@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type {
   MushafSnapshotRecord,
+  QuranCoreSnapshotRecord,
   WordByWordTranslationSnapshotRecord,
   WordByWordTransliterationSnapshotRecord,
 } from "../src/types";
@@ -264,6 +265,41 @@ describe("Resources API", () => {
       });
     });
 
+    it("returns Quran core verse row mutations", async () => {
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/sync",
+          ({ request }) => {
+            expect(new URL(request.url).searchParams.get("resources")).toBe(
+              "mushafs:1;quran_core:1",
+            );
+            return HttpResponse.json({
+              sync: {
+                sync_until_sequence: 43, has_more: false,
+                next_page_url: null, next_sync_token: "sync-token-43",
+                mutations: [{
+                  sequence: 43, type: "ROW_UPDATE", resource_group: "quran_core",
+                  resource_id: 1, resource_content_id: null, record_type: "verse",
+                  record_key: "1", source_record_id: 1,
+                  changed_at: "2026-09-21T00:00:00Z",
+                  data: { id: 1, verse_key: "1:1", text_uthmani: "بِسْمِ ٱللَّهِ" },
+                  snapshot_url: null, unavailable_reason: null,
+                }],
+              },
+            });
+          },
+        ),
+      );
+
+      const response = await testClient.resources.sync<QuranCoreSnapshotRecord>({
+        resources: "mushafs:1;quran_core:1", syncToken: "sync-token-42",
+      });
+      expect(response.sync.mutations[0]).toMatchObject({
+        resourceGroup: "quran_core", recordType: "verse", recordKey: "1",
+        data: { verseKey: "1:1", textUthmani: "بِسْمِ ٱللَّهِ" },
+      });
+    });
+
     it("exposes sync through content.v4.resources", async () => {
       const response = await testClient.content.v4.resources.sync({
         resources: "translations:19",
@@ -275,6 +311,60 @@ describe("Resources API", () => {
   });
 
   describe("findSnapshot()", () => {
+    it("returns typed Quran core records without Mushaf-specific pages", async () => {
+      let requestUrl: URL | null = null;
+      server.use(
+        http.get(
+          "https://apis.quran.foundation/content/api/v4/resources/snapshots/quran_core/1",
+          ({ request }) => {
+            requestUrl = new URL(request.url);
+            return HttpResponse.json({
+              resource_group: "quran_core",
+              resource_id: 1,
+              resource_content_id: null,
+              schema_version: 1,
+              sync_sequence: 42,
+              records: [
+                {
+                  record_type: "chapter", id: 1, chapter_number: 1,
+                  name_simple: "Al-Fatihah", verses_count: 7,
+                  updated_at: "2026-09-21T00:00:00Z",
+                },
+                {
+                  record_type: "verse", id: 1, chapter_id: 1,
+                  verse_number: 1, verse_index: 1, verse_key: "1:1",
+                  text_uthmani: "بِسْمِ ٱللَّهِ", updated_at: "2026-09-21T00:00:00Z",
+                },
+                {
+                  record_type: "rub_el_hizb", id: 1, rub_el_hizb_number: 1,
+                  first_verse_id: 1, last_verse_id: 7, verses_count: 7,
+                  verse_mapping: { "1": "1-7" }, updated_at: "2026-09-21T00:00:00Z",
+                },
+              ],
+            });
+          },
+        ),
+      );
+
+      const snapshot = await testClient.resources.findSnapshot<QuranCoreSnapshotRecord>(
+        "quran_core", 1,
+      );
+      expect(expectCapturedUrl(requestUrl).pathname).toBe(
+        "/content/api/v4/resources/snapshots/quran_core/1",
+      );
+      expect(snapshot.resourceContentId).toBeNull();
+      expect(snapshot.records[0]).toMatchObject({
+        recordType: "chapter", chapterNumber: 1, versesCount: 7,
+      });
+      expect(snapshot.records[0]).not.toHaveProperty("pages");
+      expect(snapshot.records[1]).toMatchObject({
+        recordType: "verse", verseKey: "1:1", textUthmani: "بِسْمِ ٱللَّهِ",
+      });
+      expect(snapshot.records[2]).toMatchObject({
+        recordType: "rub_el_hizb", rubElHizbNumber: 1, firstVerseId: 1,
+      });
+    });
+
     it("returns typed camel-cased Mushaf records", async () => {
       let requestUrl: URL | null = null;
 
