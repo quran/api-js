@@ -53,6 +53,7 @@ describe("createPublicClient", () => {
     };
 
     await expect(content.v4.chapters.list()).rejects.toThrowError(/server/i);
+    expect(typeof client.tafsir.get).toBe("function");
     await expect(answers.findByAyah("2:255")).rejects.toThrowError(/server/i);
 
     const response =

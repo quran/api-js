@@ -75,6 +75,19 @@ describe("createServerClient", () => {
     expect(search.pagination.currentPage).toBe(1);
   });
 
+  it("exposes the tafsir facade through the runtime client", async () => {
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+      },
+    });
+
+    expect(typeof client.tafsir.get).toBe("function");
+    expect(typeof client.content.v4.tafsir.byChapter).toBe("function");
+  });
+
   it("lets server client defaults override the Arabic language default", async () => {
     let chaptersUrl: string | null = null;
 
