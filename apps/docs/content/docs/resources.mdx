@@ -86,6 +86,44 @@ for (const record of snapshot.records) {
   name="MushafSnapshotRecord"
 />
 
+### Sync Canonical Quran Core
+
+When published, the singleton `quran_core:1` contains canonical Uthmani verse
+text, Surah metadata, and Juz/Hizb/Rub-el-Hizb boundaries. Its records are
+identified by `recordType` and `id`. It excludes Mushaf-specific page and
+glyph data; sync `mushafs:<id>` alongside it for layout. Quran core publication
+is pending content/licensing approval, so a snapshot may currently be unavailable.
+
+```ts
+import type { QuranCoreSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "mushafs:1;quran_core:1",
+});
+
+const core = await client.resources.findSnapshot<QuranCoreSnapshotRecord>(
+  "quran_core",
+  1,
+);
+for (const record of core.records) {
+  if (record.recordType === "verse") {
+    console.log(record.verseKey, record.textUthmani);
+  }
+}
+```
+
+The SDK camel-cases record fields such as `text_uthmani` to `textUthmani`.
+Use the same canonical `resources` filter for incremental sync, and replace all
+local rows on `RESOURCE_INVALIDATE` using the current snapshot.
+
+### QuranCoreSnapshotRecord Type
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Resources.ts"
+  name="QuranCoreSnapshotRecord"
+/>
+
 ### Sync Word-by-Word Translations
 
 Use the resource content ID with the `word_by_word_translations` group. Only approved, shareable, translation-only one-word resources are available. Transliteration resources use the separate `word_by_word_transliterations` group documented below.

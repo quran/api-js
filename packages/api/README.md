@@ -211,6 +211,27 @@ Mushaf snapshots include layout metadata, pages, publicly distributable font
 assets, and words. Store the final `nextSyncToken` and use it with the same
 `resources` filter on subsequent sync calls.
 
+Once published, the singleton `quran_core:1` provides canonical Uthmani verse
+text, Surah metadata, and Juz/Hizb/Rub-el-Hizb boundaries without duplicating
+them in every Mushaf snapshot. Mushaf-specific pages and glyphs remain in
+`mushafs:<id>`. Publication is pending content/licensing approval.
+
+```ts
+import type { QuranCoreSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "mushafs:1;quran_core:1",
+});
+const core = await client.resources.findSnapshot<QuranCoreSnapshotRecord>(
+  "quran_core",
+  1,
+);
+for (const record of core.records) {
+  if (record.recordType === "verse") console.log(record.verseKey, record.textUthmani);
+}
+```
+
 Word-by-word transliterations use their resource content ID and expose a typed,
 camel-cased snapshot payload:
 
