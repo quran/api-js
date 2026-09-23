@@ -67,6 +67,19 @@ export interface TokenStorage {
   clearSession?: () => void | Promise<void>;
 }
 
+/**
+ * Which content scopes the SDK asks for when it fetches an app access token.
+ *
+ * `legacy` is the default and the pre-split behavior: one `content` scope for every content call.
+ * It keeps working for credentials that were granted `content`.
+ *
+ * `granular` asks for the specific scope the operation needs, from the pinned operation catalog.
+ * Required for credentials issued under the granular policy, which are never granted `content`.
+ *
+ * The default will only change in a deliberately versioned release.
+ */
+export type ContentScopeMode = "legacy" | "granular";
+
 interface BaseRuntimeClientConfig {
   clientId: string;
   fetch?: CustomFetcher;
@@ -74,6 +87,15 @@ interface BaseRuntimeClientConfig {
   services?: ServiceEnvironmentConfig;
   userSession?: UserSession;
   storage?: TokenStorage;
+  /**
+   * Content scope mode. Defaults to `legacy`.
+   *
+   * Set to `granular` when your credentials were issued with the granular content scopes
+   * (`content.quran.read` and friends) rather than the `content` umbrella.
+   */
+  contentScopeMode?: ContentScopeMode;
+  /** Token audience, when your credentials are issued for a specific audience. */
+  audience?: string;
 }
 
 export interface ServerClientConfig extends BaseRuntimeClientConfig {
@@ -87,6 +109,8 @@ export interface PublicClientConfig extends BaseRuntimeClientConfig {
 export interface CachedToken {
   value: string;
   expiresAt: number;
+  /** Scopes the authorization server actually granted, when it reported them. */
+  grantedScopes?: string[];
 }
 
 export interface TokenResponse {

@@ -11,7 +11,7 @@ const writeJson = async (filePath, value) => {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
 };
 
-const loadCatalogModule = async () => {
+const loadCatalogModule = async ({ pin, pinDirectory = false } = {}) => {
   const sourcePath = path.resolve(
     testDir,
     "../../../scripts/generate-operation-catalogs.mjs",
@@ -23,6 +23,9 @@ const loadCatalogModule = async () => {
   const modulePath = path.join(moduleDir, "generate-operation-catalogs.mjs");
 
   await fs.writeFile(modulePath, source.replace(/^#!.*(?:\r?\n|$)/, ""));
+  const pinPath = path.join(moduleDir, "openapi-source.json");
+  if (pinDirectory) await fs.mkdir(pinPath);
+  else if (pin !== undefined) await fs.writeFile(pinPath, pin);
 
   return import(pathToFileURL(modulePath).href);
 };
@@ -43,6 +46,16 @@ const operation = (
 });
 
 describe("operation catalog generator", () => {
+  it("rejects malformed committed pins instead of falling back to main", async () => {
+    const { generateCatalogs } = await loadCatalogModule({ pin: "{broken" });
+    await expect(generateCatalogs({ sourceDir: "/unused" })).rejects.toBeInstanceOf(SyntaxError);
+  });
+
+  it("propagates pin read errors other than ENOENT", async () => {
+    const { generateCatalogs } = await loadCatalogModule({ pinDirectory: true });
+    await expect(generateCatalogs({ sourceDir: "/unused" })).rejects.toMatchObject({ code: "EISDIR" });
+  });
+
   it("builds compact server and public catalogs from OpenAPI specs", async () => {
     const { generateCatalogs } = await catalogModule;
     const sourceDir = await fs.mkdtemp(
