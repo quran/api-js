@@ -234,9 +234,13 @@ for (const record of chapterAudio.records) {
 }
 ```
 
-A first bootstrap receives current timing rows. Apply incremental
-`audio_segment` row mutations by record ID. When `RESOURCE_INVALIDATE` is
-returned, replace the complete chapter-recitation snapshot.
+Bootstrap returns `RESOURCE_CREATE` entries with `snapshotUrl`; it does not
+return timing rows inline. Fetch and apply every referenced snapshot before
+storing the final sync token. Apply incremental `audio_segment` row mutations
+using `(resourceGroup, resourceId, recordType, recordKey)` as the stable local
+key, not `sourceRecordId` or `data`, because either may be null for a delete.
+When `RESOURCE_INVALIDATE` is returned, replace the complete
+chapter-recitation snapshot.
 
 Once published, the singleton `quran_core:1` provides canonical Uthmani verse
 text, Surah metadata, and Juz/Hizb/Rub-el-Hizb boundaries without duplicating
