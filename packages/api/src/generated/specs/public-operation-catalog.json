@@ -628,6 +628,16 @@
           "method": "get",
           "path": "/v1/comments/{id}/delete"
         },
+        "commentsControllerHideComment": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/hide"
+        },
+        "commentsControllerUnhideComment": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/unhide"
+        },
         "commentsControllerReportAbuse": {
           "auth": "user",
           "method": "post",
