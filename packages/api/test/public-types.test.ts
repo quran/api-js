@@ -35,6 +35,9 @@ describe("@quranjs/api/public type surface", () => {
     const source = `
       import type { PublicClient, TokenStorage, UserSession } from "@quranjs/api/public";
       import type {
+        AudioSegmentSnapshotRecord,
+        ChapterAudioFileSnapshotRecord,
+        ChapterRecitationSnapshotRecord,
         ContentSyncResourceGroup,
         MushafFontAssetSnapshotRecord,
         MushafMetadataSnapshotRecord,
@@ -60,6 +63,42 @@ describe("@quranjs/api/public type surface", () => {
       const chapterResourceGroup: ContentSyncResourceGroup = "chapter_recitations";
       const transliterationResourceGroup: ContentSyncResourceGroup = "word_by_word_transliterations";
       const quranCoreResourceGroup: ContentSyncResourceGroup = "quran_core";
+      const chapterAudioFile: ChapterAudioFileSnapshotRecord = {
+        recordType: "chapter_audio_file",
+        id: 10,
+        audioRecitationId: 7,
+        chapterId: 2,
+        audioUrl: "https://audio.quran.com/2.mp3",
+        duration: 620,
+        durationMs: 620000,
+        fileName: "002.mp3",
+        fileSize: 123456,
+        format: "mp3",
+        mimeType: "audio/mpeg",
+        metadata: {},
+        updatedAt: "2026-09-29T00:00:00Z",
+      };
+      const audioSegment: AudioSegmentSnapshotRecord = {
+        recordType: "audio_segment",
+        id: 20,
+        audioFileId: 10,
+        audioRecitationId: 7,
+        chapterId: 2,
+        verseId: 8,
+        verseKey: "2:1",
+        verseNumber: 1,
+        timestampFrom: 100,
+        timestampTo: 900,
+        timestampMedian: 500,
+        duration: 1,
+        durationMs: 800,
+        segments: [[1, 100, 900]],
+        updatedAt: "2026-09-29T00:00:00Z",
+      };
+      const chapterRecitationRecords: ChapterRecitationSnapshotRecord[] = [
+        chapterAudioFile,
+        audioSegment,
+      ];
       const coreJuz: QuranCoreJuzSnapshotRecord = {
         recordType: "juz", id: 1, juzNumber: 1,
         firstVerseId: 1, lastVerseId: 148, versesCount: 148,
@@ -171,6 +210,7 @@ describe("@quranjs/api/public type surface", () => {
       void chapterResourceGroup;
       void transliterationResourceGroup;
       void quranCoreResourceGroup;
+      void chapterRecitationRecords;
       void coreRecord;
       void transliterationRecord;
       void genericRecord;

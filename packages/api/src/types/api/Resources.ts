@@ -92,6 +92,45 @@ export type ContentSyncResourceGroup =
   | "word_by_word_transliterations"
   | "word_by_word_translations";
 
+export interface ChapterAudioFileSnapshotRecord
+  extends Record<string, unknown> {
+  recordType: "chapter_audio_file";
+  id: number;
+  audioRecitationId: number;
+  chapterId: number;
+  audioUrl: string | null;
+  duration: number | null;
+  durationMs: number | null;
+  fileName: string | null;
+  fileSize: number | null;
+  format: string | null;
+  mimeType: string | null;
+  metadata: Record<string, unknown> | null;
+  updatedAt: string;
+}
+
+export interface AudioSegmentSnapshotRecord extends Record<string, unknown> {
+  recordType: "audio_segment";
+  id: number;
+  audioFileId: number;
+  audioRecitationId: number;
+  chapterId: number;
+  verseId: number;
+  verseKey: string;
+  verseNumber: number;
+  timestampFrom: number | null;
+  timestampTo: number | null;
+  timestampMedian: number | null;
+  duration: number | null;
+  durationMs: number | null;
+  segments: [number, number, number][];
+  updatedAt: string;
+}
+
+export type ChapterRecitationSnapshotRecord =
+  | ChapterAudioFileSnapshotRecord
+  | AudioSegmentSnapshotRecord;
+
 export interface MushafMetadataSnapshotRecord extends Record<string, unknown> {
   recordType: "mushaf";
   id: number;
