@@ -212,7 +212,10 @@ assets, and words. Store the final `nextSyncToken` and use it with the same
 `resources` filter on subsequent sync calls.
 
 Chapter-recitation snapshots contain chapter audio files and their associated
-verse and word timing segments:
+verse and word timing segments. Segment timestamps and tuple boundaries are
+milliseconds from the start of the chapter file; each tuple is
+`[oneBasedWordIndex, startMs, endMs]`. Use `durationMs` for exact arithmetic;
+`duration` is the legacy whole-seconds compatibility value.
 
 ```ts
 import type { ChapterRecitationSnapshotRecord } from "@quranjs/api";
