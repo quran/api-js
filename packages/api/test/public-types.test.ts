@@ -46,6 +46,7 @@ describe("@quranjs/api/public type surface", () => {
         MushafWordSnapshotRecord,
         QuranCoreJuzSnapshotRecord,
         QuranCoreSnapshotRecord,
+        QuranCoreWordSnapshotRecord,
         WordByWordTransliterationSnapshotRecord,
         WordByWordTranslationSnapshotRecord,
       } from "@quranjs/api";
@@ -104,7 +105,21 @@ describe("@quranjs/api/public type surface", () => {
         firstVerseId: 1, lastVerseId: 148, versesCount: 148,
         verseMapping: { "1": "1-7" }, updatedAt: "2026-09-21T00:00:00Z",
       };
-      const coreRecord: QuranCoreSnapshotRecord = coreJuz;
+      const coreWord: QuranCoreWordSnapshotRecord = {
+        recordType: "word",
+        id: 1,
+        verseId: 1,
+        chapterId: 1,
+        position: 1,
+        verseKey: "1:1",
+        location: "1:1:1",
+        charTypeId: 1,
+        charTypeName: "word",
+        textIndopak: "بِسْمِ",
+        textUthmaniTajweed: "بِسْمِ",
+        updatedAt: "2026-09-21T00:00:00Z",
+      };
+      const coreRecord: QuranCoreSnapshotRecord = coreWord;
       const transliterationRecord: WordByWordTransliterationSnapshotRecord = {
         id: 1,
         resourceContentId: 60,

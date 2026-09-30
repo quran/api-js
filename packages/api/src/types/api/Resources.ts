@@ -240,6 +240,21 @@ export interface QuranCoreVerseSnapshotRecord extends Record<string, unknown> {
   updatedAt: string;
 }
 
+export interface QuranCoreWordSnapshotRecord extends Record<string, unknown> {
+  recordType: "word";
+  id: number;
+  verseId: number;
+  chapterId: number;
+  position: number;
+  verseKey: string;
+  location: string;
+  charTypeId: number | null;
+  charTypeName: string | null;
+  textIndopak: string | null;
+  textUthmaniTajweed: string | null;
+  updatedAt: string;
+}
+
 interface QuranCoreBoundaryFields extends Record<string, unknown> {
   id: number;
   verseMapping: Record<string, unknown> | null;
@@ -267,6 +282,7 @@ export interface QuranCoreRubElHizbSnapshotRecord extends QuranCoreBoundaryField
 export type QuranCoreSnapshotRecord =
   | QuranCoreChapterSnapshotRecord
   | QuranCoreVerseSnapshotRecord
+  | QuranCoreWordSnapshotRecord
   | QuranCoreJuzSnapshotRecord
   | QuranCoreHizbSnapshotRecord
   | QuranCoreRubElHizbSnapshotRecord;
