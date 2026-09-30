@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.10.1
+
+### Patch Changes
+
+- 2d98f9e: Add typed Content Sync snapshot records for chapter audio files and verse timing segments.
+
 ## 3.10.0
 
 ### Minor Changes
