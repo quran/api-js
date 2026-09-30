@@ -212,7 +212,10 @@ assets, and words. Store the final `nextSyncToken` and use it with the same
 `resources` filter on subsequent sync calls.
 
 Chapter-recitation snapshots contain chapter audio files and their associated
-verse and word timing segments:
+verse and word timing segments. Segment timestamps and tuple boundaries are
+milliseconds from the start of the chapter file; each tuple is
+`[oneBasedWordIndex, startMs, endMs]`. Use `durationMs` for exact arithmetic;
+`duration` is the legacy whole-seconds compatibility value.
 
 ```ts
 import type { ChapterRecitationSnapshotRecord } from "@quranjs/api";
@@ -234,9 +237,13 @@ for (const record of chapterAudio.records) {
 }
 ```
 
-A first bootstrap receives current timing rows. Apply incremental
-`audio_segment` row mutations by record ID. When `RESOURCE_INVALIDATE` is
-returned, replace the complete chapter-recitation snapshot.
+Bootstrap returns `RESOURCE_CREATE` entries with `snapshotUrl`; it does not
+return timing rows inline. Fetch and apply every referenced snapshot before
+storing the final sync token. Apply incremental `audio_segment` row mutations
+using `(resourceGroup, resourceId, recordType, recordKey)` as the stable local
+key, not `sourceRecordId` or `data`, because either may be null for a delete.
+When `RESOURCE_INVALIDATE` is returned, replace the complete
+chapter-recitation snapshot.
 
 Once published, the singleton `quran_core:1` provides canonical Uthmani verse
 text, Surah metadata, and Juz/Hizb/Rub-el-Hizb boundaries without duplicating
