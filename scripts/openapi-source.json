@@ -1,0 +1,31 @@
+{
+  "$comment": [
+    "Pinned source revision for the generated operation catalogs.",
+    "",
+    "The catalogs are a published artifact: the paths and scopes in them are what the SDK",
+    "requests at runtime. Reading them from a moving branch means a rebuild can change client",
+    "behaviour with no corresponding change in this repository, and it makes CI non-reproducible.",
+    "So generation, `--check`, and CI all read this one file.",
+    "",
+    "`ref` must be a full 40-character commit SHA. The generator warns loudly if it is a branch",
+    "name, because a branch is not a reproducible input.",
+    "",
+    "To update: point `ref` at the approved qf-api-docs commit, run",
+    "`pnpm --filter @quranjs/api generate:operation-catalogs`, and commit both together.",
+    "",
+    "TODO: this currently points at the head of qf-api-docs `feat/content-scope-split-v1`,",
+    "which is the revision carrying the `x-qf-scopes` content scope metadata. Once",
+    "quran/qf-api-docs#207 merges, move this to the resulting commit on `main`.",
+    "",
+    "The contract that revision carries is sha256 ecfced4348e5, which added",
+    "`appCredentialsOnlyScopes`. Regenerating against it produces byte-identical catalogs: the",
+    "field records that `content.reflections.read` must not authorize a user-bound token, and",
+    "the gateway is what enforces it. This SDK cannot reach that case anyway -- content scopes",
+    "are resolved only on the `client_credentials` branch of `applyAuthHeaders`, where `sub`",
+    "equals the client id, and the `user` branch sends the session's existing token without",
+    "choosing scopes at all."
+  ],
+  "repository": "quran/qf-api-docs",
+  "ref": "5b21946d29a5b75c90c8012ae5e1a3630ec12c9b",
+  "path": "openAPI"
+}

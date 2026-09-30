@@ -19,15 +19,24 @@ const validateAuth = (request: Request): boolean => {
 };
 
 export const handlers = [
-  // OAuth2 token endpoint for authentication
-  http.post("https://oauth2.quran.foundation/oauth2/token", () => {
-    return HttpResponse.json({
-      access_token: "mock-access-token",
-      token_type: "Bearer",
-      expires_in: 3600,
-      scope: "content",
-    });
-  }),
+  // OAuth2 token endpoint for authentication.
+  //
+  // Echoes the requested scope, which is what a real authorization server does for a client
+  // that is approved for what it asked. Returning a fixed scope here would hide scope-selection
+  // bugs and make the SDK's granted-scope check meaningless.
+  http.post(
+    "https://oauth2.quran.foundation/oauth2/token",
+    async ({ request }) => {
+      const body = new URLSearchParams(await request.text());
+
+      return HttpResponse.json({
+        access_token: "mock-access-token",
+        token_type: "Bearer",
+        expires_in: 3600,
+        scope: body.get("scope") ?? "content",
+      });
+    },
+  ),
 
   http.get(
     "https://apis.quran.foundation/content/api/v4/quran/verses/uthmani_tajweed",
