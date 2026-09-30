@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.11.0
+
+### Minor Changes
+
+- e8a8b32: Add typed Quran core word records with IndoPak and Uthmani Tajweed text for Content Sync snapshots.
+
 ## 3.10.1
 
 ### Patch Changes
