@@ -252,8 +252,11 @@ export interface QuranCoreWordSnapshotRecord extends Record<string, unknown> {
   charTypeName: string | null;
   /** @deprecated Use `textIndopakNastaleeq`. Retained for backwards compatibility. */
   textIndopak: string | null;
-  /** IndoPak Nastaleeq word text, as used by Quran.com. */
-  textIndopakNastaleeq: string | null;
+  /**
+   * IndoPak Nastaleeq word text, as used by Quran.com. Optional because
+   * snapshots generated before the server-side backfill do not include it.
+   */
+  textIndopakNastaleeq?: string | null;
   textUthmaniTajweed: string | null;
   updatedAt: string;
 }

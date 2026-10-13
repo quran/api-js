@@ -249,9 +249,10 @@ Once published, the singleton `quran_core:1` provides canonical Uthmani verse
 text, word-level IndoPak Nastaleeq and Uthmani Tajweed text, Surah metadata, and
 Juz/Hizb/Rub-el-Hizb boundaries without duplicating them in every Mushaf
 snapshot. Mushaf-specific pages and glyphs remain in `mushafs:<id>`. Word
-records are exposed through the `QuranCoreWordSnapshotRecord` type; use
+records are exposed through the `QuranCoreWordSnapshotRecord` type; prefer
 `textIndopakNastaleeq` for IndoPak word text (`textIndopak` is deprecated and
-retained only for backwards compatibility). Publication
+retained only for backwards compatibility). `textIndopakNastaleeq` is optional
+and may be absent from snapshots generated before it was added. Publication
 is pending content/licensing approval.
 
 ```ts
@@ -271,7 +272,7 @@ for (const record of core.records) {
   if (record.recordType === "word")
     console.log(
       record.location,
-      record.textIndopakNastaleeq,
+      record.textIndopakNastaleeq ?? record.textIndopak,
       record.textUthmaniTajweed,
     );
 }
