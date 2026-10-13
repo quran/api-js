@@ -27,6 +27,17 @@ export interface CreateQuranReflectPostPayload {
 export type UpdateQuranReflectPostPayload =
   Partial<CreateQuranReflectPostPayload>;
 
+/**
+ * Partner app that created a post through the Quran Foundation API, for display
+ * as "Post from {name}".
+ */
+export interface QuranReflectPostSourceApp {
+  /** Display name of the partner app. */
+  name: string;
+  /** Absolute http(s) link to the partner app. */
+  url: string;
+}
+
 export interface QuranReflectPost {
   id: number | string;
   authorId?: string;
@@ -54,6 +65,11 @@ export interface QuranReflectPost {
   reviewedAt?: string;
   roomId?: number | null;
   roomPostStatus?: number;
+  /**
+   * Present only when the creating partner app is configured for attribution.
+   * Omitted (never `null`) for native, unverified, and unconfigured posts.
+   */
+  sourceApp?: QuranReflectPostSourceApp;
   toxicityScore?: number;
   updatedAt?: string;
   verified?: boolean;
