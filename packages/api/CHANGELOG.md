@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.12.0
+
+### Minor Changes
+
+- 21d8975: Add optional `textIndopakNastaleeq` to typed Quran core word records for Content Sync snapshots and deprecate `textIndopak`, which is retained for backwards compatibility. The new field may be absent from snapshots generated before the server-side backfill.
+
 ## 3.11.0
 
 ### Minor Changes
