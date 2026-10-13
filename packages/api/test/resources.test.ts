@@ -336,6 +336,13 @@ describe("Resources API", () => {
                   text_uthmani: "بِسْمِ ٱللَّهِ", updated_at: "2026-09-21T00:00:00Z",
                 },
                 {
+                  record_type: "word", id: 1, verse_id: 1, chapter_id: 1,
+                  position: 1, verse_key: "1:1", location: "1:1:1",
+                  char_type_id: 1, char_type_name: "word",
+                  text_indopak: "بِسۡمِ", text_indopak_nastaleeq: "بِسۡمِ",
+                  text_uthmani_tajweed: "بِسْمِ", updated_at: "2026-09-21T00:00:00Z",
+                },
+                {
                   record_type: "rub_el_hizb", id: 1, rub_el_hizb_number: 1,
                   first_verse_id: 1, last_verse_id: 7, verses_count: 7,
                   verse_mapping: { "1": "1-7" }, updated_at: "2026-09-21T00:00:00Z",
@@ -361,6 +368,10 @@ describe("Resources API", () => {
         recordType: "verse", verseKey: "1:1", textUthmani: "بِسْمِ ٱللَّهِ",
       });
       expect(snapshot.records[2]).toMatchObject({
+        recordType: "word", location: "1:1:1",
+        textIndopak: "بِسۡمِ", textIndopakNastaleeq: "بِسۡمِ",
+      });
+      expect(snapshot.records[3]).toMatchObject({
         recordType: "rub_el_hizb", rubElHizbNumber: 1, firstVerseId: 1,
       });
     });

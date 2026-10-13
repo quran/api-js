@@ -116,6 +116,7 @@ describe("@quranjs/api/public type surface", () => {
         charTypeId: 1,
         charTypeName: "word",
         textIndopak: "بِسْمِ",
+        textIndopakNastaleeq: "بِسْمِ",
         textUthmaniTajweed: "بِسْمِ",
         updatedAt: "2026-09-21T00:00:00Z",
       };
