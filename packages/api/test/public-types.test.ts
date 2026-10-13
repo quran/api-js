@@ -116,7 +116,23 @@ describe("@quranjs/api/public type surface", () => {
         charTypeId: 1,
         charTypeName: "word",
         textIndopak: "بِسْمِ",
+        textIndopakNastaleeq: "بِسْمِ",
         textUthmaniTajweed: "بِسْمِ",
+        updatedAt: "2026-09-21T00:00:00Z",
+      };
+      // Snapshots generated before the backfill omit textIndopakNastaleeq.
+      const legacyCoreWord: QuranCoreWordSnapshotRecord = {
+        recordType: "word",
+        id: 2,
+        verseId: 1,
+        chapterId: 1,
+        position: 2,
+        verseKey: "1:1",
+        location: "1:1:2",
+        charTypeId: 1,
+        charTypeName: "word",
+        textIndopak: "اللّٰهِ",
+        textUthmaniTajweed: "ٱللَّهِ",
         updatedAt: "2026-09-21T00:00:00Z",
       };
       const coreRecord: QuranCoreSnapshotRecord = coreWord;
@@ -227,6 +243,7 @@ describe("@quranjs/api/public type surface", () => {
       void quranCoreResourceGroup;
       void chapterRecitationRecords;
       void coreRecord;
+      void legacyCoreWord;
       void transliterationRecord;
       void genericRecord;
       void nullableRecord;

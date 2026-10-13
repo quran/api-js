@@ -152,6 +152,26 @@
           "method": "post",
           "path": "/v1/reading-sessions"
         },
+        "getV1ReadingBookmarks": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/reading-bookmarks"
+        },
+        "postV1ReadingBookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/reading-bookmarks"
+        },
+        "patchV1ReadingBookmarksBySlot": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/reading-bookmarks/{slot}"
+        },
+        "deleteV1ReadingBookmarksBySlot": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/reading-bookmarks/{slot}"
+        },
         "getV1GoalsGetTodaysPlan": {
           "auth": "user",
           "method": "get",
@@ -251,6 +271,11 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/notes/{noteId}/publish"
+        },
+        "generateShareVerseImage": {
+          "auth": "user",
+          "method": "post",
+          "path": "/media/share-verse"
         }
       },
       "service": "auth",
@@ -577,6 +602,11 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/posts/{id}/toggle-like"
+        },
+        "postsControllerSetReaction": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/{id}/reactions"
         },
         "postsControllerToggleSave": {
           "auth": "user",
