@@ -257,6 +257,11 @@ export interface QuranCoreWordSnapshotRecord extends Record<string, unknown> {
    * snapshots generated before the server-side backfill do not include it.
    */
   textIndopakNastaleeq?: string | null;
+  /**
+   * Imlaei (standard Arabic orthography) word text. Optional because snapshots
+   * generated before the server-side backfill do not include it.
+   */
+  textImlaei?: string | null;
   textUthmaniTajweed: string | null;
   updatedAt: string;
 }
