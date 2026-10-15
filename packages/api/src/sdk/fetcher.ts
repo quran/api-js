@@ -39,6 +39,8 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
   content: "content",
   search: "search",
 };
+const QIRAAT_PATH_SEGMENT = "/api/v4/qiraat/";
+const QIRAAT_APP_SCOPE = "qiraat.read";
 const QURAN_REFLECT_POSTS_PATH_PREFIX = "/quran-reflect/v1/posts/";
 const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
   "/comments",
@@ -639,6 +641,10 @@ export class QuranFetcher {
     }
 
     const pathname = new URL(resourceUrl).pathname;
+    if (pathname.includes(QIRAAT_PATH_SEGMENT)) {
+      return QIRAAT_APP_SCOPE;
+    }
+
     if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
       return APP_SERVICE_SCOPES.content;
     }

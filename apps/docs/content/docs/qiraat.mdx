@@ -1,0 +1,90 @@
+---
+title: Qira'at API
+description: Access Qira'at readers, transmitters, junctures, readings and the variant-reading matrix.
+---
+
+The Qira'at API exposes the canonical variant recitations (Qira'at) of the Quran: the readers and their transmitters, the junctures (points of variation) in each ayah, the readings at each juncture, and a matrix of which reader or transmitter recites which reading.
+
+> **Scope required:** the Qira'at endpoints require the `qiraat.read` (or `qiraat`) OAuth scope. Your client must be granted this scope. The server client requests `qiraat.read` automatically for these endpoints.
+
+These methods are available from the server client (`@quranjs/api/server`) as `client.qiraat`, and as `client.content.v4.qiraat`.
+
+## Readers and Transmitters
+
+```ts
+const { readers } = await client.qiraat.findAllReaders({
+  include: ["transmitters"],
+});
+
+const { reader } = await client.qiraat.findReaderById(1);
+
+const { transmitters } = await client.qiraat.findAllTransmitters({
+  readerId: 1,
+});
+
+const { transmitter } = await client.qiraat.findTransmitterById(1);
+```
+
+## Junctures
+
+```ts
+// Junctures in an ayah. Pass include: ["readings"] to embed a readings preview.
+const byVerse = await client.qiraat.findJuncturesByVerse("1:4");
+
+// Paginated junctures in a chapter.
+const byChapter = await client.qiraat.findJuncturesByChapter(1, {
+  page: 1,
+  perPage: 20,
+});
+
+// A single juncture with its readings.
+const { juncture } = await client.qiraat.findJunctureById(1);
+```
+
+## Readings
+
+```ts
+const { reading } = await client.qiraat.findReadingById(1);
+
+console.log(reading.attributedTo.readers, reading.attributedTo.transmitters);
+```
+
+## Matrix
+
+```ts
+// 404 (QuranHttpError) when the ayah has no recorded variations.
+const matrix = await client.qiraat.findMatrixByVerse("1:4", {
+  textField: "text_imlaei",
+});
+
+const chapterMatrix = await client.qiraat.findMatrixByChapter(1, {
+  page: 1,
+  perPage: 20,
+});
+
+// Map of verse key to juncture count within an inclusive range.
+const counts = await client.qiraat.countMatrixWithinRange("1:1", "2:10");
+```
+
+## Endpoints
+
+| Method                       | Endpoint                                              |
+| ---------------------------- | ----------------------------------------------------- |
+| `findAllReaders`             | `GET /content/api/v4/qiraat/readers`                  |
+| `findReaderById`             | `GET /content/api/v4/qiraat/readers/:id`              |
+| `findAllTransmitters`        | `GET /content/api/v4/qiraat/transmitters`             |
+| `findTransmitterById`        | `GET /content/api/v4/qiraat/transmitters/:id`         |
+| `findJuncturesByVerse`       | `GET /content/api/v4/qiraat/junctures/by_verse/:verse_key` |
+| `findJuncturesByChapter`     | `GET /content/api/v4/qiraat/junctures/by_chapter/:chapter_number` |
+| `findJunctureById`           | `GET /content/api/v4/qiraat/junctures/:id`            |
+| `findReadingById`            | `GET /content/api/v4/qiraat/readings/:id`             |
+| `findMatrixByVerse`          | `GET /content/api/v4/qiraat/matrix/by_verse/:verse_key` |
+| `findMatrixByChapter`        | `GET /content/api/v4/qiraat/matrix/by_chapter/:chapter_number` |
+| `countMatrixWithinRange`     | `GET /content/api/v4/qiraat/matrix/count_within_range?from=1:1&to=2:10` |
+
+## Types
+
+<auto-type-table
+  path="../../../../packages/api/src/types/api/Qiraat.ts"
+  name="QiraatReader"
+/>

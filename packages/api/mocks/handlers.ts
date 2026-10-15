@@ -941,6 +941,298 @@ export const handlers = [
   ),
 
   http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/readers",
+    () => {
+      return HttpResponse.json({
+        readers: [
+          {
+            id: 1,
+            name: "Nafi'",
+            abbreviation: "N",
+            death_year_hijri: 169,
+            death_year_gregorian: 785,
+            position: 1,
+            translated_name: "Nafi' of Medina",
+            bio: { text: "Reader of Medina." },
+          },
+        ],
+        meta: { total: 1 },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/readers/:id",
+    ({ params }) => {
+      return HttpResponse.json({
+        reader: {
+          id: Number(params.id),
+          name: "Nafi'",
+          abbreviation: "N",
+          death_year_hijri: 169,
+          death_year_gregorian: 785,
+          position: 1,
+          transmitters: [
+            { id: 1, name: "Qalun", abbreviation: "Q", is_primary: true },
+          ],
+          bio: { text: "Reader of Medina.", short_text: "Medina" },
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/transmitters",
+    () => {
+      return HttpResponse.json({
+        transmitters: [
+          {
+            id: 1,
+            name: "Qalun",
+            abbreviation: "Q",
+            is_primary: true,
+            death_year_hijri: 220,
+            death_year_gregorian: 835,
+            position: 1,
+            translated_name: "Qalun",
+            reader: { id: 1, name: "Nafi'", abbreviation: "N" },
+          },
+        ],
+        meta: { total: 1 },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/transmitters/:id",
+    ({ params }) => {
+      return HttpResponse.json({
+        transmitter: {
+          id: Number(params.id),
+          name: "Qalun",
+          abbreviation: "Q",
+          is_primary: true,
+          position: 1,
+          reader: { id: 1, name: "Nafi'", abbreviation: "N" },
+          bio: { text: "Transmitter of Nafi'." },
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/junctures/by_verse/:verse_key",
+    ({ params }) => {
+      return HttpResponse.json({
+        verse: {
+          verse_key: params.verse_key,
+          verse_number: 4,
+          chapter_number: 1,
+          text_uthmani: "مَـٰلِكِ يَوْمِ ٱلدِّينِ",
+        },
+        junctures: [
+          {
+            id: 7,
+            verse_key: params.verse_key,
+            position: 1,
+            word_id: 10,
+            word_position: 1,
+            start_word_position: 1,
+            end_word_position: 1,
+            text_uthmani: "مَـٰلِكِ",
+            text_imlaei: "مالك",
+            category: "word",
+            readings_count: 2,
+          },
+        ],
+        meta: { total_junctures: 1 },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/junctures/by_chapter/:chapter_number",
+    ({ params }) => {
+      return HttpResponse.json({
+        chapter: {
+          id: Number(params.chapter_number),
+          chapter_number: Number(params.chapter_number),
+          name_simple: "Al-Fatihah",
+        },
+        junctures: [
+          {
+            id: 7,
+            verse_key: "1:4",
+            position: 1,
+            word_id: 10,
+            word_position: 1,
+            start_word_position: 1,
+            end_word_position: 1,
+            text_uthmani: "مَـٰلِكِ",
+            text_imlaei: "مالك",
+            category: "word",
+            readings_count: 2,
+          },
+        ],
+        pagination: {
+          current_page: 1,
+          total_pages: 1,
+          total_count: 1,
+          per_page: 20,
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/junctures/:id",
+    ({ params }) => {
+      return HttpResponse.json({
+        juncture: {
+          id: Number(params.id),
+          verse_key: "1:4",
+          position: 1,
+          word_id: 10,
+          word_position: 1,
+          start_word_position: 1,
+          end_word_position: 1,
+          text_uthmani: "مَـٰلِكِ",
+          text_imlaei: "مالك",
+          readings: [
+            { id: 70, text_uthmani: "مَـٰلِكِ", translation: "Owner" },
+            { id: 71, text_uthmani: "مَلِكِ", translation: "King" },
+          ],
+          readings_count: 2,
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/readings/:id",
+    ({ params }) => {
+      return HttpResponse.json({
+        reading: {
+          id: Number(params.id),
+          juncture_id: 7,
+          verse_key: "1:4",
+          text_uthmani: "مَـٰلِكِ",
+          position: 1,
+          translation: "Owner",
+          attributed_to: {
+            readers: [
+              { id: 1, name: "Nafi'", abbreviation: "N", scope: "all_transmitters" },
+            ],
+            transmitters: [],
+          },
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/matrix/count_within_range",
+    () => {
+      return HttpResponse.json({
+        "1:4": 1,
+        "2:10": 2,
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/matrix/by_chapter/:chapter_number",
+    ({ params }) => {
+      return HttpResponse.json({
+        chapter: {
+          id: Number(params.chapter_number),
+          chapter_number: Number(params.chapter_number),
+          name_simple: "Al-Fatihah",
+        },
+        readers: [{ id: 1, name: "Nafi'", abbreviation: "N", position: 1 }],
+        transmitters: [],
+        junctures: [],
+        pagination: {
+          current_page: 1,
+          total_pages: 1,
+          total_count: 0,
+          per_page: 20,
+        },
+        meta: {
+          language: "en",
+          direction: "ltr",
+          text_field: "text_uthmani",
+          generated_at: "2026-10-15T00:00:00Z",
+        },
+      });
+    },
+  ),
+
+  http.get(
+    "https://apis.quran.foundation/content/api/v4/qiraat/matrix/by_verse/:verse_key",
+    ({ params }) => {
+      if (params.verse_key === "1:1") {
+        return HttpResponse.json(
+          {
+            details: {
+              status: 404,
+              error: {
+                code: "NOT_FOUND",
+                message: "No qiraat variations found for verse 1:1",
+              },
+            },
+            message: "No qiraat variations found for verse 1:1",
+            type: "not_found",
+            success: false,
+          },
+          { status: 404 },
+        );
+      }
+
+      return HttpResponse.json({
+        verse: {
+          verse_key: params.verse_key,
+          chapter_number: 1,
+          verse_number: 4,
+          text: "مَـٰلِكِ يَوْمِ ٱلدِّينِ",
+          text_field: "text_uthmani",
+        },
+        navigation: { previous_verse: null, next_verse: null },
+        readers: [{ id: 1, name: "Nafi'", abbreviation: "N", position: 1 }],
+        transmitters: [],
+        junctures: [
+          {
+            id: 7,
+            position: 1,
+            verse_key: params.verse_key,
+            text: "مَـٰلِكِ",
+            category: "word",
+            readings: [
+              {
+                id: 70,
+                text: "مَـٰلِكِ",
+                matrix: {
+                  readers: [1],
+                  transmitters: [],
+                  cells: [{ reader_id: 1, transmitter_id: null, type: "reader" }],
+                },
+              },
+            ],
+          },
+        ],
+        meta: {
+          language: "en",
+          direction: "ltr",
+          text_field: "text_uthmani",
+          total_junctures: 1,
+          total_readings: 1,
+          generated_at: "2026-10-15T00:00:00Z",
+        },
+      });
+    },
+  ),
+
+  http.get(
     "https://apis.quran.foundation/content/api/v4/answers/by_ayah/:ayah_key",
     ({ params }) => {
       return HttpResponse.json({

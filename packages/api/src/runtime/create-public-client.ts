@@ -371,6 +371,7 @@ export const createPublicRuntimeClient = (config: PublicClientConfig) => {
       ...oauth2V1,
       v1: oauth2V1,
     },
+    qiraat: serverOnlyGuard,
     quranReflect: {
       ...quranReflectV1,
       v1: quranReflectV1,
