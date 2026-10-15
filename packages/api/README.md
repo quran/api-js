@@ -82,6 +82,23 @@ the same event IDs so downstream processing can identify duplicates.
 
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
+### Qira'at
+
+The Qira'at Content API v4 endpoints (readers, transmitters, junctures,
+readings and the variant-reading matrix) require the `qiraat.read` scope (the
+`qiraat` scope is also accepted), so your client must be granted it. They are
+available only from the server entrypoint, which requests the scope
+automatically for these endpoints.
+
+```typescript
+const { readers } = await client.qiraat.findAllReaders();
+const junctures = await client.qiraat.findJuncturesByVerse("1:4");
+const matrix = await client.qiraat.findMatrixByVerse("1:4");
+const counts = await client.qiraat.countMatrixWithinRange("1:1", "2:10");
+
+// Also available as client.content.v4.qiraat.readers.list(), etc.
+```
+
 ### App State
 
 App State stores app-owned JSON documents for signed-in users. It is available

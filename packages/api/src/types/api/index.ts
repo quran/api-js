@@ -17,5 +17,6 @@ export * from './Verse';
 export * from './Word';
 export * from './Juz';
 export * from './Pagination';
+export * from './Qiraat';
 export * from './Resources';
 export * from './search-result';
