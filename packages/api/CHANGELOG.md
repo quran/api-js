@@ -1,5 +1,11 @@
 # @quranjs/api
 
+## 3.15.0
+
+### Minor Changes
+
+- acb665b: Add optional `textImlaei` to typed Quran core word records for Content Sync snapshots. The new field may be absent from snapshots generated before the server-side backfill.
+
 ## 3.14.0
 
 ### Minor Changes
