@@ -35,7 +35,9 @@ describe("QuranReflect post type surface", () => {
     const source = `
       import type {
         CreateQuranReflectPostPayload,
+        QuranReflectPost,
         QuranReflectPostMutationResponse,
+        QuranReflectPostSourceApp,
       } from "@quranjs/api";
       import { createPublicClient } from "@quranjs/api/public";
       import { createServerClient } from "@quranjs/api/server";
@@ -68,6 +70,24 @@ describe("QuranReflect post type surface", () => {
         body: "Updated reflection",
       });
       void serverClient.quranReflect.v1.posts.get(123);
+
+      const sourceApp: QuranReflectPostSourceApp = {
+        name: "Example Partner App",
+        url: "https://partner.example.com",
+      };
+      const attributedPost: QuranReflectPost = { id: 1, sourceApp };
+      const nativePost: QuranReflectPost = { id: 2 };
+      const sourceAppName: string | undefined = attributedPost.sourceApp?.name;
+
+      void [nativePost, sourceAppName];
+
+      const invalidSourceApp: QuranReflectPost = {
+        id: 3,
+        // @ts-expect-error - sourceApp is omitted, never null.
+        sourceApp: null,
+      };
+
+      void invalidSourceApp;
 
       const invalidPayload: CreateQuranReflectPostPayload = {
         body: "Invalid reflection",
