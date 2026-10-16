@@ -340,10 +340,11 @@ describe("Resources API", () => {
                   position: 1, verse_key: "1:1", location: "1:1:1",
                   char_type_id: 1, char_type_name: "word",
                   text_indopak: "بِسۡمِ", text_indopak_nastaleeq: "بِسۡمِ",
+                  text_imlaei: "بِسْمِ",
                   text_uthmani_tajweed: "بِسْمِ", updated_at: "2026-09-21T00:00:00Z",
                 },
                 {
-                  // Snapshot generated before text_indopak_nastaleeq was backfilled.
+                  // Snapshot generated before text_indopak_nastaleeq and text_imlaei were backfilled.
                   record_type: "word", id: 2, verse_id: 1, chapter_id: 1,
                   position: 2, verse_key: "1:1", location: "1:1:2",
                   char_type_id: 1, char_type_name: "word",
@@ -378,11 +379,13 @@ describe("Resources API", () => {
       expect(snapshot.records[2]).toMatchObject({
         recordType: "word", location: "1:1:1",
         textIndopak: "بِسۡمِ", textIndopakNastaleeq: "بِسۡمِ",
+        textImlaei: "بِسْمِ",
       });
       expect(snapshot.records[3]).toMatchObject({
         recordType: "word", location: "1:1:2", textIndopak: "اللّٰهِ",
       });
       expect(snapshot.records[3]).not.toHaveProperty("textIndopakNastaleeq");
+      expect(snapshot.records[3]).not.toHaveProperty("textImlaei");
       expect(snapshot.records[4]).toMatchObject({
         recordType: "rub_el_hizb", rubElHizbNumber: 1, firstVerseId: 1,
       });

@@ -117,10 +117,11 @@ describe("@quranjs/api/public type surface", () => {
         charTypeName: "word",
         textIndopak: "بِسْمِ",
         textIndopakNastaleeq: "بِسْمِ",
+        textImlaei: "بِسْمِ",
         textUthmaniTajweed: "بِسْمِ",
         updatedAt: "2026-09-21T00:00:00Z",
       };
-      // Snapshots generated before the backfill omit textIndopakNastaleeq.
+      // Snapshots generated before the backfill omit textIndopakNastaleeq and textImlaei.
       const legacyCoreWord: QuranCoreWordSnapshotRecord = {
         recordType: "word",
         id: 2,

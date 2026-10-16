@@ -263,14 +263,15 @@ When `RESOURCE_INVALIDATE` is returned, replace the complete
 chapter-recitation snapshot.
 
 Once published, the singleton `quran_core:1` provides canonical Uthmani verse
-text, word-level IndoPak Nastaleeq and Uthmani Tajweed text, Surah metadata, and
-Juz/Hizb/Rub-el-Hizb boundaries without duplicating them in every Mushaf
-snapshot. Mushaf-specific pages and glyphs remain in `mushafs:<id>`. Word
+text, word-level IndoPak Nastaleeq, Imlaei and Uthmani Tajweed text, Surah
+metadata, and Juz/Hizb/Rub-el-Hizb boundaries without duplicating them in every
+Mushaf snapshot. Mushaf-specific pages and glyphs remain in `mushafs:<id>`. Word
 records are exposed through the `QuranCoreWordSnapshotRecord` type; prefer
 `textIndopakNastaleeq` for IndoPak word text (`textIndopak` is deprecated and
 retained only for backwards compatibility). `textIndopakNastaleeq` is optional
-and may be absent from snapshots generated before it was added. Publication
-is pending content/licensing approval.
+and may be absent from snapshots generated before it was added; the same
+applies to the optional `textImlaei` word field. Publication is pending
+content/licensing approval.
 
 ```ts
 import type { QuranCoreSnapshotRecord } from "@quranjs/api";
@@ -290,6 +291,7 @@ for (const record of core.records) {
     console.log(
       record.location,
       record.textIndopakNastaleeq ?? record.textIndopak,
+      record.textImlaei,
       record.textUthmaniTajweed,
     );
 }
