@@ -772,6 +772,61 @@
           "auth": "app",
           "method": "get",
           "path": "/resources/snapshots/{resource_group}/{id}"
+        },
+        "listQiraatReaders": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readers"
+        },
+        "getQiraatReader": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readers/{id}"
+        },
+        "listQiraatTransmitters": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/transmitters"
+        },
+        "getQiraatTransmitter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/transmitters/{id}"
+        },
+        "listQiraatJuncturesByVerse": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/by_verse/{verse_key}"
+        },
+        "listQiraatJuncturesByChapter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/by_chapter/{chapter_number}"
+        },
+        "getQiraatJuncture": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/{id}"
+        },
+        "getQiraatReading": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readings/{id}"
+        },
+        "getQiraatMatrixByVerse": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/by_verse/{verse_key}"
+        },
+        "getQiraatMatrixByChapter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/by_chapter/{chapter_number}"
+        },
+        "countQiraatMatrixWithinRange": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/count_within_range"
         }
       },
       "service": "content",
