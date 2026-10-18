@@ -12,6 +12,5 @@ import type { JuzNumber } from "../types";
  */
 export const isValidJuz = (juz: string | number): juz is JuzNumber => {
   const parsedJuz = typeof juz === "number" ? juz : Number(juz);
-  if (!parsedJuz || parsedJuz <= 0 || parsedJuz > 30) return false;
-  return true;
+  return Number.isInteger(parsedJuz) && parsedJuz >= 1 && parsedJuz <= 30;
 };

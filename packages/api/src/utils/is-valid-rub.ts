@@ -12,6 +12,5 @@ import type { RubNumber } from "../types";
  */
 export const isValidRub = (rub: string | number): rub is RubNumber => {
   const parsedRub = typeof rub === "number" ? rub : Number(rub);
-  if (!parsedRub || parsedRub <= 0 || parsedRub > 240) return false;
-  return true;
+  return Number.isInteger(parsedRub) && parsedRub >= 1 && parsedRub <= 240;
 };

@@ -1,4 +1,4 @@
-import type { ChapterId, VerseKey } from "../types";
+import type { VerseKey } from "../types";
 import { isValidChapterId } from "./is-valid-chapter-id";
 import { versesMapping } from "./verses-mapping";
 
@@ -11,15 +11,24 @@ import { versesMapping } from "./verses-mapping";
  * isValidVerseKey('0') // false
  * isValidVerseKey('1:-') // false
  * isValidVerseKey('1_1') // false
+ * isValidVerseKey('1:8') // false (Al-Fatihah has 7 verses)
+ * isValidVerseKey('1:1:1') // false
  */
 export const isValidVerseKey = (key: string): key is VerseKey => {
-  const [chapterId, verseId] = key.trim().split(":");
+  const parts = key.trim().split(":");
+  if (parts.length !== 2) return false;
+
+  const [chapterId, verseId] = parts;
   if (!chapterId || !verseId || !isValidChapterId(chapterId)) return false;
 
+  // Look up by the parsed number so non-canonical chapter strings such as
+  // "01" still resolve to their verse count instead of `undefined`.
+  const verseCount =
+    versesMapping[Number(chapterId) as keyof typeof versesMapping];
   const parsedVerse = Number(verseId);
-  const verseCount = versesMapping[chapterId as ChapterId];
-  if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
-    return false;
-
-  return true;
+  return (
+    Number.isInteger(parsedVerse) &&
+    parsedVerse >= 1 &&
+    parsedVerse <= verseCount
+  );
 };

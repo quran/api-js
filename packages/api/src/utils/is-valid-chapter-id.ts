@@ -12,6 +12,5 @@ import type { ChapterId } from "../types";
  */
 export const isValidChapterId = (id: string | number): id is ChapterId => {
   const parsedId = typeof id === "number" ? id : Number(id);
-  if (!parsedId || parsedId <= 0 || parsedId > 114) return false;
-  return true;
+  return Number.isInteger(parsedId) && parsedId >= 1 && parsedId <= 114;
 };

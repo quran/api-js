@@ -12,6 +12,5 @@ import type { HizbNumber } from "../types";
  */
 export const isValidHizb = (hizb: string | number): hizb is HizbNumber => {
   const parsedHizb = typeof hizb === "number" ? hizb : Number(hizb);
-  if (!parsedHizb || parsedHizb <= 0 || parsedHizb > 60) return false;
-  return true;
+  return Number.isInteger(parsedHizb) && parsedHizb >= 1 && parsedHizb <= 60;
 };

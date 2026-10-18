@@ -12,6 +12,5 @@ import type { PageNumber } from "../types";
  */
 export const isValidQuranPage = (page: string | number): page is PageNumber => {
   const parsedPage = typeof page === "number" ? page : Number(page);
-  if (!parsedPage || parsedPage <= 0 || parsedPage > 604) return false;
-  return true;
+  return Number.isInteger(parsedPage) && parsedPage >= 1 && parsedPage <= 604;
 };
