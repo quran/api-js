@@ -1,4 +1,5 @@
 import type { HizbNumber } from "../types";
+import { parseReferenceNumber } from "./parse-reference-number";
 
 /**
  * Validates hizb number
@@ -11,6 +12,6 @@ import type { HizbNumber } from "../types";
  * isValidHizb('200') // false
  */
 export const isValidHizb = (hizb: string | number): hizb is HizbNumber => {
-  const parsedHizb = typeof hizb === "number" ? hizb : Number(hizb);
-  return Number.isInteger(parsedHizb) && parsedHizb >= 1 && parsedHizb <= 60;
+  const parsedHizb = parseReferenceNumber(hizb);
+  return parsedHizb !== null && parsedHizb <= 60;
 };

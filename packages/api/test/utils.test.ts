@@ -75,6 +75,16 @@ describe("Utils", () => {
         ),
       );
     });
+
+    it("should return false for non-canonical numeric strings", () => {
+      for (const value of ["01", "+1", "1.0", "1e1", "0x10", " 1", "1 ", ""]) {
+        expect(utils.isValidChapterId(value)).toBe(false);
+        expect(utils.isValidJuz(value)).toBe(false);
+        expect(utils.isValidHizb(value)).toBe(false);
+        expect(utils.isValidRub(value)).toBe(false);
+        expect(utils.isValidQuranPage(value)).toBe(false);
+      }
+    });
   });
 
   describe(`isValidHizb`, () => {
@@ -165,10 +175,19 @@ describe("Utils", () => {
       expect(total).toBe(6236);
     });
 
-    it("should still enforce the verse count when the chapter has a leading zero", () => {
-      expect(utils.isValidVerseKey("01:7")).toBe(true);
-      expect(utils.isValidVerseKey("01:8")).toBe(false);
-      expect(utils.isValidVerseKey("02:300")).toBe(false);
+    it("should return false for non-canonical chapter or verse numbers", () => {
+      expect(utils.isValidVerseKey("01:7")).toBe(false);
+      expect(utils.isValidVerseKey("01:300")).toBe(false);
+      expect(utils.isValidVerseKey("1:07")).toBe(false);
+      expect(utils.isValidVerseKey("+2:255")).toBe(false);
+      expect(utils.isValidVerseKey("0x2:255")).toBe(false);
+      expect(utils.isValidVerseKey("2:0xff")).toBe(false);
+      expect(utils.isValidVerseKey("1e1:5")).toBe(false);
+      expect(utils.isValidVerseKey("2:1e2")).toBe(false);
+      expect(utils.isValidVerseKey("1.0:1")).toBe(false);
+      expect(utils.isValidVerseKey(" 2:3 ")).toBe(false);
+      expect(utils.isValidVerseKey("2: 255")).toBe(false);
+      expect(utils.isValidVerseKey("2 :255")).toBe(false);
     });
 
     it("should return false for non-integer chapter or verse numbers", () => {

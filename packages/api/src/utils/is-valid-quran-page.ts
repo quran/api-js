@@ -1,4 +1,5 @@
 import type { PageNumber } from "../types";
+import { parseReferenceNumber } from "./parse-reference-number";
 
 /**
  * Validates mushaf page number
@@ -11,6 +12,6 @@ import type { PageNumber } from "../types";
  * isValidQuranPage('1000') // false
  */
 export const isValidQuranPage = (page: string | number): page is PageNumber => {
-  const parsedPage = typeof page === "number" ? page : Number(page);
-  return Number.isInteger(parsedPage) && parsedPage >= 1 && parsedPage <= 604;
+  const parsedPage = parseReferenceNumber(page);
+  return parsedPage !== null && parsedPage <= 604;
 };

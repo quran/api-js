@@ -1,4 +1,5 @@
 import type { ChapterId } from "../types";
+import { parseReferenceNumber } from "./parse-reference-number";
 
 /**
  * Validates chapter id
@@ -11,6 +12,6 @@ import type { ChapterId } from "../types";
  * isValidChapterId('200') // false
  */
 export const isValidChapterId = (id: string | number): id is ChapterId => {
-  const parsedId = typeof id === "number" ? id : Number(id);
-  return Number.isInteger(parsedId) && parsedId >= 1 && parsedId <= 114;
+  const parsedId = parseReferenceNumber(id);
+  return parsedId !== null && parsedId <= 114;
 };

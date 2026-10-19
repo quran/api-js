@@ -59,7 +59,7 @@ describe("Verses API", () => {
       ).rejects.toThrowError("Invalid verse key");
     });
 
-    it.each(["01:300", "1.5:1", "1:1.5", "1:1:1"])(
+    it.each(["01:300", "1.5:1", "1:1.5", "1:1:1", "0x2:255", " 2:255 "])(
       "should throw error for malformed verse key %s",
       async (key) => {
         await expect(

@@ -1,4 +1,5 @@
 import type { RubNumber } from "../types";
+import { parseReferenceNumber } from "./parse-reference-number";
 
 /**
  * Validates rub number
@@ -11,6 +12,6 @@ import type { RubNumber } from "../types";
  * isValidRub('300') // false
  */
 export const isValidRub = (rub: string | number): rub is RubNumber => {
-  const parsedRub = typeof rub === "number" ? rub : Number(rub);
-  return Number.isInteger(parsedRub) && parsedRub >= 1 && parsedRub <= 240;
+  const parsedRub = parseReferenceNumber(rub);
+  return parsedRub !== null && parsedRub <= 240;
 };
