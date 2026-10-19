@@ -2,6 +2,7 @@ import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 
 import * as utils from "../src/utils";
+import { versesMapping } from "../src/utils/verses-mapping";
 
 describe("Utils", () => {
   describe(`isValidChapterId`, () => {
@@ -60,6 +61,30 @@ describe("Utils", () => {
         { numRuns: 250 },
       );
     });
+
+    it("should return false for non-integer chapter ids", () => {
+      fc.assert(
+        fc.property(
+          fc
+            .double({ min: 1, max: 114, noNaN: true })
+            .filter((n) => !Number.isInteger(n)),
+          (chapterId) => {
+            expect(utils.isValidChapterId(chapterId)).toBe(false);
+            expect(utils.isValidChapterId(String(chapterId))).toBe(false);
+          },
+        ),
+      );
+    });
+
+    it("should return false for non-canonical numeric strings", () => {
+      for (const value of ["01", "+1", "1.0", "1e1", "0x10", " 1", "1 ", ""]) {
+        expect(utils.isValidChapterId(value)).toBe(false);
+        expect(utils.isValidJuz(value)).toBe(false);
+        expect(utils.isValidHizb(value)).toBe(false);
+        expect(utils.isValidRub(value)).toBe(false);
+        expect(utils.isValidQuranPage(value)).toBe(false);
+      }
+    });
   });
 
   describe(`isValidHizb`, () => {
@@ -72,6 +97,8 @@ describe("Utils", () => {
       expect(utils.isValidHizb(0)).toBeFalsy();
       expect(utils.isValidHizb(61)).toBeFalsy();
       expect(utils.isValidHizb(-10)).toBeFalsy();
+      expect(utils.isValidHizb(1.5)).toBe(false);
+      expect(utils.isValidHizb("1.5")).toBe(false);
     });
   });
 
@@ -84,6 +111,8 @@ describe("Utils", () => {
       expect(utils.isValidJuz(0)).toBeFalsy();
       expect(utils.isValidJuz(31)).toBeFalsy();
       expect(utils.isValidJuz(-10)).toBeFalsy();
+      expect(utils.isValidJuz(1.5)).toBe(false);
+      expect(utils.isValidJuz("29.9")).toBe(false);
     });
   });
 
@@ -97,6 +126,8 @@ describe("Utils", () => {
       expect(utils.isValidQuranPage(0)).toBeFalsy();
       expect(utils.isValidQuranPage(605)).toBeFalsy();
       expect(utils.isValidQuranPage(-10)).toBeFalsy();
+      expect(utils.isValidQuranPage(1.5)).toBe(false);
+      expect(utils.isValidQuranPage("603.5")).toBe(false);
     });
   });
 
@@ -110,6 +141,8 @@ describe("Utils", () => {
       expect(utils.isValidRub(0)).toBeFalsy();
       expect(utils.isValidRub(241)).toBeFalsy();
       expect(utils.isValidRub(-10)).toBeFalsy();
+      expect(utils.isValidRub(1.5)).toBe(false);
+      expect(utils.isValidRub("239.5")).toBe(false);
     });
   });
 
@@ -126,6 +159,46 @@ describe("Utils", () => {
       expect(utils.isValidVerseKey("!!")).toBeFalsy();
       expect(utils.isValidVerseKey(":")).toBeFalsy();
       expect(utils.isValidVerseKey("0:")).toBeFalsy();
+    });
+
+    it("should return true for every verse in the mushaf and false just past the end of each chapter", () => {
+      let total = 0;
+      for (const [chapter, verseCount] of Object.entries(versesMapping)) {
+        for (let verse = 1; verse <= verseCount; verse += 1) {
+          expect(utils.isValidVerseKey(`${chapter}:${verse}`)).toBe(true);
+          total += 1;
+        }
+        expect(utils.isValidVerseKey(`${chapter}:${verseCount + 1}`)).toBe(
+          false,
+        );
+      }
+      expect(total).toBe(6236);
+    });
+
+    it("should return false for non-canonical chapter or verse numbers", () => {
+      expect(utils.isValidVerseKey("01:7")).toBe(false);
+      expect(utils.isValidVerseKey("01:300")).toBe(false);
+      expect(utils.isValidVerseKey("1:07")).toBe(false);
+      expect(utils.isValidVerseKey("+2:255")).toBe(false);
+      expect(utils.isValidVerseKey("0x2:255")).toBe(false);
+      expect(utils.isValidVerseKey("2:0xff")).toBe(false);
+      expect(utils.isValidVerseKey("1e1:5")).toBe(false);
+      expect(utils.isValidVerseKey("2:1e2")).toBe(false);
+      expect(utils.isValidVerseKey("1.0:1")).toBe(false);
+      expect(utils.isValidVerseKey(" 2:3 ")).toBe(false);
+      expect(utils.isValidVerseKey("2: 255")).toBe(false);
+      expect(utils.isValidVerseKey("2 :255")).toBe(false);
+    });
+
+    it("should return false for non-integer chapter or verse numbers", () => {
+      expect(utils.isValidVerseKey("1.5:1")).toBe(false);
+      expect(utils.isValidVerseKey("1:1.5")).toBe(false);
+      expect(utils.isValidVerseKey("1e1:999")).toBe(false);
+    });
+
+    it("should return false for keys with more than one separator", () => {
+      expect(utils.isValidVerseKey("1:1:1")).toBe(false);
+      expect(utils.isValidVerseKey("2:255:")).toBe(false);
     });
   });
 });
