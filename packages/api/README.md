@@ -49,32 +49,50 @@ const results = await client.search.v1.query({
 
 ### Content scopes
 
-By default the SDK requests the `content` scope for every content call. That is the pre-existing
-behaviour and it keeps working unchanged for credentials that were granted `content`.
+Quran Foundation is splitting the `content` scope into nine narrower read scopes
+(`content.quran.read`, `content.audio.read`, and so on). Which scopes you request depends on the
+credentials you have.
 
-Quran Foundation is splitting `content` into nine narrower read scopes (`content.quran.read`,
-`content.audio.read`, and so on). Those scopes are **not issued to any client yet**. When your
-credentials are issued with them, opt in:
+**Existing credentials (granted `content`).** Nothing changes. The default
+`contentScopeMode: "legacy"` requests `content` for content calls, exactly as before, and keeps
+working: `content` stays valid for clients that already have it.
 
-```typescript
-const client = createServerClient({
-  clientId: process.env.CLIENT_ID!,
-  clientSecret: process.env.CLIENT_SECRET!,
-  contentScopeMode: "granular",
-});
-```
+**New credentials.** Today every newly issued client is still granted `content`, so the default
+works for new clients too. Once Quran Foundation turns on the new-client policy, newly issued
+clients are no longer granted `content`:
+
+- A **backend (confidential) client** is issued the granular scopes. Use it from your server with
+  `contentScopeMode: "granular"`:
+
+  ```typescript
+  const client = createServerClient({
+    clientId: process.env.CLIENT_ID!,
+    clientSecret: process.env.CLIENT_SECRET!,
+    contentScopeMode: "granular",
+  });
+  ```
+
+- A **browser or mobile (public) client** gets no Content scope. Serve Content from your own
+  backend, which calls the API with a confidential client as above. `@quranjs/api/public` already
+  refuses Content calls for this reason.
+
+The granular scopes authorize app (client-credentials) tokens, not user-bound tokens. The server
+client reads Content with an app token by default, so no change is needed for that.
 
 In `granular` mode the SDK requests the single scope each operation needs, taken from the pinned
 operation catalog, so a call for chapters asks only for `content.quran.read`. Notes:
 
-- Use it only with credentials granted the granular scopes. With older credentials the token
-  endpoint will reject the request with `invalid_scope`; the SDK reports that and names the
-  scopes rather than retrying with a broader one.
-- Operations without a typed convenience method remain available through `client.raw`; for
-  example, `client.raw.listChapters()` requests `content.quran.read` from the same pinned catalog.
-  The public client has no arbitrary `client.fetch(url)` facade. For a path absent from the catalog,
-  call your fetch implementation directly and pass an explicit access token rather than guessing a
-  scope.
+- Use `granular` only with credentials granted the granular scopes. With credentials granted only
+  `content`, the token endpoint rejects the request with `invalid_scope`; the SDK reports that and
+  names the scopes rather than retrying with a broader one.
+- Operations without a typed convenience method remain available through the raw catalog client;
+  for example, `client.content.v4.raw.listChapters()` requests `content.quran.read` from the same
+  pinned catalog.
+- For an operation the catalog has no scope for, pass the scopes explicitly:
+  `client.content.v4.raw.someOperation({ scopes: ["content.metadata.read"] })`. Explicit scopes
+  are requested exactly as given, in either mode.
+- Qira'at endpoints (`client.qiraat.*`) are outside the split and request `qiraat.read` in both
+  modes.
 - `search` and `analytics.events.write` are separate permissions and are unaffected in both modes.
   A content call never requests them.
 - The default will only change in a deliberately versioned release.
@@ -219,6 +237,11 @@ const client = new QuranClient({
 
 const chapters = await client.chapters.findAll();
 ```
+
+`QuranClient` requests `content search` by default. With credentials that were never granted
+`content`, set `scope` to the scopes they were approved for, for example
+`scope: "content.quran.read search"`. For new apps, prefer `createServerClient` with
+`contentScopeMode: "granular"`, which picks the scope for each call.
 
 For new apps, prefer the runtime-specific `@quranjs/api/server` and `@quranjs/api/public` entrypoints.
 

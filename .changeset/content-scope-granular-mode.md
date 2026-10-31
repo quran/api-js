@@ -8,21 +8,32 @@ Quran Foundation is splitting the `content` scope into nine narrower read scopes
 lets the SDK request the specific scope each content operation needs, taken from the pinned
 operation catalog, instead of one service-wide `content` scope.
 
-**Nothing changes unless you opt in.** `contentScopeMode` defaults to `"legacy"`, which reproduces
-the previous behaviour exactly, including the existing special handling of the public QuranReflect
-reads. Existing credentials and existing code keep working with no change. The default will only
-change in a deliberately versioned major release.
+**Existing credentials: nothing changes.** `contentScopeMode` defaults to `"legacy"`, which
+reproduces the previous behaviour exactly, including the existing special handling of the public
+QuranReflect reads and `qiraat.read` for Qira'at. Credentials granted `content` keep working with
+no code change, and must stay on the default: the token endpoint rejects a granular request from
+them with `invalid_scope`. The default will only change in a deliberately versioned major release.
 
-Set `contentScopeMode: "granular"` when your credentials were issued with the granular scopes.
-Those scopes are not issued to any client yet, so no current integration is affected. Credentials
-granted only `content` must stay on the default: the token endpoint would reject a granular
-request with `invalid_scope`.
+**New credentials.** Today newly issued clients are still granted `content`, so the default works
+for them as well. Once Quran Foundation turns on the new-client policy, a newly issued backend
+(confidential) client is granted the granular scopes instead of `content` and should use
+`createServerClient` with `contentScopeMode: "granular"`. A newly issued browser or mobile (public)
+client gets no Content scope and should serve Content from its own backend.
 
-This is the minimum release that supports granular-only credentials. Earlier versions hard-code a
-`content` scope request and cannot work with credentials that were never granted it.
+With this release, credentials that were never granted `content` can be used through
+`createServerClient` with `contentScopeMode: "granular"`, through an explicit per-request `scopes`
+list, or through the legacy `QuranClient` with an explicit `scope`. Earlier versions always request
+`content` (`content search` in `QuranClient`) and cannot use such credentials.
 
 Also in this release:
 
+- `OperationRequest.scopes` sets the client-credentials scopes for one app-authenticated call, in
+  either mode, for operations the catalog has no scope for. The SDK requests exactly those scopes.
+- `QuranClientConfig.scope` replaces the `QuranClient` default of `content search`.
+- Qira'at operations are outside the split and request `qiraat.read` in both modes.
+- An app-token 401 or 403 is still a `QuranHttpError` with its `status`, `headers` and `payload`;
+  its message now also names the requested scopes and, in legacy mode, the `contentScopeMode`
+  switch. It is never retried with a broader scope, and neither is an `invalid_scope` rejection.
 - App access tokens are cached per issuer, client, audience and canonical scope set, so a token
   from one issuer is never reused against another, and scope ordering no longer creates duplicate
   cache entries.
@@ -32,7 +43,8 @@ Also in this release:
   the call. A narrower grant is accepted, per RFC 6749 section 3.3; a grant sharing nothing with
   the request now fails immediately with both scope lists named, rather than surfacing later as an
   opaque 403.
-- An `invalid_scope` rejection or an insufficient-scope response is reported with the requested
-  scopes and never retried with a broader scope.
+- Generated content operations record the `contractSha256` of the qf-api-docs content scope
+  contract they came from, and catalog generation fails when the pinned docs revision's contract
+  no longer matches the recorded hash.
 - `generate-operation-catalogs` accepts `--source-ref <git-ref>` to pin the OpenAPI revision, and
   warns when a build reads the mutable `main` branch of qf-api-docs.
