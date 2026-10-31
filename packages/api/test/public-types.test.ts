@@ -35,12 +35,18 @@ describe("@quranjs/api/public type surface", () => {
     const source = `
       import type { PublicClient, TokenStorage, UserSession } from "@quranjs/api/public";
       import type {
+        AudioSegmentSnapshotRecord,
+        ChapterAudioFileSnapshotRecord,
+        ChapterRecitationSnapshotRecord,
         ContentSyncResourceGroup,
         MushafFontAssetSnapshotRecord,
         MushafMetadataSnapshotRecord,
         MushafPageSnapshotRecord,
         MushafSnapshotRecord,
         MushafWordSnapshotRecord,
+        QuranCoreJuzSnapshotRecord,
+        QuranCoreSnapshotRecord,
+        QuranCoreWordSnapshotRecord,
         WordByWordTransliterationSnapshotRecord,
         WordByWordTranslationSnapshotRecord,
       } from "@quranjs/api";
@@ -57,6 +63,80 @@ describe("@quranjs/api/public type surface", () => {
       const mushafResourceGroup: ContentSyncResourceGroup = "mushafs";
       const chapterResourceGroup: ContentSyncResourceGroup = "chapter_recitations";
       const transliterationResourceGroup: ContentSyncResourceGroup = "word_by_word_transliterations";
+      const quranCoreResourceGroup: ContentSyncResourceGroup = "quran_core";
+      const chapterAudioFile: ChapterAudioFileSnapshotRecord = {
+        recordType: "chapter_audio_file",
+        id: 10,
+        audioRecitationId: 7,
+        chapterId: 2,
+        audioUrl: "https://audio.quran.com/2.mp3",
+        duration: 620,
+        durationMs: 620000,
+        fileName: "002.mp3",
+        fileSize: 123456,
+        format: "mp3",
+        mimeType: "audio/mpeg",
+        metadata: {},
+        updatedAt: "2026-09-29T00:00:00Z",
+      };
+      const audioSegment: AudioSegmentSnapshotRecord = {
+        recordType: "audio_segment",
+        id: 20,
+        audioFileId: 10,
+        audioRecitationId: 7,
+        chapterId: 2,
+        verseId: 8,
+        verseKey: "2:1",
+        verseNumber: 1,
+        timestampFrom: 100,
+        timestampTo: 900,
+        timestampMedian: 500,
+        duration: 1,
+        durationMs: 800,
+        segments: [[1, 100, 900]],
+        updatedAt: "2026-09-29T00:00:00Z",
+      };
+      const chapterRecitationRecords: ChapterRecitationSnapshotRecord[] = [
+        chapterAudioFile,
+        audioSegment,
+      ];
+      const coreJuz: QuranCoreJuzSnapshotRecord = {
+        recordType: "juz", id: 1, juzNumber: 1,
+        firstVerseId: 1, lastVerseId: 148, versesCount: 148,
+        verseMapping: { "1": "1-7" }, updatedAt: "2026-09-21T00:00:00Z",
+      };
+      const coreWord: QuranCoreWordSnapshotRecord = {
+        recordType: "word",
+        id: 1,
+        verseId: 1,
+        chapterId: 1,
+        position: 1,
+        verseKey: "1:1",
+        location: "1:1:1",
+        charTypeId: 1,
+        charTypeName: "word",
+        textIndopak: "بِسْمِ",
+        textIndopakNastaleeq: "بِسْمِ",
+        textImlaei: "بِسْمِ",
+        textUthmaniTajweed: "بِسْمِ",
+        updatedAt: "2026-09-21T00:00:00Z",
+      };
+      // Snapshots generated before the backfill omit textIndopakNastaleeq and textImlaei.
+      const legacyCoreWord: QuranCoreWordSnapshotRecord = {
+        recordType: "word",
+        id: 2,
+        verseId: 1,
+        chapterId: 1,
+        position: 2,
+        verseKey: "1:1",
+        location: "1:1:2",
+        charTypeId: 1,
+        charTypeName: "word",
+        textIndopak: "اللّٰهِ",
+        textUthmaniTajweed: "ٱللَّهِ",
+        updatedAt: "2026-09-21T00:00:00Z",
+      };
+      const coreRecord: QuranCoreSnapshotRecord = coreWord;
       const transliterationRecord: WordByWordTransliterationSnapshotRecord = {
         id: 1,
         resourceContentId: 60,
@@ -161,6 +241,10 @@ describe("@quranjs/api/public type surface", () => {
       void mushafResourceGroup;
       void chapterResourceGroup;
       void transliterationResourceGroup;
+      void quranCoreResourceGroup;
+      void chapterRecitationRecords;
+      void coreRecord;
+      void legacyCoreWord;
       void transliterationRecord;
       void genericRecord;
       void nullableRecord;

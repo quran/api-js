@@ -15,6 +15,56 @@
   "auth": {
     "v1": {
       "operations": {
+        "getUserCsrfToken": {
+          "auth": "user",
+          "method": "get",
+          "path": "/users/csrf-token"
+        },
+        "listUserConnectedApps": {
+          "auth": "user",
+          "method": "get",
+          "path": "/users/connected-apps"
+        },
+        "runUserConnectedAppLifecycle": {
+          "auth": "user",
+          "method": "post",
+          "path": "/users/connected-apps/{appId}/lifecycle"
+        },
+        "getAppStateConfiguration": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:config"
+        },
+        "bootstrapAppState": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:bootstrap"
+        },
+        "getAppStateChanges": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state:changes"
+        },
+        "listAppStateDocuments": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state/{collection}"
+        },
+        "getAppStateDocument": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
+        "putAppStateDocument": {
+          "auth": "user",
+          "method": "put",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
+        "deleteAppStateDocument": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/app-state/{collection}/{key}"
+        },
         "getV1Collections": {
           "auth": "user",
           "method": "get",
@@ -115,6 +165,26 @@
           "method": "post",
           "path": "/v1/reading-sessions"
         },
+        "getV1ReadingBookmarks": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/reading-bookmarks"
+        },
+        "postV1ReadingBookmarks": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/reading-bookmarks"
+        },
+        "patchV1ReadingBookmarksBySlot": {
+          "auth": "user",
+          "method": "patch",
+          "path": "/v1/reading-bookmarks/{slot}"
+        },
+        "deleteV1ReadingBookmarksBySlot": {
+          "auth": "user",
+          "method": "delete",
+          "path": "/v1/reading-bookmarks/{slot}"
+        },
         "getV1GoalsGetTodaysPlan": {
           "auth": "user",
           "method": "get",
@@ -214,6 +284,11 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/notes/{noteId}/publish"
+        },
+        "generateShareVerseImage": {
+          "auth": "user",
+          "method": "post",
+          "path": "/media/share-verse"
         }
       },
       "service": "auth",
@@ -1649,6 +1724,61 @@
               "content"
             ]
           }
+        },
+        "listQiraatReaders": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readers"
+        },
+        "getQiraatReader": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readers/{id}"
+        },
+        "listQiraatTransmitters": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/transmitters"
+        },
+        "getQiraatTransmitter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/transmitters/{id}"
+        },
+        "listQiraatJuncturesByVerse": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/by_verse/{verse_key}"
+        },
+        "listQiraatJuncturesByChapter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/by_chapter/{chapter_number}"
+        },
+        "getQiraatJuncture": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/junctures/{id}"
+        },
+        "getQiraatReading": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/readings/{id}"
+        },
+        "getQiraatMatrixByVerse": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/by_verse/{verse_key}"
+        },
+        "getQiraatMatrixByChapter": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/by_chapter/{chapter_number}"
+        },
+        "countQiraatMatrixWithinRange": {
+          "auth": "app",
+          "method": "get",
+          "path": "/qiraat/matrix/count_within_range"
         }
       },
       "service": "content",
@@ -1976,6 +2106,11 @@
           "method": "post",
           "path": "/v1/posts/{id}/toggle-like"
         },
+        "postsControllerSetReaction": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/posts/{id}/reactions"
+        },
         "postsControllerToggleSave": {
           "auth": "user",
           "method": "post",
@@ -2025,6 +2160,21 @@
           "auth": "user",
           "method": "get",
           "path": "/v1/comments/{id}/delete"
+        },
+        "commentsControllerHideComment": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/hide"
+        },
+        "commentsControllerUnhideComment": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/unhide"
+        },
+        "commentsControllerReportAbuse": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/comments/{id}/report"
         },
         "commentsControllerToggleLike": {
           "auth": "user",

@@ -114,6 +114,99 @@ the same event IDs so downstream processing can identify duplicates.
 
 For browser or mobile apps, use `@quranjs/api/public`. Public usage docs live in the API docs portal.
 
+### Qira'at
+
+The Qira'at Content API v4 endpoints (readers, transmitters, junctures,
+readings and the variant-reading matrix) require the `qiraat.read` scope (the
+`qiraat` scope is also accepted), so your client must be granted it. They are
+available only from the server entrypoint, which requests the scope
+automatically for these endpoints.
+
+```typescript
+const { readers } = await client.qiraat.findAllReaders();
+const junctures = await client.qiraat.findJuncturesByVerse("1:4");
+const matrix = await client.qiraat.findMatrixByVerse("1:4");
+const counts = await client.qiraat.countMatrixWithinRange("1:1", "2:10");
+
+// Also available as client.content.v4.qiraat.readers.list(), etc.
+```
+
+### App State
+
+App State stores app-owned JSON documents for signed-in users. It is available
+from both runtime entrypoints under `client.auth.v1.appState`. Read the enabled
+data groups before writing, use a fresh high-entropy idempotency key for each
+logical mutation, and store quoted ETags unchanged.
+
+```typescript
+const config = await client.auth.v1.appState.getConfiguration();
+
+const created = await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "dark" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifNoneMatch: "*" },
+);
+
+const current = await client.auth.v1.appState.getDocument("settings", "theme");
+await client.auth.v1.appState.putDocument(
+  "settings",
+  "theme",
+  { value: { mode: "light" }, schemaVersion: 1 },
+  { idempotencyKey: crypto.randomUUID(), ifMatch: current.etag! },
+);
+```
+
+For offline startup, page through `bootstrap()` until `hasMore` is false and
+then persist `nextSyncToken`. Apply each `getChanges()` page and its next token
+atomically. On HTTP 410, preserve pending writes, bootstrap and drain changes,
+replay pending writes, and then pull again. An unchanged replay request retains
+its idempotency key; a conflict rebase rotates it with the changed fingerprint.
+
+For transactional offline reconciliation, provide an account-scoped durable
+`AppStateStore`. Its `transaction(accountId, reducer)` implementation must
+initialize missing accounts, run the reducer synchronously, and atomically
+commit the complete draft only when the reducer returns successfully. Reducers
+must not perform network I/O. The reconciler stages bootstrap pages separately,
+applies change pages with their tokens atomically, replays immutable local
+replacements, and rejects responses from an account that is no longer active.
+
+```typescript
+import { createAppStateReconciler } from "@quranjs/api/public";
+
+const appState = createAppStateReconciler({
+  accountId: signedInAccountId, // Explicit identity; never derive it from a token.
+  store: durableAppStateStore,
+  transport: client.auth.v1.appState,
+});
+
+await appState.putDocument("settings", "theme", {
+  schemaVersion: 1,
+  value: { mode: "dark" },
+});
+await appState.reconcile();
+
+const state = await appState.getState();
+const theme = state.visible["settings/theme"];
+
+await appState.switchAccount(
+  nextSignedInAccountId,
+  nextAccountClient.auth.v1.appState,
+);
+```
+
+Account switching replaces the local account boundary and transport atomically. Create a separate
+client/transport whose immutable session belongs to the target account; do not pass a facade that
+reads a mutable cross-account session at request time. An in-flight request retains the transport
+captured for its original account, and its late result cannot commit after the generation changes.
+
+`putDocument()` and `deleteDocument()` only queue local mutations. Call
+`reconcile()` to pull, replay the captured pending set, and pull again. Calls to
+`reconcile()` are serialized, while local queue writes remain available. On a
+strict `412` conflict, the complete replacement is rebased onto the refreshed
+ETag with a new idempotency key. `createAppStateMemoryStore()` is available for
+tests and short-lived sessions; it is not durable across process restarts.
+
 Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
 
 ```typescript
@@ -166,6 +259,75 @@ const snapshot = await client.resources.findSnapshot<MushafSnapshotRecord>(
 Mushaf snapshots include layout metadata, pages, publicly distributable font
 assets, and words. Store the final `nextSyncToken` and use it with the same
 `resources` filter on subsequent sync calls.
+
+Chapter-recitation snapshots contain chapter audio files and their associated
+verse and word timing segments. Segment timestamps and tuple boundaries are
+milliseconds from the start of the chapter file; each tuple is
+`[oneBasedWordIndex, startMs, endMs]`. Use `durationMs` for exact arithmetic;
+`duration` is the legacy whole-seconds compatibility value.
+
+```ts
+import type { ChapterRecitationSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "chapter_recitations:159",
+});
+const chapterAudio =
+  await client.resources.findSnapshot<ChapterRecitationSnapshotRecord>(
+    "chapter_recitations",
+    159,
+  );
+
+for (const record of chapterAudio.records) {
+  if (record.recordType === "audio_segment") {
+    console.log(record.verseKey, record.segments);
+  }
+}
+```
+
+Bootstrap returns `RESOURCE_CREATE` entries with `snapshotUrl`; it does not
+return timing rows inline. Fetch and apply every referenced snapshot before
+storing the final sync token. Apply incremental `audio_segment` row mutations
+using `(resourceGroup, resourceId, recordType, recordKey)` as the stable local
+key, not `sourceRecordId` or `data`, because either may be null for a delete.
+When `RESOURCE_INVALIDATE` is returned, replace the complete
+chapter-recitation snapshot.
+
+Once published, the singleton `quran_core:1` provides canonical Uthmani verse
+text, word-level IndoPak Nastaleeq, Imlaei and Uthmani Tajweed text, Surah
+metadata, and Juz/Hizb/Rub-el-Hizb boundaries without duplicating them in every
+Mushaf snapshot. Mushaf-specific pages and glyphs remain in `mushafs:<id>`. Word
+records are exposed through the `QuranCoreWordSnapshotRecord` type; prefer
+`textIndopakNastaleeq` for IndoPak word text (`textIndopak` is deprecated and
+retained only for backwards compatibility). `textIndopakNastaleeq` is optional
+and may be absent from snapshots generated before it was added; the same
+applies to the optional `textImlaei` word field. Publication is pending
+content/licensing approval.
+
+```ts
+import type { QuranCoreSnapshotRecord } from "@quranjs/api";
+
+await client.resources.sync({
+  bootstrap: true,
+  resources: "mushafs:1;quran_core:1",
+});
+const core = await client.resources.findSnapshot<QuranCoreSnapshotRecord>(
+  "quran_core",
+  1,
+);
+for (const record of core.records) {
+  if (record.recordType === "verse")
+    console.log(record.verseKey, record.textUthmani);
+  if (record.recordType === "word")
+    console.log(
+      record.location,
+      record.textIndopakNastaleeq ?? record.textIndopak,
+      record.textImlaei,
+      record.textUthmaniTajweed,
+    );
+}
+```
 
 Word-by-word transliterations use their resource content ID and expose a typed,
 camel-cased snapshot payload:

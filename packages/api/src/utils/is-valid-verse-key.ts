@@ -1,5 +1,6 @@
-import type { ChapterId, VerseKey } from "../types";
+import type { VerseKey } from "../types";
 import { isValidChapterId } from "./is-valid-chapter-id";
+import { parseReferenceNumber } from "./parse-reference-number";
 import { versesMapping } from "./verses-mapping";
 
 /**
@@ -11,15 +12,17 @@ import { versesMapping } from "./verses-mapping";
  * isValidVerseKey('0') // false
  * isValidVerseKey('1:-') // false
  * isValidVerseKey('1_1') // false
+ * isValidVerseKey('1:8') // false (Al-Fatihah has 7 verses)
+ * isValidVerseKey('1:1:1') // false
+ * isValidVerseKey('01:1') // false (must be canonical, as sent to the API)
  */
 export const isValidVerseKey = (key: string): key is VerseKey => {
-  const [chapterId, verseId] = key.trim().split(":");
-  if (!chapterId || !verseId || !isValidChapterId(chapterId)) return false;
+  const parts = key.split(":");
+  if (parts.length !== 2) return false;
 
-  const parsedVerse = Number(verseId);
-  const verseCount = versesMapping[chapterId as ChapterId];
-  if (!parsedVerse || parsedVerse <= 0 || parsedVerse > verseCount)
-    return false;
+  const [chapterId, verseId] = parts as [string, string];
+  if (!isValidChapterId(chapterId)) return false;
 
-  return true;
+  const parsedVerse = parseReferenceNumber(verseId);
+  return parsedVerse !== null && parsedVerse <= versesMapping[chapterId];
 };

@@ -12,6 +12,7 @@ import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
 import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
+import { createAppStateFacade } from "@/runtime/app-state";
 import { PublicQuranFetcher } from "@/sdk/public-fetcher";
 
 type RawOperation = (request?: OperationRequest) => Promise<unknown>;
@@ -57,6 +58,7 @@ const createAuthFacade = (fetcher: PublicQuranFetcher) => {
 
   return {
     ...generatedGroups,
+    appState: createAppStateFacade(fetcher),
     collections: {
       ...generatedGroups.collections,
       addBookmark: (collectionId: string, body: Record<string, unknown>) =>
@@ -369,6 +371,7 @@ export const createPublicRuntimeClient = (config: PublicClientConfig) => {
       ...oauth2V1,
       v1: oauth2V1,
     },
+    qiraat: serverOnlyGuard,
     quranReflect: {
       ...quranReflectV1,
       v1: quranReflectV1,

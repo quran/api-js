@@ -15,6 +15,7 @@ import type {
 import { lookupContentScopes } from "@/lib/content-scope-lookup";
 import { encodeBasicAuth, prepareBody, toUserSession } from "@/lib/http-utils";
 import { retry } from "@/lib/retry";
+import { QuranHttpError } from "@/sdk/http-error";
 import {
   API_BASE_URL,
   DEFAULT_BASE_URLS,
@@ -40,6 +41,8 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
   content: "content",
   search: "search",
 };
+const QIRAAT_PATH_SEGMENT = "/api/v4/qiraat/";
+const QIRAAT_APP_SCOPE = "qiraat.read";
 const QURAN_REFLECT_POSTS_PATH_PREFIX = "/quran-reflect/v1/posts/";
 const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
   "/comments",
@@ -282,8 +285,13 @@ export class QuranFetcher {
     }
 
     if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
+      throw await QuranHttpError.fromResponse(response);
     }
+
+    request.onResponse?.({
+      headers: response.headers,
+      status: response.status,
+    });
 
     if (response.status === 204) {
       return undefined as T;
@@ -295,6 +303,9 @@ export class QuranFetcher {
     }
 
     const json = await response.json();
+    if (request.preserveResponseKeys) {
+      return json as T;
+    }
     return camelizeKeys(json as object) as T;
   }
 
@@ -837,6 +848,10 @@ export class QuranFetcher {
     }
 
     const pathname = new URL(resourceUrl).pathname;
+    if (pathname.includes(QIRAAT_PATH_SEGMENT)) {
+      return [QIRAAT_APP_SCOPE];
+    }
+
     if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
       return contentScope ? [contentScope] : [];
     }

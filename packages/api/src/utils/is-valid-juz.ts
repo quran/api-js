@@ -1,4 +1,5 @@
 import type { JuzNumber } from "../types";
+import { parseReferenceNumber } from "./parse-reference-number";
 
 /**
  * Validates juz number
@@ -11,7 +12,6 @@ import type { JuzNumber } from "../types";
  * isValidJuz('200') // false
  */
 export const isValidJuz = (juz: string | number): juz is JuzNumber => {
-  const parsedJuz = typeof juz === "number" ? juz : Number(juz);
-  if (!parsedJuz || parsedJuz <= 0 || parsedJuz > 30) return false;
-  return true;
+  const parsedJuz = parseReferenceNumber(juz);
+  return parsedJuz !== null && parsedJuz <= 30;
 };

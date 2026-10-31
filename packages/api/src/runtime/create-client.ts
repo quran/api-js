@@ -22,6 +22,7 @@ import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
 import { createAnalyticsFacade } from "@/runtime/analytics";
+import { createAppStateFacade } from "@/runtime/app-state";
 import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
@@ -29,6 +30,7 @@ import { QuranChapters } from "@/sdk/chapters";
 import { QuranFetcher } from "@/sdk/fetcher";
 import { QuranHadithReferences } from "@/sdk/hadith-references";
 import { QuranJuzs } from "@/sdk/juzs";
+import { QuranQiraat } from "@/sdk/qiraat";
 import { QuranResources } from "@/sdk/resources";
 import { QuranSearch } from "@/sdk/search";
 import { QuranVerses } from "@/sdk/verses";
@@ -73,6 +75,7 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
 
   return {
     ...generatedGroups,
+    appState: createAppStateFacade(fetcher),
     collections: {
       ...generatedGroups.collections,
       addBookmark: (collectionId: string, body: Record<string, unknown>) =>
@@ -360,6 +363,7 @@ const createContentFacade = (
   juzs: QuranJuzs,
   audio: QuranAudio,
   hadithReferences: QuranHadithReferences,
+  qiraat: QuranQiraat,
   resources: QuranResources,
   raw: Record<string, RawOperation>,
 ) => {
@@ -408,6 +412,38 @@ const createContentFacade = (
     },
     juzs: {
       list: () => juzs.findAll(),
+    },
+    qiraat: {
+      junctures: {
+        byChapter: (id: ChapterId, query?: ApiParams) =>
+          qiraat.findJuncturesByChapter(id, query),
+        byVerse: (key: VerseKey, query?: ApiParams) =>
+          qiraat.findJuncturesByVerse(key, query),
+        get: (id: string | number, query?: ApiParams) =>
+          qiraat.findJunctureById(id, query),
+      },
+      matrix: {
+        byChapter: (id: ChapterId, query?: ApiParams) =>
+          qiraat.findMatrixByChapter(id, query),
+        byVerse: (key: VerseKey, query?: ApiParams) =>
+          qiraat.findMatrixByVerse(key, query),
+        countWithinRange: (from: VerseKey, to: VerseKey, query?: ApiParams) =>
+          qiraat.countMatrixWithinRange(from, to, query),
+      },
+      readers: {
+        get: (id: string | number, query?: ApiParams) =>
+          qiraat.findReaderById(id, query),
+        list: (query?: ApiParams) => qiraat.findAllReaders(query),
+      },
+      readings: {
+        get: (id: string | number, query?: ApiParams) =>
+          qiraat.findReadingById(id, query),
+      },
+      transmitters: {
+        get: (id: string | number, query?: ApiParams) =>
+          qiraat.findTransmitterById(id, query),
+        list: (query?: ApiParams) => qiraat.findAllTransmitters(query),
+      },
     },
     raw,
     resources: {
@@ -477,6 +513,7 @@ export const createRuntimeClient = (
   const juzs = new QuranJuzs(fetcher);
   const audio = new QuranAudio(fetcher);
   const hadithReferences = new QuranHadithReferences(fetcher);
+  const qiraat = new QuranQiraat(fetcher);
   const resources = new QuranResources(fetcher);
   const searchClient = new QuranSearch(fetcher);
 
@@ -508,6 +545,7 @@ export const createRuntimeClient = (
     juzs,
     audio,
     hadithReferences,
+    qiraat,
     resources,
     raw.content.v4,
   );
@@ -556,6 +594,7 @@ export const createRuntimeClient = (
       ...oauth2V1,
       v1: oauth2V1,
     },
+    qiraat,
     quranReflect: {
       ...quranReflectV1,
       v1: quranReflectV1,

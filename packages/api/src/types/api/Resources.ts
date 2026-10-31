@@ -85,11 +85,51 @@ export type ContentSyncResourceGroup =
   | "articles"
   | "chapter_recitations"
   | "mushafs"
+  | "quran_core"
   | "recitations"
   | "tafsirs"
   | "translations"
   | "word_by_word_transliterations"
   | "word_by_word_translations";
+
+export interface ChapterAudioFileSnapshotRecord
+  extends Record<string, unknown> {
+  recordType: "chapter_audio_file";
+  id: number;
+  audioRecitationId: number;
+  chapterId: number;
+  audioUrl: string | null;
+  duration: number | null;
+  durationMs: number | null;
+  fileName: string | null;
+  fileSize: number | null;
+  format: string | null;
+  mimeType: string | null;
+  metadata: Record<string, unknown> | null;
+  updatedAt: string;
+}
+
+export interface AudioSegmentSnapshotRecord extends Record<string, unknown> {
+  recordType: "audio_segment";
+  id: number;
+  audioFileId: number;
+  audioRecitationId: number;
+  chapterId: number;
+  verseId: number;
+  verseKey: string;
+  verseNumber: number;
+  timestampFrom: number | null;
+  timestampTo: number | null;
+  timestampMedian: number | null;
+  duration: number | null;
+  durationMs: number | null;
+  segments: [number, number, number][];
+  updatedAt: string;
+}
+
+export type ChapterRecitationSnapshotRecord =
+  | ChapterAudioFileSnapshotRecord
+  | AudioSegmentSnapshotRecord;
 
 export interface MushafMetadataSnapshotRecord extends Record<string, unknown> {
   recordType: "mushaf";
@@ -163,6 +203,101 @@ export type MushafSnapshotRecord =
   | MushafFontAssetSnapshotRecord
   | MushafWordSnapshotRecord;
 
+export interface QuranCoreChapterSnapshotRecord extends Record<string, unknown> {
+  recordType: "chapter";
+  id: number;
+  chapterNumber: number;
+  revelationPlace: string | null;
+  revelationOrder: number | null;
+  bismillahPre: boolean | null;
+  nameSimple: string | null;
+  nameComplex: string | null;
+  nameArabic: string | null;
+  versesCount: number | null;
+  rukusCount: number | null;
+  hizbsCount: number | null;
+  rubElHizbsCount: number | null;
+  updatedAt: string;
+}
+
+export interface QuranCoreVerseSnapshotRecord extends Record<string, unknown> {
+  recordType: "verse";
+  id: number;
+  chapterId: number;
+  verseNumber: number;
+  verseIndex: number;
+  verseKey: string;
+  textUthmani: string;
+  juzNumber: number | null;
+  hizbNumber: number | null;
+  rubElHizbNumber: number | null;
+  rukuNumber: number | null;
+  surahRukuNumber: number | null;
+  manzilNumber: number | null;
+  sajdahType: string | null;
+  sajdahNumber: number | null;
+  wordsCount: number | null;
+  updatedAt: string;
+}
+
+export interface QuranCoreWordSnapshotRecord extends Record<string, unknown> {
+  recordType: "word";
+  id: number;
+  verseId: number;
+  chapterId: number;
+  position: number;
+  verseKey: string;
+  location: string;
+  charTypeId: number | null;
+  charTypeName: string | null;
+  /** @deprecated Use `textIndopakNastaleeq`. Retained for backwards compatibility. */
+  textIndopak: string | null;
+  /**
+   * IndoPak Nastaleeq word text, as used by Quran.com. Optional because
+   * snapshots generated before the server-side backfill do not include it.
+   */
+  textIndopakNastaleeq?: string | null;
+  /**
+   * Imlaei (standard Arabic orthography) word text. Optional because snapshots
+   * generated before the server-side backfill do not include it.
+   */
+  textImlaei?: string | null;
+  textUthmaniTajweed: string | null;
+  updatedAt: string;
+}
+
+interface QuranCoreBoundaryFields extends Record<string, unknown> {
+  id: number;
+  verseMapping: Record<string, unknown> | null;
+  firstVerseId: number | null;
+  lastVerseId: number | null;
+  versesCount: number | null;
+  updatedAt: string;
+}
+
+export interface QuranCoreJuzSnapshotRecord extends QuranCoreBoundaryFields {
+  recordType: "juz";
+  juzNumber: number;
+}
+
+export interface QuranCoreHizbSnapshotRecord extends QuranCoreBoundaryFields {
+  recordType: "hizb";
+  hizbNumber: number;
+}
+
+export interface QuranCoreRubElHizbSnapshotRecord extends QuranCoreBoundaryFields {
+  recordType: "rub_el_hizb";
+  rubElHizbNumber: number;
+}
+
+export type QuranCoreSnapshotRecord =
+  | QuranCoreChapterSnapshotRecord
+  | QuranCoreVerseSnapshotRecord
+  | QuranCoreWordSnapshotRecord
+  | QuranCoreJuzSnapshotRecord
+  | QuranCoreHizbSnapshotRecord
+  | QuranCoreRubElHizbSnapshotRecord;
+
 export interface WordByWordTranslationSnapshotRecord
   extends Record<string, unknown> {
   id: number;
@@ -198,7 +333,7 @@ export type ContentSyncMutationType =
   | "RESOURCE_INVALIDATE";
 
 export interface ContentSyncOptions extends ApiParams {
-  /** Resource filter, e.g. `articles:*;mushafs:1;translations:1,6;word_by_word_transliterations:60`. */
+  /** Resource filter, e.g. `mushafs:1;quran_core:1;translations:1,6`. */
   resources?: string;
   /** Set to true for the initial sync. */
   bootstrap?: boolean;

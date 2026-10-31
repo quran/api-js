@@ -135,4 +135,6 @@ export interface OperationRequest {
     password: string;
   };
   contentType?: string;
+  onResponse?: (metadata: { headers: Headers; status: number }) => void;
+  preserveResponseKeys?: boolean;
 }
