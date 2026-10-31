@@ -934,7 +934,7 @@ export class QuranFetcher {
       const granular =
         operation?.scopes?.granularAnyOf ??
         (resourceUrl
-          ? lookupContentScopes(service, method, new URL(resourceUrl).pathname)
+          ? lookupContentScopes(service, method, this.serviceRelativePathname(service, resourceUrl))
               ?.granularAnyOf
           : undefined) ??
         [];
@@ -978,6 +978,27 @@ export class QuranFetcher {
     }
 
     return ["post.read"];
+  }
+
+  /**
+   * The request pathname with the configured base URL's mount path removed.
+   *
+   * A base URL may carry a path of its own (for example a gatewayUrl of
+   * "https://proxy.example/gateway"). The catalog lookup only knows the service's fixed
+   * prefixes, so the mount path is stripped first. Both the service's own base and the gateway
+   * are tried, since a request may go through either.
+   */
+  private serviceRelativePathname(service: ApiService, resourceUrl: string): string {
+    const pathname = new URL(resourceUrl).pathname;
+    for (const crossService of [false, true]) {
+      const basePath = removeTrailingSlash(
+        new URL(this.resolveServiceBaseUrl(service, crossService).baseUrl).pathname,
+      );
+      if (basePath && pathname.startsWith(`${basePath}/`)) {
+        return pathname.slice(basePath.length);
+      }
+    }
+    return pathname;
   }
 
   private resolveServiceBaseUrl(

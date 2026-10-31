@@ -213,6 +213,22 @@ describe("granular mode requests the operation's own scope", () => {
     expect(tokenScopes()).toEqual(["qiraat.read"]);
   });
 
+  it.each([
+    ["gatewayUrl", { gatewayUrl: "https://proxy.example/gateway/" }],
+    ["contentBaseUrl", { contentBaseUrl: "https://proxy.example/mounted/content" }],
+  ] as const)(
+    "resolves typed calls when the %s has a mount path",
+    async (_name, services) => {
+      const { calls, fetchImpl, tokenScopes } = makeFetch();
+      const fetcher = granular({ services }, fetchImpl as never);
+
+      await fetcher.fetch("/content/api/v4/chapters");
+
+      expect(tokenScopes()).toEqual(["content.quran.read"]);
+      expect(calls.some((call) => call.url.startsWith("https://proxy.example/"))).toBe(true);
+    },
+  );
+
   it("never requests the legacy umbrella", async () => {
     const { fetchImpl, tokenScopes } = makeFetch();
     const fetcher = granular({}, fetchImpl as never);
