@@ -266,26 +266,28 @@ export class QuranFetcher {
       );
     }
 
-    // A missing permission is never retried with a broader scope. Widening the request would
-    // paper over a misconfigured client and hand it more access than it was granted; the caller
-    // needs to see the failure and fix the scope or the client's approvals.
-    if (
-      INSUFFICIENT_SCOPE_STATUSES.has(response.status) &&
-      effectiveAuth === "app"
-    ) {
-      throw new Error(
-        `${response.status} ${response.statusText}. ` +
-          `The app token did not carry a scope this endpoint accepts. ` +
-          `Requested scope: ${this.describeRequestedAppScope(service, url, operation, request.method ?? "GET")}. ` +
-          `Check the scopes granted to client ${this.config.clientId}` +
-          (service === "content" && this.contentScopeMode() === "legacy"
-            ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
-            : `.`),
-      );
-    }
-
     if (!response.ok) {
-      throw await QuranHttpError.fromResponse(response);
+      const error = await QuranHttpError.fromResponse(response);
+
+      // A missing permission is never retried with a broader scope. Widening the request would
+      // paper over a misconfigured client and hand it more access than it was granted; the caller
+      // needs to see the failure and fix the scope or the client's approvals.
+      //
+      // The error stays a QuranHttpError (status, headers, payload, instanceof) in both modes;
+      // only its message gains the scope hint.
+      if (
+        INSUFFICIENT_SCOPE_STATUSES.has(response.status) &&
+        effectiveAuth === "app"
+      ) {
+        error.message = `${error.message}. ${this.describeInsufficientScope(
+          service,
+          url,
+          request,
+          operation,
+        )}`;
+      }
+
+      throw error;
     }
 
     request.onResponse?.({
@@ -503,6 +505,7 @@ export class QuranFetcher {
         resourceUrl,
         operation,
         request.method ?? "GET",
+        request.scopes,
       );
       this.setTokenHeaders(service, headers, token);
       return;
@@ -628,6 +631,7 @@ export class QuranFetcher {
     resourceUrl?: string,
     operation?: OperationDefinition,
     method = "GET",
+    explicitScopes?: string[],
   ): Promise<string> {
     if (this.mode !== "server") {
       throw new Error(
@@ -635,7 +639,13 @@ export class QuranFetcher {
       );
     }
 
-    const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
+    const scopes = this.resolveAppScopes(
+      service,
+      resourceUrl,
+      operation,
+      method,
+      explicitScopes,
+    );
     if (scopes.length === 0) {
       throw new Error(
         `No client-credentials scope is configured for ${service}.`,
@@ -774,15 +784,48 @@ export class QuranFetcher {
     return [...new Set(scopes)].sort().join(" ");
   }
 
+  /** Scope hint appended to an app-token 401/403 message. */
+  private describeInsufficientScope(
+    service: ApiService,
+    resourceUrl: string,
+    request: OperationRequest,
+    operation?: OperationDefinition,
+  ): string {
+    if (request.accessToken) {
+      return (
+        `The caller-supplied access token did not carry a scope this endpoint accepts. ` +
+        `Check the scopes it was issued with.`
+      );
+    }
+
+    return (
+      `The app token did not carry a scope this endpoint accepts. ` +
+      `Requested scope: ${this.describeRequestedAppScope(service, resourceUrl, operation, request.method ?? "GET", request.scopes)}. ` +
+      `Check the scopes granted to client ${this.config.clientId}` +
+      (service === "content" &&
+      !request.scopes?.length &&
+      this.contentScopeMode() === "legacy"
+        ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
+        : `.`)
+    );
+  }
+
   /** Requested scope list for an error message, or a marker when it cannot be determined. */
   private describeRequestedAppScope(
     service: ApiService,
     resourceUrl?: string,
     operation?: OperationDefinition,
     method = "GET",
+    explicitScopes?: string[],
   ): string {
     try {
-      const scopes = this.resolveAppScopes(service, resourceUrl, operation, method);
+      const scopes = this.resolveAppScopes(
+        service,
+        resourceUrl,
+        operation,
+        method,
+        explicitScopes,
+      );
       return scopes.length > 0 ? this.canonicalizeScopes(scopes) : "none";
     } catch {
       return "unknown";
@@ -805,10 +848,24 @@ export class QuranFetcher {
     resourceUrl?: string,
     operation?: OperationDefinition,
     method = "GET",
+    explicitScopes?: string[],
   ): string[] {
+    // An explicit per-request scope list wins in both modes. It is the escape hatch for an
+    // operation the pinned catalog carries no scope for; the SDK never widens it.
+    const explicit = explicitScopes?.filter(Boolean) ?? [];
+    if (explicit.length > 0) {
+      return explicit;
+    }
+
     if (service !== "content") {
       const serviceScope = APP_SERVICE_SCOPES[service];
       return serviceScope ? [serviceScope] : [];
+    }
+
+    // Qira'at is outside the content scope split and keeps its own `qiraat.read` scope, so it is
+    // routed before the granular branch: its operations carry no content scope metadata.
+    if (resourceUrl && new URL(resourceUrl).pathname.includes(QIRAAT_PATH_SEGMENT)) {
+      return [QIRAAT_APP_SCOPE];
     }
 
     if (this.contentScopeMode() === "granular") {
@@ -833,7 +890,8 @@ export class QuranFetcher {
       throw new Error(
         `contentScopeMode is "granular" but no content scope is known for this call` +
           (resourceUrl ? ` (${new URL(resourceUrl).pathname})` : "") +
-          `. Call it through a generated operation, or pass an explicit accessToken.`,
+          `. Call it through a generated operation, pass explicit scopes ({ scopes: [...] }), ` +
+          `or pass an explicit accessToken.`,
       );
     }
 

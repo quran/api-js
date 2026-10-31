@@ -46,6 +46,15 @@ export interface QuranClientConfig {
   fetch?: CustomFetcher;
   /** Default parameters for all API calls */
   defaults?: Partial<BaseApiParams>;
+  /**
+   * Space-separated scopes requested for the client-credentials token. Defaults to
+   * `"content search"`, which keeps working for credentials that were granted `content`.
+   *
+   * Credentials issued only with the granular content scopes are never granted `content`; set
+   * this to the scopes they were approved for (for example `"content.quran.read search"`), or use
+   * `createServerClient` with `contentScopeMode: "granular"`, which picks the scope per call.
+   */
+  scope?: string;
 }
 
 export interface UserSession {
@@ -130,6 +139,15 @@ export interface OperationRequest {
   method?: HTTPMethod;
   auth?: "auto" | "none" | "app" | "user";
   accessToken?: string;
+  /**
+   * Scopes for the client-credentials token of an app-authenticated call (server client only).
+   *
+   * Overrides the scopes the SDK would choose, in both content scope modes. Use it for an
+   * operation the pinned catalog carries no scope for, for example
+   * `client.content.v4.raw.someOperation({ scopes: ["content.quran.read"] })`. The SDK requests
+   * exactly these scopes and never widens them.
+   */
+  scopes?: string[];
   basicAuth?: {
     username: string;
     password: string;

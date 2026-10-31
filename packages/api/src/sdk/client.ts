@@ -22,6 +22,7 @@ import { QuranSearch } from "./search";
 import { QuranVerses } from "./verses";
 
 const { camelizeKeys } = humps;
+/** Pre-split default. Overridden by `QuranClientConfig.scope`. */
 const LEGACY_CLIENT_CREDENTIALS_SCOPE = "content search";
 
 type LegacyConfig = Required<
@@ -35,7 +36,16 @@ class LegacyQuranFetcher {
   constructor(private config: LegacyConfig) {}
 
   public updateConfig(config: LegacyConfig): void {
+    // A token fetched for one scope set must not be reused for another.
+    if (this.requestedScope(config) !== this.requestedScope(this.config)) {
+      this.cachedToken = null;
+    }
     this.config = config;
+  }
+
+  private requestedScope(config: LegacyConfig = this.config): string {
+    const scope = config.scope?.trim().split(/\s+/u).filter(Boolean).join(" ");
+    return scope || LEGACY_CLIENT_CREDENTIALS_SCOPE;
   }
 
   public getFetch(): CustomFetcher {
@@ -85,7 +95,7 @@ class LegacyQuranFetcher {
 
     const body = new URLSearchParams({
       grant_type: "client_credentials",
-      scope: LEGACY_CLIENT_CREDENTIALS_SCOPE,
+      scope: this.requestedScope(),
     }).toString();
 
     const response = await retry(

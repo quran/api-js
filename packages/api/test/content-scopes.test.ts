@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { operationCatalog } from "@/generated/contracts";
+import { QuranClient } from "@/sdk/client";
 import { QuranFetcher } from "@/sdk/fetcher";
+import { QuranHttpError } from "@/sdk/http-error";
 import type { ServerClientConfig } from "@/types";
 
 /**
@@ -80,11 +82,16 @@ const makeFetch = (
       );
     }
 
+    const status = options.apiStatus ?? 200;
     return Promise.resolve(
-      new Response(JSON.stringify({}), {
-        headers: { "content-type": "application/json" },
-        status: options.apiStatus ?? 200,
-      }),
+      new Response(
+        JSON.stringify(status >= 400 ? { error: "insufficient_scope" } : {}),
+        {
+          headers: { "content-type": "application/json" },
+          status,
+          statusText: status === 403 ? "Forbidden" : status === 401 ? "Unauthorized" : "",
+        },
+      ),
     );
   });
 
@@ -135,6 +142,16 @@ describe("legacy mode is the default and is unchanged", () => {
     expect(tokenScopes()).toEqual(["post.read", "comment.read"]);
   });
 
+  it("requests qiraat.read as one scope for Qira'at operations", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const fetcher = new QuranFetcher("server", serverConfig({}, fetchImpl as never));
+
+    await fetcher.requestOperation(contentOperation("listQiraatReaders"));
+
+    // Not the characters of "qiraat.read" spread into a scope set.
+    expect(tokenScopes()).toEqual(["qiraat.read"]);
+  });
+
   it("still works through the untyped legacy fetch facade", async () => {
     const { fetchImpl, tokenScopes } = makeFetch();
     const fetcher = new QuranFetcher("server", serverConfig({}, fetchImpl as never));
@@ -182,6 +199,18 @@ describe("granular mode requests the operation's own scope", () => {
 
     // Not comment.read: the successor replaces the path-sniffing special case entirely.
     expect(tokenScopes()).toEqual(["content.reflections.read"]);
+  });
+
+  it("keeps qiraat.read for Qira'at, which is outside the content scope split", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const fetcher = granular({}, fetchImpl as never);
+
+    await fetcher.requestOperation(contentOperation("listQiraatReaders"));
+    await fetcher.requestOperation(contentOperation("getQiraatReader"), { path: { id: 1 } });
+    await fetcher.fetch("/api/v4/qiraat/transmitters");
+
+    // One token, shared by all three calls.
+    expect(tokenScopes()).toEqual(["qiraat.read"]);
   });
 
   it("never requests the legacy umbrella", async () => {
@@ -401,6 +430,39 @@ describe("failures are reported, never widened", () => {
     ).rejects.toThrow(/contentScopeMode: "granular"/u);
   });
 
+  it.each([
+    ["legacy", 403, /Requested scope: content\. .*contentScopeMode: "granular"/u],
+    ["legacy", 401, /Requested scope: content\./u],
+    ["granular", 403, /Requested scope: content\.quran\.read\./u],
+    ["granular", 401, /Requested scope: content\.quran\.read\./u],
+  ] as const)(
+    "keeps an app-token %s-mode %i a QuranHttpError with the scope hint",
+    async (mode, status, hint) => {
+      const { fetchImpl } = makeFetch({ apiStatus: status });
+      const fetcher = new QuranFetcher(
+        "server",
+        serverConfig({ contentScopeMode: mode }, fetchImpl as never),
+      );
+
+      const failure = await fetcher
+        .requestOperation(contentOperation("listChapters"))
+        .then(
+          () => null,
+          (error: unknown) => error,
+        );
+
+      expect(failure).toBeInstanceOf(QuranHttpError);
+      expect(failure).toMatchObject({
+        payload: { error: "insufficient_scope" },
+        status,
+      });
+      expect((failure as Error).message).toMatch(
+        new RegExp(`^${status} (Forbidden|Unauthorized)\\. The app token did not carry`, "u"),
+      );
+      expect((failure as Error).message).toMatch(hint);
+    },
+  );
+
   it("fails when the granted token shares no scope with the request", async () => {
     const { fetchImpl } = makeFetch({ grantedScope: "search" });
     const fetcher = new QuranFetcher(
@@ -446,20 +508,38 @@ describe("failures are reported, never widened", () => {
 });
 
 describe("catalog scope metadata", () => {
-  it("covers every content operation with exactly one successor", () => {
-    const operations = Object.entries(operationCatalog.content.v4.operations);
+  const contentOperations = Object.entries(operationCatalog.content.v4.operations);
+  const isQiraat = (path: string) => path.startsWith("/qiraat/");
+
+  it("covers every content operation outside Qira'at with exactly one successor", () => {
+    const operations = contentOperations.filter(([, operation]) => !isQiraat(operation.path));
     expect(operations).toHaveLength(95);
 
+    const contractHashes = new Set<string | undefined>();
     for (const [name, operation] of operations) {
       expect(operation.scopes, `${name} has no scope metadata`).toBeDefined();
       expect(operation.scopes?.granularAnyOf, name).toHaveLength(1);
       expect(operation.scopes?.legacyAnyOf.length, name).toBeGreaterThan(0);
       expect(operation.scopes?.contractVersion).toBe("content-scopes/v1");
+      contractHashes.add(operation.scopes?.contractSha256);
+    }
+
+    // Every operation comes from one reviewed contract, recorded by its hash.
+    expect(contractHashes.size).toBe(1);
+    expect([...contractHashes][0]).toMatch(/^[0-9a-f]{64}$/u);
+  });
+
+  it("leaves Qira'at outside the content scope split", () => {
+    const qiraat = contentOperations.filter(([, operation]) => isQiraat(operation.path));
+    expect(qiraat.length).toBeGreaterThan(0);
+    for (const [name, operation] of qiraat) {
+      expect(operation.scopes?.granularAnyOf ?? [], name).toEqual([]);
     }
   });
 
   it("carries no quota information into the SDK", () => {
     for (const operation of Object.values(operationCatalog.content.v4.operations)) {
+      if (!operation.scopes) continue;
       expect(operation.scopes).not.toHaveProperty("quotaBuckets");
       expect(operation.scopes).not.toHaveProperty("rateLimitPolicyId");
     }
@@ -472,6 +552,75 @@ describe("catalog scope metadata", () => {
     for (const operation of Object.values(operationCatalog.auth.v1.operations)) {
       expect(operation.scopes).toBeUndefined();
     }
+  });
+});
+
+describe("explicit scopes", () => {
+  const unscopedOperation = () => {
+    const { scopes: _scopes, ...operation } = contentOperation("listChapters");
+    return { ...operation, operationName: "notInCatalog", path: "/not-in-catalog" };
+  };
+
+  it("lets an operation without catalog scopes take an explicit scope in granular mode", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const fetcher = new QuranFetcher(
+      "server",
+      serverConfig({ contentScopeMode: "granular" }, fetchImpl as never),
+    );
+
+    await expect(fetcher.requestOperation(unscopedOperation())).rejects.toThrow(
+      /no content scope is known.*explicit scopes/u,
+    );
+    await fetcher.requestOperation(unscopedOperation(), {
+      scopes: ["content.metadata.read"],
+    });
+
+    expect(tokenScopes()).toEqual(["content.metadata.read"]);
+  });
+
+  it("uses explicit scopes over the catalog in both modes, without widening", async () => {
+    for (const mode of ["legacy", "granular"] as const) {
+      const { fetchImpl, tokenScopes } = makeFetch();
+      const fetcher = new QuranFetcher(
+        "server",
+        serverConfig({ contentScopeMode: mode }, fetchImpl as never),
+      );
+
+      await fetcher.requestOperation(contentOperation("listChapters"), {
+        scopes: ["content.quran.read", "content.metadata.read"],
+      });
+
+      expect(tokenScopes()).toEqual(["content.metadata.read content.quran.read"]);
+    }
+  });
+
+  it("lets the legacy QuranClient request an explicit scope instead of content search", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const client = new QuranClient({
+      clientId: "legacy-client",
+      clientSecret: "legacy-secret",
+      fetch: fetchImpl as never,
+      scope: "content.quran.read",
+    });
+
+    await client.chapters.findAll().catch(() => undefined);
+    expect(tokenScopes()).toEqual(["content.quran.read"]);
+
+    client.updateConfig({ scope: "content.quran.read search" });
+    await client.chapters.findAll().catch(() => undefined);
+    expect(tokenScopes()).toEqual(["content.quran.read", "content.quran.read search"]);
+  });
+
+  it("keeps the legacy QuranClient default of content search", async () => {
+    const { fetchImpl, tokenScopes } = makeFetch();
+    const client = new QuranClient({
+      clientId: "legacy-client",
+      clientSecret: "legacy-secret",
+      fetch: fetchImpl as never,
+    });
+
+    await client.chapters.findAll().catch(() => undefined);
+    expect(tokenScopes()).toEqual(["content search"]);
   });
 });
 
