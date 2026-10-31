@@ -285,6 +285,16 @@
           "method": "post",
           "path": "/v1/notes/{noteId}/publish"
         },
+        "getV1Sync": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/sync"
+        },
+        "postV1Sync": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/sync"
+        },
         "generateShareVerseImage": {
           "auth": "user",
           "method": "post",
@@ -303,7 +313,7 @@
           "method": "get",
           "path": "/audio/reciters/{reciter_id}/timestamp",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -319,7 +329,7 @@
           "method": "get",
           "path": "/audio/reciters/{reciter_id}/lookup",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -335,7 +345,7 @@
           "method": "get",
           "path": "/chapters",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -351,7 +361,7 @@
           "method": "get",
           "path": "/chapters/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -367,7 +377,7 @@
           "method": "get",
           "path": "/chapters/{id}/info",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -383,7 +393,7 @@
           "method": "get",
           "path": "/hadith_references/by_ayah/{ayah_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.hadith.read"
@@ -399,7 +409,7 @@
           "method": "get",
           "path": "/hadith_references/by_ayah/{ayah_key}/hadiths",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.hadith.read"
@@ -415,7 +425,7 @@
           "method": "get",
           "path": "/hadith_references/count_within_range",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.hadith.read"
@@ -431,7 +441,7 @@
           "method": "get",
           "path": "/pages",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -447,7 +457,7 @@
           "method": "get",
           "path": "/pages/lookup",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -463,7 +473,7 @@
           "method": "get",
           "path": "/pages/{page_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -479,7 +489,7 @@
           "method": "get",
           "path": "/verses/by_chapter/{chapter_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -495,7 +505,7 @@
           "method": "get",
           "path": "/verses/by_page/{page_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -511,7 +521,7 @@
           "method": "get",
           "path": "/verses/by_juz/{juz_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -527,7 +537,7 @@
           "method": "get",
           "path": "/verses/by_hizb/{hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -543,7 +553,7 @@
           "method": "get",
           "path": "/verses/by_rub/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -559,7 +569,7 @@
           "method": "get",
           "path": "/verses/by_manzil/{manzil_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -575,7 +585,7 @@
           "method": "get",
           "path": "/verses/by_ruku/{ruku_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -591,7 +601,7 @@
           "method": "get",
           "path": "/verses/by_range",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -607,7 +617,7 @@
           "method": "get",
           "path": "/verses/by_key/{verse_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -623,7 +633,7 @@
           "method": "get",
           "path": "/verses/random",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -639,7 +649,7 @@
           "method": "get",
           "path": "/juzs",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -655,7 +665,7 @@
           "method": "get",
           "path": "/quran/verses/{script}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -671,7 +681,7 @@
           "method": "get",
           "path": "/quran/verses/indopak",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -687,7 +697,7 @@
           "method": "get",
           "path": "/quran/verses/indopak_nastaleeq",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -703,7 +713,7 @@
           "method": "get",
           "path": "/quran/verses/uthmani_tajweed",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -719,7 +729,7 @@
           "method": "get",
           "path": "/quran/verses/uthmani",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -735,7 +745,7 @@
           "method": "get",
           "path": "/quran/verses/uthmani_simple",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -751,7 +761,7 @@
           "method": "get",
           "path": "/quran/verses/imlaei",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -767,7 +777,7 @@
           "method": "get",
           "path": "/resources/recitations",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -783,7 +793,7 @@
           "method": "get",
           "path": "/quran/recitations/{recitation_id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -799,7 +809,7 @@
           "method": "get",
           "path": "/quran/translations/{translation_id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -815,7 +825,7 @@
           "method": "get",
           "path": "/resources/chapter_reciters",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -831,7 +841,7 @@
           "method": "get",
           "path": "/quran/tafsirs/{tafsir_id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -847,7 +857,7 @@
           "method": "get",
           "path": "/quran/verses/code_v1",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -863,7 +873,7 @@
           "method": "get",
           "path": "/quran/verses/code_v2",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -879,7 +889,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_chapter/{chapter_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -895,7 +905,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_juz/{juz_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -911,7 +921,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_page/{page_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -927,7 +937,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_rub/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -943,7 +953,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_hizb/{hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -959,7 +969,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_ayah/{ayah_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -975,7 +985,7 @@
           "method": "get",
           "path": "/resources/recitations/{recitation_id}/info",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -991,7 +1001,7 @@
           "method": "get",
           "path": "/resources/translations/{translation_id}/info",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1007,7 +1017,7 @@
           "method": "get",
           "path": "/resources/translations",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1023,7 +1033,7 @@
           "method": "get",
           "path": "/resources/tafsirs",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1039,7 +1049,7 @@
           "method": "get",
           "path": "/resources/tafsirs/{tafsir_id}/info",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1055,7 +1065,7 @@
           "method": "get",
           "path": "/resources/recitation_styles",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1071,7 +1081,7 @@
           "method": "get",
           "path": "/resources/languages",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.metadata.read"
@@ -1087,7 +1097,7 @@
           "method": "get",
           "path": "/resources/chapter_infos",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1103,7 +1113,7 @@
           "method": "get",
           "path": "/resources/verse_media",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.metadata.read"
@@ -1119,7 +1129,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_manzil/{manzil_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1135,7 +1145,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_ruku/{ruku_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1151,7 +1161,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_chapter/{chapter_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1167,7 +1177,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_page/{page_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1183,7 +1193,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_juz/{juz_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1199,7 +1209,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1215,7 +1225,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_hizb/{hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1231,7 +1241,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_manzil/{manzil_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1247,7 +1257,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_ruku/{ruku_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1263,7 +1273,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_ayah/{ayah_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1279,7 +1289,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_chapter/{chapter_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1295,7 +1305,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_page/{page_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1311,7 +1321,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_juz/{juz_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1327,7 +1337,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_rub_el_hizb/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1343,7 +1353,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_hizb/{hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1359,7 +1369,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_manzil/{manzil_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1375,7 +1385,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_ruku/{ruku_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1391,7 +1401,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_ayah/{ayah_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1407,7 +1417,7 @@
           "method": "get",
           "path": "/juzs/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1423,7 +1433,7 @@
           "method": "get",
           "path": "/hizbs",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1439,7 +1449,7 @@
           "method": "get",
           "path": "/hizbs/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1455,7 +1465,7 @@
           "method": "get",
           "path": "/rub_el_hizbs",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1471,7 +1481,7 @@
           "method": "get",
           "path": "/rub_el_hizbs/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1487,7 +1497,7 @@
           "method": "get",
           "path": "/rukus",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1503,7 +1513,7 @@
           "method": "get",
           "path": "/rukus/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1519,7 +1529,7 @@
           "method": "get",
           "path": "/manzils",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1535,7 +1545,7 @@
           "method": "get",
           "path": "/manzils/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1551,7 +1561,7 @@
           "method": "get",
           "path": "/foot_notes/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1567,7 +1577,7 @@
           "method": "get",
           "path": "/quran-reflect/v1/posts/feed",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.reflections.read"
@@ -1583,7 +1593,7 @@
           "method": "get",
           "path": "/quran-reflect/v1/posts/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.reflections.read"
@@ -1599,7 +1609,7 @@
           "method": "get",
           "path": "/quran-reflect/v1/posts/user-posts/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.reflections.read"
@@ -1615,7 +1625,7 @@
           "method": "get",
           "path": "/quran-reflect/v1/posts/{id}/comments",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.reflections.read"
@@ -1632,7 +1642,7 @@
           "method": "get",
           "path": "/quran-reflect/v1/posts/{id}/all-comments",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.reflections.read"
@@ -1649,7 +1659,7 @@
           "method": "get",
           "path": "/chapter_recitations/{reciter_id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1665,7 +1675,7 @@
           "method": "get",
           "path": "/chapter_recitations/{reciter_id}/{chapter_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1681,7 +1691,7 @@
           "method": "get",
           "path": "/verses/by_rub_el_hizb/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.quran.read"
@@ -1697,7 +1707,7 @@
           "method": "get",
           "path": "/translations/{resource_id}/by_rub/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.translations.read"
@@ -1713,7 +1723,7 @@
           "method": "get",
           "path": "/tafsirs/{resource_id}/by_rub/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.tafsirs.read"
@@ -1729,7 +1739,7 @@
           "method": "get",
           "path": "/recitations/{recitation_id}/by_rub_el_hizb/{rub_el_hizb_number}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.audio.read"
@@ -1745,7 +1755,7 @@
           "method": "get",
           "path": "/answers/by_ayah/{ayah_key}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.answers.read"
@@ -1761,7 +1771,7 @@
           "method": "get",
           "path": "/answers/{question_id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.answers.read"
@@ -1777,7 +1787,7 @@
           "method": "get",
           "path": "/answers/count_within_range",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.answers.read"
@@ -1793,7 +1803,7 @@
           "method": "get",
           "path": "/resources/sync",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.sync.read"
@@ -1809,7 +1819,7 @@
           "method": "get",
           "path": "/resources/snapshots/{resource_group}/{id}",
           "scopes": {
-            "contractSha256": "ecfced4348e51237ecfe717303d2b180bcaa00a024ae078f2663516f018ba47b",
+            "contractSha256": "154deaa744ec60852beb609c3a232f386928acf8c87baa92f287ef303c82d6c2",
             "contractVersion": "content-scopes/v1",
             "granularAnyOf": [
               "content.sync.read"
@@ -2040,6 +2050,11 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/rooms/{id}/invite"
+        },
+        "roomsControllerGetInvitationStatus": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/invitation-status"
         },
         "roomsControllerAcceptInvite": {
           "auth": "user",
