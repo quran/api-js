@@ -31,9 +31,13 @@ Also in this release:
   either mode, for operations the catalog has no scope for. The SDK requests exactly those scopes.
 - `QuranClientConfig.scope` replaces the `QuranClient` default of `content search`.
 - Qira'at operations are outside the split and request `qiraat.read` in both modes.
-- An app-token 401 or 403 is still a `QuranHttpError` with its `status`, `headers` and `payload`;
-  its message now also names the requested scopes and, in legacy mode, the `contentScopeMode`
-  switch. It is never retried with a broader scope, and neither is an `invalid_scope` rejection.
+- An app-token 401 or 403 is still a `QuranHttpError` with its `status`, `headers` and `payload`.
+  On a 403 its message now also names the requested scopes and, for content calls in legacy mode,
+  the `contentScopeMode` switch. On a 401 the refused app token is dropped from the cache so the
+  next call fetches a fresh one. Neither these nor an `invalid_scope` rejection is ever retried
+  with a broader scope.
+- `QuranClient` drops its cached token when its issuer, client, secret or scope changes, including
+  a token request already in flight when the configuration changed.
 - App access tokens are cached per issuer, client, audience and canonical scope set, so a token
   from one issuer is never reused against another, and scope ordering no longer creates duplicate
   cache entries.
@@ -43,8 +47,12 @@ Also in this release:
   the call. A narrower grant is accepted, per RFC 6749 section 3.3; a grant sharing nothing with
   the request now fails immediately with both scope lists named, rather than surfacing later as an
   opaque 403.
-- Generated content operations record the `contractSha256` of the qf-api-docs content scope
-  contract they came from, and catalog generation fails when the pinned docs revision's contract
-  no longer matches the recorded hash.
+- The generated content catalog records the `contractSha256` of the qf-api-docs content scope
+  contract it came from, and catalog generation fails when the pinned docs revision's contract no
+  longer matches the recorded hash.
+- The operation catalog is regenerated from the revised qf-api-docs contract. Besides the content
+  scope metadata, it adds three raw operations that revision documents: `auth.v1` `getV1Sync` and
+  `postV1Sync` (`GET`/`POST /v1/sync`), and `quranReflect.v1` `roomsControllerGetInvitationStatus`
+  (`GET /v1/rooms/{id}/invitation-status`).
 - `generate-operation-catalogs` accepts `--source-ref <git-ref>` to pin the OpenAPI revision, and
   warns when a build reads the mutable `main` branch of qf-api-docs.

@@ -88,9 +88,11 @@ operation catalog, so a call for chapters asks only for `content.quran.read`. No
 - Operations without a typed convenience method remain available through the raw catalog client;
   for example, `client.content.v4.raw.listChapters()` requests `content.quran.read` from the same
   pinned catalog.
-- For an operation the catalog has no scope for, pass the scopes explicitly:
-  `client.content.v4.raw.someOperation({ scopes: ["content.metadata.read"] })`. Explicit scopes
-  are requested exactly as given, in either mode.
+- Any raw catalog operation accepts an explicit scope list, which is requested exactly as given in
+  either mode: `client.content.v4.raw.listChapters({ scopes: ["content.quran.read"] })`.
+- The raw client only covers operations in the catalog, and there is no arbitrary
+  `client.fetch(url)` facade. For a path absent from the catalog, call your fetch implementation
+  directly and pass an explicit access token rather than guessing a scope.
 - Qira'at endpoints (`client.qiraat.*`) are outside the split and request `qiraat.read` in both
   modes.
 - `search` and `analytics.events.write` are separate permissions and are unaffected in both modes.
@@ -238,10 +240,25 @@ const client = new QuranClient({
 const chapters = await client.chapters.findAll();
 ```
 
-`QuranClient` requests `content search` by default. With credentials that were never granted
-`content`, set `scope` to the scopes they were approved for, for example
-`scope: "content.quran.read search"`. For new apps, prefer `createServerClient` with
-`contentScopeMode: "granular"`, which picks the scope for each call.
+`QuranClient` requests `content search` by default, as one token for every call. With credentials
+that were never granted `content`, prefer `createServerClient` with `contentScopeMode: "granular"`,
+which picks the scope for each call. If you keep `QuranClient`, set `scope` to every scope the
+areas you call need:
+
+| `QuranClient` area           | Scope                               |
+| ---------------------------- | ----------------------------------- |
+| `chapters`, `verses`, `juzs` | `content.quran.read`                |
+| `audio`                      | `content.audio.read`                |
+| `answers`                    | `content.answers.read`              |
+| `hadithReferences`           | `content.hadith.read`               |
+| `resources`                  | depends on the resource (see below) |
+| `search`                     | `search`                            |
+
+In `resources`: recitations, recitation styles and chapter reciters need `content.audio.read`;
+translations `content.translations.read`; tafsirs `content.tafsirs.read`; chapter infos
+`content.quran.read`; languages and verse media `content.metadata.read`; sync and snapshots
+`content.sync.read`. For example, an app reading verses, audio and search sets
+`scope: "content.quran.read content.audio.read search"`.
 
 For new apps, prefer the runtime-specific `@quranjs/api/server` and `@quranjs/api/public` entrypoints.
 
