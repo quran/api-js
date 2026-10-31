@@ -131,11 +131,10 @@ export const lookupContentScopes = (
     const matches = templated.filter(
       (entry) => entry.method === upperMethod && entry.pattern.test(candidate),
     );
-    if (matches.length === 0) continue;
-
     // Prefer the most specific template, so a longer path never resolves via a shorter one.
     matches.sort((a, b) => b.segments - a.segments || a.path.length - b.path.length);
-    return matches[0].scopes;
+    const [best] = matches;
+    if (best) return best.scopes;
   }
 
   return undefined;
