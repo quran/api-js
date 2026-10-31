@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
@@ -11,6 +12,7 @@ const RAW_HOST = "https://raw.githubusercontent.com";
 const SOURCE_REPOSITORY = "quran/qf-api-docs";
 const SOURCE_REPO_RAW_BASE = `${RAW_HOST}/${SOURCE_REPOSITORY}`;
 const UNPINNED_REF = "main";
+const DEFAULT_CONTRACT_PATH = "contracts/content-scopes/v1.json";
 
 /**
  * Pinned source revision, from scripts/openapi-source.json.
@@ -39,6 +41,8 @@ const getSourcePin = () => {
     if (error.code !== "ENOENT") throw error;
     sourcePinCache = {
       available: false,
+      contractSha256: undefined,
+      contractUrl: `${SOURCE_REPO_RAW_BASE}/${UNPINNED_REF}/${DEFAULT_CONTRACT_PATH}`,
       isCommitSha: false,
       ref: UNPINNED_REF,
       url: `${SOURCE_REPO_RAW_BASE}/${UNPINNED_REF}/openAPI`,
@@ -50,8 +54,19 @@ const getSourcePin = () => {
     throw new Error(`${pinPath} must set "repository" and "ref"`);
   }
 
+  if (
+    pin.contractSha256 !== undefined &&
+    !/^[0-9a-f]{64}$/u.test(pin.contractSha256)
+  ) {
+    throw new Error(
+      `${pinPath} "contractSha256" must be a 64-character lowercase sha256 hex digest`,
+    );
+  }
+
   sourcePinCache = {
     available: true,
+    contractSha256: pin.contractSha256,
+    contractUrl: `${RAW_HOST}/${pin.repository}/${pin.ref}/${pin.contractPath ?? DEFAULT_CONTRACT_PATH}`,
     isCommitSha: /^[0-9a-f]{40}$/u.test(pin.ref),
     ref: pin.ref,
     url: `${RAW_HOST}/${pin.repository}/${pin.ref}/${pin.path ?? "openAPI"}`,
@@ -275,6 +290,100 @@ const readJsonFromSourceUrl = async (sourceUrl, relativePath) => {
   return response.json();
 };
 
+/** sha256 of the contract text, with CRLF normalized exactly as qf-api-docs hashes it. */
+export const hashContract = (text) =>
+  crypto
+    .createHash("sha256")
+    .update(text.split("\r\n").join("\n"))
+    .digest("hex");
+
+const readOptionalText = async (read) => {
+  try {
+    return await read();
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.status === 404) return null;
+    throw error;
+  }
+};
+
+const readContractFromSourceDir = (sourceDir) =>
+  readOptionalText(() =>
+    fs.readFile(path.join(sourceDir, "..", DEFAULT_CONTRACT_PATH), "utf8"),
+  );
+
+const readContractFromUrl = (url) =>
+  readOptionalText(async () => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const error = new Error(
+        `Failed to fetch ${url}: ${response.status} ${response.statusText}`,
+      );
+      error.status = response.status;
+      throw error;
+    }
+    return response.text();
+  });
+
+/**
+ * Check the content scope contract the catalogs are generated from.
+ *
+ * qf-api-docs stamps every `x-qf-scopes` block with the sha256 of the contract it was generated
+ * from (`contracts/content-scopes/v1.json`), and promises that each consumer's CI fails when that
+ * hash drifts. This is that check for this package:
+ *
+ * - the OpenAPI metadata must name exactly one contract hash, and it must be the hash of the
+ *   contract file at the same docs revision (stale metadata is caught here);
+ * - when scripts/openapi-source.json records `contractSha256`, the pinned revision's contract must
+ *   hash to it, so moving `ref` to a revision with a different contract fails until the new hash is
+ *   reviewed and recorded alongside it.
+ *
+ * @returns {string | undefined} the verified contract hash, when the source carries one.
+ */
+export const verifyContentScopeContract = ({
+  contentSpec,
+  contractText,
+  recordedSha256,
+  source = "the OpenAPI source",
+}) => {
+  const specHashes = new Set();
+  visitOperations(contentSpec, ({ operation }) => {
+    const hash = operation["x-qf-scopes"]?.contractSha256;
+    if (hash) specHashes.add(hash);
+  });
+
+  if (specHashes.size > 1) {
+    throw new Error(
+      `x-qf-scopes in ${source} names more than one contract hash: ${[...specHashes].join(", ")}`,
+    );
+  }
+
+  const actual = contractText == null ? undefined : hashContract(contractText);
+  const [specHash] = specHashes;
+
+  if ((specHash || recordedSha256) && !actual) {
+    throw new Error(
+      `${source} has no ${DEFAULT_CONTRACT_PATH}, so its content scope contract hash cannot be verified.`,
+    );
+  }
+
+  if (specHash && specHash !== actual) {
+    throw new Error(
+      `x-qf-scopes in ${source} records contract ${specHash}, but ${DEFAULT_CONTRACT_PATH} ` +
+        `hashes to ${actual}. The OpenAPI metadata is stale relative to the contract.`,
+    );
+  }
+
+  if (recordedSha256 && recordedSha256 !== actual) {
+    throw new Error(
+      `The content scope contract at ${source} hashes to ${actual}, but ` +
+        `scripts/openapi-source.json records contractSha256 ${recordedSha256}. Review the ` +
+        "contract change, then update contractSha256 together with ref and regenerate the catalogs.",
+    );
+  }
+
+  return actual && (specHash || recordedSha256) ? actual : undefined;
+};
+
 const readSpecs = async ({ sourceDir, sourceUrl } = {}) => {
   if (sourceDir && sourceUrl) {
     throw new Error("Use either --source-dir or --source-url, not both.");
@@ -300,13 +409,41 @@ const readSpecs = async ({ sourceDir, sourceUrl } = {}) => {
     ? (relativePath) => readJsonFromSourceDir(sourceDir, relativePath)
     : (relativePath) => readJsonFromSourceUrl(resolvedUrl, relativePath);
 
-  return {
+  const specs = {
     analytics: await readJson(inputSpecs.analytics.file),
     content: await readJson(inputSpecs.content.file),
     oauth2: await readJson(inputSpecs.oauth2.file),
     search: await readJson(inputSpecs.search.file),
     userRelated: await readJson(inputSpecs.userRelated.file),
   };
+
+  // The recorded hash describes the pinned revision only. An explicit override is for local work
+  // against another revision, so it is checked for internal consistency and the recorded hash is
+  // only reported, never enforced.
+  const usesPin = !sourceDir && !sourceUrl;
+  const contractText = sourceDir
+    ? await readContractFromSourceDir(sourceDir)
+    : await readContractFromUrl(
+        usesPin
+          ? pin.contractUrl
+          : new URL(`../${DEFAULT_CONTRACT_PATH}`, `${resolvedUrl.replace(/\/+$/, "")}/`).href,
+      );
+  const source = sourceDir ?? (usesPin ? `qf-api-docs@${pin.ref}` : resolvedUrl);
+  const verified = verifyContentScopeContract({
+    contentSpec: specs.content,
+    contractText,
+    recordedSha256: usesPin ? pin.contractSha256 : undefined,
+    source,
+  });
+
+  if (!usesPin && verified && pin.contractSha256 && verified !== pin.contractSha256) {
+    console.warn(
+      `${source} carries content scope contract ${verified}; scripts/openapi-source.json ` +
+        `records ${pin.contractSha256}. Update both together when re-pinning.`,
+    );
+  }
+
+  return specs;
 };
 
 const visitOperations = (spec, callback) => {
@@ -347,6 +484,8 @@ const extractOperationScopes = (operation) => {
   }
 
   return {
+    // Carried so the shipped catalog records which reviewed contract it was generated from.
+    ...(scopes.contractSha256 ? { contractSha256: scopes.contractSha256 } : {}),
     contractVersion: scopes.contractVersion,
     granularAnyOf,
     legacyAnyOf,
