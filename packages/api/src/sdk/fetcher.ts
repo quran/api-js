@@ -43,13 +43,14 @@ const APP_SERVICE_SCOPES: Partial<Record<ApiService, string>> = {
 };
 const QIRAAT_PATH_SEGMENT = "/api/v4/qiraat/";
 const QIRAAT_APP_SCOPE = "qiraat.read";
+const isQiraatUrl = (resourceUrl: string): boolean =>
+  new URL(resourceUrl).pathname.includes(QIRAAT_PATH_SEGMENT);
 const QURAN_REFLECT_POSTS_PATH_PREFIX = "/quran-reflect/v1/posts/";
 const QURAN_REFLECT_COMMENT_PATH_SUFFIXES = [
   "/comments",
   "/all-comments",
 ] as const;
 const DEFAULT_CONTENT_SCOPE_MODE: ContentScopeMode = "legacy";
-const INSUFFICIENT_SCOPE_STATUSES = new Set([401, 403]);
 const GATEWAY_SERVICES = [
   "analytics",
   "auth",
@@ -274,17 +275,32 @@ export class QuranFetcher {
       // needs to see the failure and fix the scope or the client's approvals.
       //
       // The error stays a QuranHttpError (status, headers, payload, instanceof) in both modes;
-      // only its message gains the scope hint.
-      if (
-        INSUFFICIENT_SCOPE_STATUSES.has(response.status) &&
-        effectiveAuth === "app"
-      ) {
-        error.message = `${error.message}. ${this.describeInsufficientScope(
+      // only its message gains the scope hint. That hint is for 403 only: a 401 means the token
+      // itself was not accepted (invalid, expired or revoked), not that it lacked a scope.
+      if (response.status === 403 && effectiveAuth === "app") {
+        // Drop the trailing space QuranHttpError leaves when statusText is empty.
+        error.message = `${error.message.trimEnd()}. ${this.describeInsufficientScope(
           service,
           url,
           request,
           operation,
         )}`;
+      }
+
+      // A 401 on a token this SDK minted means that token is no good. Evict it so the next call
+      // fetches a fresh one instead of reusing it until it expires.
+      if (
+        response.status === 401 &&
+        effectiveAuth === "app" &&
+        !request.accessToken
+      ) {
+        this.evictAppAccessToken(
+          service,
+          url,
+          operation,
+          request.method ?? "GET",
+          request.scopes,
+        );
       }
 
       throw error;
@@ -652,16 +668,8 @@ export class QuranFetcher {
       );
     }
 
-    // Scope order must not create a second cache entry for the same permission set, and one
-    // issuer's token is not valid at another. The key therefore covers the token endpoint, the
-    // client, the audience and the canonical scope set.
     const scope = this.canonicalizeScopes(scopes);
-    const cacheKey = [
-      this.tokenEndpoint(),
-      this.config.clientId,
-      this.config.audience ?? "",
-      scope,
-    ].join("|");
+    const cacheKey = this.appTokenCacheKey(scope);
 
     const cachedToken = this.appTokens.get(cacheKey);
     if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
@@ -674,7 +682,10 @@ export class QuranFetcher {
     }
 
     const generation = this.appTokenCacheGeneration;
-    const pending = this.fetchAppAccessToken(scope);
+    const pending = this.fetchAppAccessToken(
+      scope,
+      (explicitScopes?.filter(Boolean).length ?? 0) > 0,
+    );
     this.appTokenRequests.set(cacheKey, pending);
 
     try {
@@ -690,7 +701,48 @@ export class QuranFetcher {
     }
   }
 
-  private async fetchAppAccessToken(scope: string): Promise<CachedToken> {
+  /**
+   * Scope order must not create a second cache entry for the same permission set, and one
+   * issuer's token is not valid at another. The key therefore covers the token endpoint, the
+   * client, the audience and the canonical scope set.
+   */
+  private appTokenCacheKey(scope: string): string {
+    return [
+      this.tokenEndpoint(),
+      this.config.clientId,
+      this.config.audience ?? "",
+      scope,
+    ].join("|");
+  }
+
+  /** Forget the cached app token a call used, after the API refused it with a 401. */
+  private evictAppAccessToken(
+    service: ApiService,
+    resourceUrl: string,
+    operation: OperationDefinition | undefined,
+    method: string,
+    explicitScopes?: string[],
+  ): void {
+    try {
+      const scopes = this.resolveAppScopes(
+        service,
+        resourceUrl,
+        operation,
+        method,
+        explicitScopes,
+      );
+      if (scopes.length > 0) {
+        this.appTokens.delete(this.appTokenCacheKey(this.canonicalizeScopes(scopes)));
+      }
+    } catch {
+      // No scope could be resolved, so no token was cached for this call.
+    }
+  }
+
+  private async fetchAppAccessToken(
+    scope: string,
+    explicitScopes = false,
+  ): Promise<CachedToken> {
     if (!("clientSecret" in this.config)) {
       throw new Error("client_secret is server-only. Use @quranjs/api/server.");
     }
@@ -727,9 +779,13 @@ export class QuranFetcher {
       // requested scopes turns an opaque 400 into something actionable, and retrying with a
       // broader set would be exactly the wrong response.
       if (responseBody.toLowerCase().includes("invalid_scope")) {
-        const isContentScope = scope
-          .split(/\s+/u)
-          .some((requested) => requested === "content" || requested.startsWith("content."));
+        // Mode advice is only useful when the SDK chose the scopes. With an explicit list the
+        // caller picked them, and contentScopeMode would change nothing.
+        const isContentScope =
+          !explicitScopes &&
+          scope
+            .split(/\s+/u)
+            .some((requested) => requested === "content" || requested.startsWith("content."));
         throw new Error(
           `Token request rejected with invalid_scope for "${scope}". Client ` +
             `${this.config.clientId} is not approved for those scopes.` +
@@ -802,8 +858,10 @@ export class QuranFetcher {
       `The app token did not carry a scope this endpoint accepts. ` +
       `Requested scope: ${this.describeRequestedAppScope(service, resourceUrl, operation, request.method ?? "GET", request.scopes)}. ` +
       `Check the scopes granted to client ${this.config.clientId}` +
+      // Qira'at keeps qiraat.read in both modes, so switching mode would change nothing for it.
       (service === "content" &&
       !request.scopes?.length &&
+      !isQiraatUrl(resourceUrl) &&
       this.contentScopeMode() === "legacy"
         ? `, or set contentScopeMode: "granular" if these credentials were issued with granular content scopes.`
         : `.`)
@@ -864,7 +922,7 @@ export class QuranFetcher {
 
     // Qira'at is outside the content scope split and keeps its own `qiraat.read` scope, so it is
     // routed before the granular branch: its operations carry no content scope metadata.
-    if (resourceUrl && new URL(resourceUrl).pathname.includes(QIRAAT_PATH_SEGMENT)) {
+    if (resourceUrl && isQiraatUrl(resourceUrl)) {
       return [QIRAAT_APP_SCOPE];
     }
 
@@ -890,8 +948,8 @@ export class QuranFetcher {
       throw new Error(
         `contentScopeMode is "granular" but no content scope is known for this call` +
           (resourceUrl ? ` (${new URL(resourceUrl).pathname})` : "") +
-          `. Call it through a generated operation, pass explicit scopes ({ scopes: [...] }), ` +
-          `or pass an explicit accessToken.`,
+          `. For a catalog operation, call client.<service>.<version>.raw.<operation>({ scopes: [...] }); ` +
+          `otherwise pass an explicit accessToken.`,
       );
     }
 
@@ -905,11 +963,8 @@ export class QuranFetcher {
       return contentScope ? [contentScope] : [];
     }
 
+    // Qira'at never reaches here: resolveAppScopes routes it to qiraat.read first.
     const pathname = new URL(resourceUrl).pathname;
-    if (pathname.includes(QIRAAT_PATH_SEGMENT)) {
-      return [QIRAAT_APP_SCOPE];
-    }
-
     if (!pathname.startsWith(QURAN_REFLECT_POSTS_PATH_PREFIX)) {
       return contentScope ? [contentScope] : [];
     }

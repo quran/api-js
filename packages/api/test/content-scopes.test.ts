@@ -431,13 +431,12 @@ describe("failures are reported, never widened", () => {
   });
 
   it.each([
-    ["legacy", 403, /Requested scope: content\. .*contentScopeMode: "granular"/u],
-    ["legacy", 401, /Requested scope: content\./u],
-    ["granular", 403, /Requested scope: content\.quran\.read\./u],
-    ["granular", 401, /Requested scope: content\.quran\.read\./u],
+    ["legacy", /Requested scope: content\. .*contentScopeMode: "granular"/u],
+    ["granular", /Requested scope: content\.quran\.read\./u],
   ] as const)(
-    "keeps an app-token %s-mode %i a QuranHttpError with the scope hint",
-    async (mode, status, hint) => {
+    "keeps an app-token %s-mode 403 a QuranHttpError with the scope hint",
+    async (mode, hint) => {
+      const status = 403;
       const { fetchImpl } = makeFetch({ apiStatus: status });
       const fetcher = new QuranFetcher(
         "server",
@@ -462,6 +461,77 @@ describe("failures are reported, never widened", () => {
       expect((failure as Error).message).toMatch(hint);
     },
   );
+
+  it("gives no scope hint on a 401 and evicts the refused app token", async () => {
+    for (const mode of ["legacy", "granular"] as const) {
+      const { fetchImpl, tokenScopes } = makeFetch({ apiStatus: 401 });
+      const fetcher = new QuranFetcher(
+        "server",
+        serverConfig({ contentScopeMode: mode }, fetchImpl as never),
+      );
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const failure = await fetcher
+          .requestOperation(contentOperation("listChapters"))
+          .then(
+            () => null,
+            (error: unknown) => error,
+          );
+        expect(failure).toBeInstanceOf(QuranHttpError);
+        expect(failure).toMatchObject({ message: "401 Unauthorized", status: 401 });
+      }
+
+      // The refused token was not reused: each call minted a fresh one.
+      expect(tokenScopes()).toHaveLength(2);
+    }
+  });
+
+  it("does not leave an empty statusText segment in the 403 message", async () => {
+    const fetchImpl = vi.fn((url: string | URL | Request) =>
+      Promise.resolve(
+        asHref(url) === TOKEN_URL
+          ? Response.json({ access_token: "t", expires_in: 3600, token_type: "Bearer" })
+          : new Response(null, { status: 403 }),
+      ),
+    );
+    const fetcher = new QuranFetcher("server", serverConfig({}, fetchImpl as never));
+
+    await expect(
+      fetcher.requestOperation(contentOperation("listChapters")),
+    ).rejects.toThrow(/^403\. The app token did not carry/u);
+  });
+
+  it("gives no contentScopeMode advice for a Qira'at 403", async () => {
+    const { fetchImpl } = makeFetch({ apiStatus: 403 });
+    const fetcher = new QuranFetcher("server", serverConfig({}, fetchImpl as never));
+
+    const failure = await fetcher
+      .requestOperation(contentOperation("listQiraatReaders"))
+      .then(
+        () => null,
+        (error: unknown) => error as Error,
+      );
+
+    expect(failure?.message).toContain("Requested scope: qiraat.read.");
+    expect(failure?.message).not.toContain("contentScopeMode");
+  });
+
+  it("gives no contentScopeMode advice for invalid_scope on explicit scopes", async () => {
+    const { fetchImpl } = makeFetch({ tokenError: "invalid_scope" });
+    const fetcher = new QuranFetcher("server", serverConfig({}, fetchImpl as never));
+
+    const failure = await fetcher
+      .requestOperation(contentOperation("listChapters"), {
+        scopes: ["content.quran.read"],
+      })
+      .then(
+        () => null,
+        (error: unknown) => error as Error,
+      );
+
+    expect(failure?.message).toContain('invalid_scope for "content.quran.read"');
+    expect(failure?.message).not.toContain("contentScopeMode");
+  });
 
   it("fails when the granted token shares no scope with the request", async () => {
     const { fetchImpl } = makeFetch({ grantedScope: "search" });
@@ -567,7 +637,7 @@ describe("explicit scopes", () => {
     );
 
     await expect(fetcher.requestOperation(unscopedOperation())).rejects.toThrow(
-      /no content scope is known.*explicit scopes/u,
+      /no content scope is known.*raw\.<operation>\(\{ scopes: \[\.\.\.\] \}\); otherwise pass an explicit accessToken/u,
     );
     await fetcher.requestOperation(unscopedOperation(), {
       scopes: ["content.metadata.read"],
@@ -607,6 +677,61 @@ describe("explicit scopes", () => {
     client.updateConfig({ scope: "content.quran.read search" });
     await client.chapters.findAll().catch(() => undefined);
     expect(tokenScopes()).toEqual(["content.quran.read", "content.quran.read search"]);
+  });
+
+  it("never caches a legacy QuranClient token fetched for a config replaced mid-flight", async () => {
+    const tokenScopes: string[] = [];
+    let releaseFirstToken: (() => void) | undefined;
+    const fetchImpl = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+      if (asHref(url) === TOKEN_URL) {
+        const scope = parseFormBody(init?.body).get("scope") ?? "";
+        tokenScopes.push(scope);
+        if (tokenScopes.length === 1) {
+          await new Promise<void>((resolve) => {
+            releaseFirstToken = resolve;
+          });
+        }
+        return Response.json({ access_token: `token-for-${scope}`, expires_in: 3600 });
+      }
+      return Response.json({ chapters: [] });
+    });
+    const client = new QuranClient({
+      clientId: "legacy-client",
+      clientSecret: "legacy-secret",
+      fetch: fetchImpl as never,
+      scope: "content.quran.read",
+    });
+
+    const inFlight = client.chapters.findAll().catch(() => undefined);
+    await vi.waitFor(() => expect(releaseFirstToken).toBeDefined());
+    client.updateConfig({ scope: "content.quran.read content.audio.read" });
+    releaseFirstToken!();
+    await inFlight;
+
+    await client.chapters.findAll().catch(() => undefined);
+    expect(tokenScopes).toEqual([
+      "content.quran.read",
+      "content.quran.read content.audio.read",
+    ]);
+  });
+
+  it.each([
+    ["clientId", { clientId: "other-client" }],
+    ["clientSecret", { clientSecret: "rotated-secret" }],
+    ["authBaseUrl", { authBaseUrl: "https://oauth2-prelive.quran.foundation" }],
+  ] as const)("drops the legacy QuranClient token when %s changes", async (_field, change) => {
+    const { calls, fetchImpl } = makeFetch();
+    const client = new QuranClient({
+      clientId: "legacy-client",
+      clientSecret: "legacy-secret",
+      fetch: fetchImpl as never,
+    });
+
+    await client.chapters.findAll().catch(() => undefined);
+    client.updateConfig(change);
+    await client.chapters.findAll().catch(() => undefined);
+
+    expect(calls.filter((call) => call.url.endsWith("/oauth2/token"))).toHaveLength(2);
   });
 
   it("keeps the legacy QuranClient default of content search", async () => {
