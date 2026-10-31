@@ -272,7 +272,11 @@ describe("operation catalog generator", () => {
   describe("content scope contract hash", () => {
     const CONTRACT_TEXT = '{\n  "contractVersion": "content-scopes.v1"\n}\n';
 
-    const writeScopedSource = async (contractSha256, contractText = CONTRACT_TEXT) => {
+    const writeScopedSource = async (
+      contractSha256,
+      contractText = CONTRACT_TEXT,
+      contractPath = "contracts/content-scopes/v1.json",
+    ) => {
       const root = await fs.mkdtemp(path.join(os.tmpdir(), "quranjs-docs-"));
       const sourceDir = path.join(root, "openAPI");
       for (const file of ["analytics/v1.json", "search/v1.json", "oauth2-apis/v1.json", "user-related-apis/v1.json"]) {
@@ -295,19 +299,19 @@ describe("operation catalog generator", () => {
         },
       });
       if (contractText !== null) {
-        await fs.mkdir(path.join(root, "contracts", "content-scopes"), { recursive: true });
-        await fs.writeFile(path.join(root, "contracts", "content-scopes", "v1.json"), contractText);
+        await fs.mkdir(path.dirname(path.join(root, contractPath)), { recursive: true });
+        await fs.writeFile(path.join(root, contractPath), contractText);
       }
       return sourceDir;
     };
 
-    it("carries contractSha256 into the generated scopes", async () => {
+    it("records contractSha256 once on the generated section", async () => {
       const { generateCatalogs, hashContract } = await catalogModule;
       const hash = hashContract(CONTRACT_TEXT);
       const catalogs = await generateCatalogs({ sourceDir: await writeScopedSource(hash) });
 
+      expect(catalogs.operationCatalog.content.v4.contractSha256).toBe(hash);
       expect(catalogs.operationCatalog.content.v4.operations.listChapters.scopes).toEqual({
-        contractSha256: hash,
         contractVersion: "content-scopes.v1",
         granularAnyOf: ["content.quran.read"],
         legacyAnyOf: ["content"],
@@ -353,6 +357,28 @@ describe("operation catalog generator", () => {
           recordedSha256: actual,
         }),
       ).toBe(actual);
+    });
+
+    it("honours the pin's contractPath when the source is overridden", async () => {
+      const { generateCatalogs, hashContract } = await loadCatalogModule({
+        pin: JSON.stringify({
+          contractPath: "contracts/alt/v2.json",
+          path: "openAPI",
+          ref: "a".repeat(40),
+          repository: "quran/qf-api-docs",
+        }),
+      });
+      const hash = hashContract(CONTRACT_TEXT);
+
+      const catalogs = await generateCatalogs({
+        sourceDir: await writeScopedSource(hash, CONTRACT_TEXT, "contracts/alt/v2.json"),
+      });
+      expect(catalogs.operationCatalog.content.v4.contractSha256).toBe(hash);
+
+      // The default location is not consulted when the pin names another one.
+      await expect(
+        generateCatalogs({ sourceDir: await writeScopedSource(hash) }),
+      ).rejects.toThrow(/has no contracts\/alt\/v2\.json/u);
     });
 
     it("rejects a malformed recorded contractSha256 in the pin", async () => {

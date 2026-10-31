@@ -41,7 +41,10 @@ const getSourcePin = () => {
     if (error.code !== "ENOENT") throw error;
     sourcePinCache = {
       available: false,
+      contractPath: DEFAULT_CONTRACT_PATH,
       contractSha256: undefined,
+      path: "openAPI",
+      repository: SOURCE_REPOSITORY,
       contractUrl: `${SOURCE_REPO_RAW_BASE}/${UNPINNED_REF}/${DEFAULT_CONTRACT_PATH}`,
       isCommitSha: false,
       ref: UNPINNED_REF,
@@ -65,7 +68,10 @@ const getSourcePin = () => {
 
   sourcePinCache = {
     available: true,
+    contractPath: pin.contractPath ?? DEFAULT_CONTRACT_PATH,
     contractSha256: pin.contractSha256,
+    path: pin.path ?? "openAPI",
+    repository: pin.repository,
     contractUrl: `${RAW_HOST}/${pin.repository}/${pin.ref}/${pin.contractPath ?? DEFAULT_CONTRACT_PATH}`,
     isCommitSha: /^[0-9a-f]{40}$/u.test(pin.ref),
     ref: pin.ref,
@@ -306,9 +312,21 @@ const readOptionalText = async (read) => {
   }
 };
 
-const readContractFromSourceDir = (sourceDir) =>
+/**
+ * Where the contract sits relative to the OpenAPI directory: the pin's `contractPath` is relative
+ * to the docs repository root, and its `path` (the OpenAPI directory) is too, so climb out of
+ * `path` and descend into `contractPath`. Used for every source, pinned or overridden.
+ */
+const contractPathFromSpecs = (pin) =>
+  `${pin.path
+    .split("/")
+    .filter(Boolean)
+    .map(() => "..")
+    .join("/")}/${pin.contractPath}`;
+
+const readContractFromSourceDir = (sourceDir, pin) =>
   readOptionalText(() =>
-    fs.readFile(path.join(sourceDir, "..", DEFAULT_CONTRACT_PATH), "utf8"),
+    fs.readFile(path.join(sourceDir, contractPathFromSpecs(pin)), "utf8"),
   );
 
 const readContractFromUrl = (url) =>
@@ -341,6 +359,7 @@ const readContractFromUrl = (url) =>
  */
 export const verifyContentScopeContract = ({
   contentSpec,
+  contractPath = DEFAULT_CONTRACT_PATH,
   contractText,
   recordedSha256,
   source = "the OpenAPI source",
@@ -362,13 +381,13 @@ export const verifyContentScopeContract = ({
 
   if ((specHash || recordedSha256) && !actual) {
     throw new Error(
-      `${source} has no ${DEFAULT_CONTRACT_PATH}, so its content scope contract hash cannot be verified.`,
+      `${source} has no ${contractPath}, so its content scope contract hash cannot be verified.`,
     );
   }
 
   if (specHash && specHash !== actual) {
     throw new Error(
-      `x-qf-scopes in ${source} records contract ${specHash}, but ${DEFAULT_CONTRACT_PATH} ` +
+      `x-qf-scopes in ${source} records contract ${specHash}, but ${contractPath} ` +
         `hashes to ${actual}. The OpenAPI metadata is stale relative to the contract.`,
     );
   }
@@ -384,12 +403,16 @@ export const verifyContentScopeContract = ({
   return actual && (specHash || recordedSha256) ? actual : undefined;
 };
 
-const readSpecs = async ({ sourceDir, sourceUrl } = {}) => {
-  if (sourceDir && sourceUrl) {
-    throw new Error("Use either --source-dir or --source-url, not both.");
+const readSpecs = async ({ sourceDir, sourceRef, sourceUrl: sourceUrlOption } = {}) => {
+  if ([sourceDir, sourceRef, sourceUrlOption].filter(Boolean).length > 1) {
+    throw new Error("Use only one of --source-dir, --source-url and --source-ref.");
   }
 
   const pin = getSourcePin();
+  // --source-ref reads the pinned repository and OpenAPI directory at another revision.
+  const sourceUrl = sourceRef
+    ? `${RAW_HOST}/${pin.repository}/${sourceRef}/${pin.path}`
+    : sourceUrlOption;
   const resolvedUrl = sourceUrl ?? pin.url;
 
   // The generated catalog is a published artifact: the scopes and paths in it are what the SDK
@@ -422,15 +445,16 @@ const readSpecs = async ({ sourceDir, sourceUrl } = {}) => {
   // only reported, never enforced.
   const usesPin = !sourceDir && !sourceUrl;
   const contractText = sourceDir
-    ? await readContractFromSourceDir(sourceDir)
+    ? await readContractFromSourceDir(sourceDir, pin)
     : await readContractFromUrl(
         usesPin
           ? pin.contractUrl
-          : new URL(`../${DEFAULT_CONTRACT_PATH}`, `${resolvedUrl.replace(/\/+$/, "")}/`).href,
+          : new URL(contractPathFromSpecs(pin), `${resolvedUrl.replace(/\/+$/, "")}/`).href,
       );
   const source = sourceDir ?? (usesPin ? `qf-api-docs@${pin.ref}` : resolvedUrl);
   const verified = verifyContentScopeContract({
     contentSpec: specs.content,
+    contractPath: pin.contractPath,
     contractText,
     recordedSha256: usesPin ? pin.contractSha256 : undefined,
     source,
@@ -484,8 +508,6 @@ const extractOperationScopes = (operation) => {
   }
 
   return {
-    // Carried so the shipped catalog records which reviewed contract it was generated from.
-    ...(scopes.contractSha256 ? { contractSha256: scopes.contractSha256 } : {}),
     contractVersion: scopes.contractVersion,
     granularAnyOf,
     legacyAnyOf,
@@ -509,6 +531,11 @@ const addSpecOperations = ({
     );
     const section = getCatalogSection(catalog, service, version);
     const scopes = extractOperationScopes(operation);
+    // Recorded once per section, so the shipped catalog names the reviewed contract it was
+    // generated from without repeating the hash on every operation. verifyContentScopeContract
+    // has already rejected a source whose operations name more than one hash.
+    const contractSha256 = operation["x-qf-scopes"]?.contractSha256;
+    if (contractSha256) section.contractSha256 = contractSha256;
     const catalogOperation = {
       auth,
       method,
@@ -707,7 +734,7 @@ const parseArgs = (args) => {
       if (!ref) {
         throw new Error("--source-ref requires a git ref, for example a commit SHA.");
       }
-      options.sourceUrl = `${SOURCE_REPO_RAW_BASE}/${ref}/openAPI`;
+      options.sourceRef = ref;
       continue;
     }
 

@@ -515,18 +515,16 @@ describe("catalog scope metadata", () => {
     const operations = contentOperations.filter(([, operation]) => !isQiraat(operation.path));
     expect(operations).toHaveLength(95);
 
-    const contractHashes = new Set<string | undefined>();
     for (const [name, operation] of operations) {
       expect(operation.scopes, `${name} has no scope metadata`).toBeDefined();
       expect(operation.scopes?.granularAnyOf, name).toHaveLength(1);
       expect(operation.scopes?.legacyAnyOf.length, name).toBeGreaterThan(0);
       expect(operation.scopes?.contractVersion).toBe("content-scopes/v1");
-      contractHashes.add(operation.scopes?.contractSha256);
+      expect(operation.scopes, name).not.toHaveProperty("contractSha256");
     }
 
-    // Every operation comes from one reviewed contract, recorded by its hash.
-    expect(contractHashes.size).toBe(1);
-    expect([...contractHashes][0]).toMatch(/^[0-9a-f]{64}$/u);
+    // The section records the one reviewed contract its scopes came from, by hash.
+    expect(operationCatalog.content.v4.contractSha256).toMatch(/^[0-9a-f]{64}$/u);
   });
 
   it("leaves Qira'at outside the content scope split", () => {

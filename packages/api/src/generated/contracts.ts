@@ -13,8 +13,6 @@ export type OperationAuthMode = "none" | "app" | "user";
  * one of them depending on `contentScopeMode`, and never requests both.
  */
 export interface OperationScopes {
-  /** sha256 of the qf-api-docs content scope contract this operation's scopes came from. */
-  contractSha256?: string;
   contractVersion: string;
   legacyAnyOf: string[];
   granularAnyOf: string[];
@@ -42,6 +40,8 @@ export type CatalogOperationDefinition = Omit<
   >;
 
 export interface ServiceOperationCatalog {
+  /** sha256 of the qf-api-docs content scope contract this section's scopes came from. */
+  contractSha256?: string;
   operations: Record<string, CatalogOperationDefinition>;
   service: ApiService;
   version: string;
