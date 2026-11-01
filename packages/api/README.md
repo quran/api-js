@@ -175,6 +175,64 @@ strict `412` conflict, the complete replacement is rebased onto the refreshed
 ETag with a new idempotency key. `createAppStateMemoryStore()` is available for
 tests and short-lived sessions; it is not durable across process restarts.
 
+### User Sync
+
+The User Sync API (`GET /v1/sync` and `POST /v1/sync`) pulls and pushes
+bookmark, collection, collection bookmark, note, reading bookmark and reading
+session mutations. It is available from both runtime entrypoints under
+`client.auth.v1.sync`. Every call needs a user token with the `sync` scope plus
+the scope of each resource you sync (for example `bookmark`, `collection` or
+`note`).
+
+```typescript
+import { isUserSyncOutOfSyncError } from "@quranjs/api/public";
+
+const sync = client.auth.v1.sync;
+
+// Pull every page for a stored cursor. Later pages are pinned to page 1's
+// lastMutationAt; a later-page 409 restarts once from page 1 with the
+// original cursor, up to `maxRestarts` (default 2) times.
+const pulled = await sync.pullAllMutations({
+  mutationsSince: storedCursor,
+  resources: ["BOOKMARK", "NOTE"],
+});
+await applyLocally(pulled.mutations);
+storedCursor = pulled.lastMutationAt; // Persist only after the final page.
+
+try {
+  const pushed = await sync.pushMutations({
+    lastMutationAt: storedCursor,
+    mutations: [
+      {
+        resource: "NOTE",
+        type: "CREATE",
+        data: { body: "...", ranges: ["2:255-2:255"] },
+      },
+    ],
+  });
+  storedCursor = pushed.data.lastMutationAt;
+} catch (error) {
+  if (isUserSyncOutOfSyncError(error)) {
+    // Another device wrote first: pull, resolve conflicts, then push again.
+  }
+  throw error;
+}
+```
+
+- `getMutations(options)` makes a single `GET /v1/sync` call. Pass
+  `metadataOnly: true` to read only the current `lastMutationAt`.
+- `pushMutations({ lastMutationAt, mutations })` sends at most 100 mutations.
+  `lastMutationAt` must be the exact current sync head: use the value returned
+  by `getMutations()` (or `metadataOnly: true`), `pullAllMutations()`, or the
+  previous push, unchanged. A stale value returns a 409 that
+  `isUserSyncOutOfSyncError()` recognizes.
+- Both low-level methods return `mutationAt`, parsed from the `X-Mutation-At`
+  response header. It is an optimistic write precondition only; never use it as
+  a pull cursor.
+- `pullAllMutations()` throws `UserSyncPullRestartLimitError` (with the last
+  409 as `cause`) when it runs out of restarts. A 409 on page 1 and any other
+  error are rethrown without a restart.
+
 Existing `QuranClient` imports from `@quranjs/api` remain supported for backwards compatibility:
 
 ```typescript

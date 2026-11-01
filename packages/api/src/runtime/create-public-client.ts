@@ -1,4 +1,5 @@
 import type { AuthService } from "@/generated/public-contracts";
+import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import type {
   ApiParams,
   HTTPMethod,
@@ -10,9 +11,9 @@ import { publicOperationCatalog } from "@/generated/public-contracts";
 import { toUserSession } from "@/lib/http-utils";
 import { createGeneratedGroups, createRawClient } from "@/lib/runtime-utils";
 import { replacePathParams } from "@/lib/url";
-import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
-import type { QuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
 import { createAppStateFacade } from "@/runtime/app-state";
+import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
+import { createUserSyncFacade } from "@/runtime/user-sync";
 import { PublicQuranFetcher } from "@/sdk/public-fetcher";
 
 type RawOperation = (request?: OperationRequest) => Promise<unknown>;
@@ -177,6 +178,10 @@ const createAuthFacade = (fetcher: PublicQuranFetcher) => {
         request("POST", "/v1/reading-sessions", { body }),
       list: (query?: ApiParams) =>
         request("GET", "/v1/reading-sessions", { query }),
+    },
+    sync: {
+      ...generatedGroups.sync,
+      ...createUserSyncFacade(fetcher),
     },
   };
 };
