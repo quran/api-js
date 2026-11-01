@@ -272,6 +272,16 @@
           "method": "post",
           "path": "/v1/notes/{noteId}/publish"
         },
+        "getV1Sync": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/sync"
+        },
+        "postV1Sync": {
+          "auth": "user",
+          "method": "post",
+          "path": "/v1/sync"
+        },
         "generateShareVerseImage": {
           "auth": "user",
           "method": "post",
@@ -442,6 +452,11 @@
           "auth": "user",
           "method": "post",
           "path": "/v1/rooms/{id}/invite"
+        },
+        "roomsControllerGetInvitationStatus": {
+          "auth": "user",
+          "method": "get",
+          "path": "/v1/rooms/{id}/invitation-status"
         },
         "roomsControllerAcceptInvite": {
           "auth": "user",
