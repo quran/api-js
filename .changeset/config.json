@@ -7,7 +7,5 @@
   "linked": [],
   "access": "public",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "@quranjs/docs"
-  ]
+  "ignore": []
 }
