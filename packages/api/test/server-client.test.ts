@@ -106,7 +106,7 @@ describe("createServerClient", () => {
   });
 
   it("stores a complete user session after code exchange and refresh", async () => {
-    let storedSession: Record<string, unknown> | null = null;
+    let storedSession = null as Record<string, unknown> | null;
 
     server.use(
       http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
@@ -172,7 +172,7 @@ describe("createServerClient", () => {
   });
 
   it("preserves an explicit refresh token when the token response omits one", async () => {
-    let storedSession: Record<string, unknown> | null = null;
+    let storedSession = null as Record<string, unknown> | null;
     let refreshBody = "";
 
     server.use(

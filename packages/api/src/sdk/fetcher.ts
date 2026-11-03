@@ -840,7 +840,7 @@ export class QuranFetcher {
     return [...new Set(scopes)].sort().join(" ");
   }
 
-  /** Scope hint appended to an app-token 401/403 message. */
+  /** Scope hint appended to an app-token 403 message. */
   private describeInsufficientScope(
     service: ApiService,
     resourceUrl: string,
@@ -981,20 +981,21 @@ export class QuranFetcher {
   }
 
   /**
-   * The request pathname with the configured base URL's mount path removed.
+   * The request pathname with the mount path of the base URL that built it removed.
    *
    * A base URL may carry a path of its own (for example a gatewayUrl of
    * "https://proxy.example/gateway"). The catalog lookup only knows the service's fixed
-   * prefixes, so the mount path is stripped first. Both the service's own base and the gateway
-   * are tried, since a request may go through either.
+   * prefixes, so the mount path is stripped first. A request may go through the service's own
+   * base or through the gateway, so both are candidates, but only a base on the same origin as
+   * the request can have built it. A direct content request to another host is therefore never
+   * trimmed by the gateway's path.
    */
   private serviceRelativePathname(service: ApiService, resourceUrl: string): string {
-    const pathname = new URL(resourceUrl).pathname;
+    const { origin, pathname } = new URL(resourceUrl);
     for (const crossService of [false, true]) {
-      const basePath = removeTrailingSlash(
-        new URL(this.resolveServiceBaseUrl(service, crossService).baseUrl).pathname,
-      );
-      if (basePath && pathname.startsWith(`${basePath}/`)) {
+      const base = new URL(this.resolveServiceBaseUrl(service, crossService).baseUrl);
+      const basePath = removeTrailingSlash(base.pathname);
+      if (base.origin === origin && basePath && pathname.startsWith(`${basePath}/`)) {
         return pathname.slice(basePath.length);
       }
     }

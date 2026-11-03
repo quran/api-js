@@ -329,7 +329,7 @@ export const handlers = [
       try {
         validateAuth(request);
         const verseKey = String(params.key);
-        const [chapter, verse] = verseKey.split(":");
+        const [chapter = "", verse = ""] = verseKey.split(":");
         const relativeUrl = `AbdulBaset/Murattal/mp3/${chapter.padStart(3, "0")}${verse.padStart(3, "0")}.mp3`;
         const absoluteUrl = `https://verses.quran.com/${relativeUrl}`;
 

@@ -13,7 +13,7 @@
     "`contractSha256` is the sha256 of `contractPath` (the content scope contract) at `ref`, as",
     "qf-api-docs computes it (CRLF normalized to LF). Generation and `--check` fail when the pinned",
     "revision's contract hashes to anything else, or when its `x-qf-scopes` metadata names a",
-    "different hash. Each generated operation carries the same value as `scopes.contractSha256`.",
+    "different hash. The hash is recorded once per generated section, as the section's `contractSha256`.",
     "",
     "To update: point `ref` at the approved qf-api-docs commit, set `contractSha256` to that",
     "revision's contracts/content-scopes/v1.sha256 after reviewing the contract change, run",

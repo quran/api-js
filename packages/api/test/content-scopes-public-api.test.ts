@@ -142,7 +142,7 @@ describe("granular mode works through the public typed API", () => {
     await granularClient(viaContent.fetchImpl as never).content.v4.chapters.list();
 
     const viaRaw = makeFetch();
-    await granularClient(viaRaw.fetchImpl as never).content.v4.raw.listChapters();
+    await granularClient(viaRaw.fetchImpl as never).content.v4.raw.listChapters?.();
 
     expect(viaTop.scopes).toEqual(["content.quran.read"]);
     expect(viaContent.scopes).toEqual(viaTop.scopes);
@@ -153,7 +153,7 @@ describe("granular mode works through the public typed API", () => {
     const { fetchImpl, scopes } = makeFetch();
     const client = granularClient(fetchImpl as never);
 
-    await client.search.search({ query: "mercy" });
+    await client.search.search("mercy", {});
 
     expect(scopes).toEqual(["search"]);
   });

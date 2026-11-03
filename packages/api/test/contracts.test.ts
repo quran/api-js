@@ -54,7 +54,7 @@ describe("operation contracts", () => {
 
   it("preserves literal colon action suffixes", () => {
     expect(
-      operationCatalog.analytics.v1.operations.submitAnalyticsEvents.path,
+      operationCatalog.analytics.v1.operations.submitAnalyticsEvents?.path,
     ).toBe("/v1/events:batch");
   });
 });

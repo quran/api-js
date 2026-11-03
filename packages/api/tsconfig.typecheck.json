@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src", "test", "mocks"],
+  "exclude": ["node_modules", "dist", "test/smoke"],
+  "compilerOptions": {
+    "checkJs": false
+  }
+}

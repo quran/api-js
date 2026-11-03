@@ -50,9 +50,7 @@ Also in this release:
 - The generated content catalog records the `contractSha256` of the qf-api-docs content scope
   contract it came from, and catalog generation fails when the pinned docs revision's contract no
   longer matches the recorded hash.
-- The operation catalog is regenerated from the revised qf-api-docs contract. Besides the content
-  scope metadata, it adds three raw operations that revision documents: `auth.v1` `getV1Sync` and
-  `postV1Sync` (`GET`/`POST /v1/sync`), and `quranReflect.v1` `roomsControllerGetInvitationStatus`
-  (`GET /v1/rooms/{id}/invitation-status`).
+- The operation catalog is regenerated from the revised qf-api-docs contract, which adds the
+  content scope metadata.
 - `generate-operation-catalogs` accepts `--source-ref <git-ref>` to pin the OpenAPI revision, and
   warns when a build reads the mutable `main` branch of qf-api-docs.

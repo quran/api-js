@@ -153,7 +153,7 @@ describe("QuranClient legacy compatibility", () => {
 
     await expect(
       client.answers.findByAyah("2:255", {
-        language: "en",
+        language: Language.ENGLISH,
         pageSize: 2,
       }),
     ).resolves.toMatchObject({

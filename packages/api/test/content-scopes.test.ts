@@ -229,6 +229,25 @@ describe("granular mode requests the operation's own scope", () => {
     },
   );
 
+  it("strips only the base that built the URL, on the same origin", async () => {
+    const { calls, fetchImpl, tokenScopes } = makeFetch();
+    const fetcher = granular(
+      {
+        services: {
+          contentBaseUrl: "https://content.internal",
+          gatewayUrl: "https://edge.example/api",
+        },
+      },
+      fetchImpl as never,
+    );
+
+    // A direct content request keeps its own /api prefix; the gateway's /api mount is on another origin.
+    await fetcher.fetch("/api/v4/chapters");
+
+    expect(tokenScopes()).toEqual(["content.quran.read"]);
+    expect(calls.some((call) => call.url.startsWith("https://content.internal/api/v4/chapters"))).toBe(true);
+  });
+
   it("never requests the legacy umbrella", async () => {
     const { fetchImpl, tokenScopes } = makeFetch();
     const fetcher = granular({}, fetchImpl as never);
