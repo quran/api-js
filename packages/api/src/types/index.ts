@@ -128,3 +128,4 @@ export * from "./analytics";
 export * from "./app-state";
 export * from "./quran-client";
 export * from "./quran-reflect";
+export * from "./user-sync";

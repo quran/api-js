@@ -24,6 +24,7 @@ import { replacePathParams } from "@/lib/url";
 import { createAnalyticsFacade } from "@/runtime/analytics";
 import { createAppStateFacade } from "@/runtime/app-state";
 import { createQuranReflectPostsFacade } from "@/runtime/quran-reflect-posts";
+import { createUserSyncFacade } from "@/runtime/user-sync";
 import { QuranAnswers } from "@/sdk/answers";
 import { QuranAudio } from "@/sdk/audio";
 import { QuranChapters } from "@/sdk/chapters";
@@ -194,6 +195,10 @@ const createAuthFacade = (fetcher: QuranFetcher) => {
         request("POST", "/v1/reading-sessions", { body }),
       list: (query?: ApiParams) =>
         request("GET", "/v1/reading-sessions", { query }),
+    },
+    sync: {
+      ...generatedGroups.sync,
+      ...createUserSyncFacade(fetcher),
     },
   };
 };

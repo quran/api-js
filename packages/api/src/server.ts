@@ -18,6 +18,14 @@ export type {
   AppStateErrorPayload,
   AppStateHttpError,
 } from "./sdk/app-state-errors";
+export {
+  isUserSyncOutOfSyncError,
+  UserSyncPullRestartLimitError,
+} from "./sdk/user-sync-errors";
+export type {
+  UserSyncOutOfSyncError,
+  UserSyncOutOfSyncErrorPayload,
+} from "./sdk/user-sync-errors";
 export type {
   AppStateAccountState,
   AppStateBootstrapPage,
@@ -49,6 +57,22 @@ export type {
   AppStateSuccess,
   AppStateTransport,
   AppStateVisibleDocument,
+} from "@/types";
+export type {
+  UserSyncGetMutationsOptions,
+  UserSyncMutation,
+  UserSyncMutationData,
+  UserSyncMutationInput,
+  UserSyncMutationsPage,
+  UserSyncMutationType,
+  UserSyncPullAllMutationsOptions,
+  UserSyncPullAllMutationsResult,
+  UserSyncPushMutationsOptions,
+  UserSyncPushMutationsResult,
+  UserSyncResource,
+  UserSyncResponse,
+  UserSyncSuccess,
+  UserSyncFacade,
 } from "@/types";
 
 export const createServerClient = (config: ServerClientConfig) => {

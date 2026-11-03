@@ -9,6 +9,14 @@ export type {
   AppStateErrorPayload,
   AppStateHttpError,
 } from "./sdk/app-state-errors";
+export {
+  isUserSyncOutOfSyncError,
+  UserSyncPullRestartLimitError,
+} from "./sdk/user-sync-errors";
+export type {
+  UserSyncOutOfSyncError,
+  UserSyncOutOfSyncErrorPayload,
+} from "./sdk/user-sync-errors";
 export { createAppStateReconciler } from "./runtime/app-state-reconciler";
 export {
   AppStateProtocolError,
