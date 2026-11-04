@@ -22,6 +22,7 @@ import { QuranSearch } from "./search";
 import { QuranVerses } from "./verses";
 
 const { camelizeKeys } = humps;
+/** Pre-split default. Overridden by `QuranClientConfig.scope`. */
 const LEGACY_CLIENT_CREDENTIALS_SCOPE = "content search";
 
 type LegacyConfig = Required<
@@ -30,12 +31,34 @@ type LegacyConfig = Required<
   Omit<QuranClientConfig, "authBaseUrl" | "contentBaseUrl">;
 
 class LegacyQuranFetcher {
-  private cachedToken: CachedToken | null = null;
+  /** The cached token, with the issuer/client/scope key it was fetched for. */
+  private cachedToken: (CachedToken & { key: string }) | null = null;
+  /**
+   * Bumped whenever the cache is invalidated, so a token request already in flight for the old
+   * configuration cannot write its result back afterwards.
+   */
+  private cacheGeneration = 0;
 
   constructor(private config: LegacyConfig) {}
 
   public updateConfig(config: LegacyConfig): void {
+    // A token fetched for one issuer, client, secret or scope set must not be reused for another.
+    if (
+      this.tokenKey(config) !== this.tokenKey(this.config) ||
+      config.clientSecret !== this.config.clientSecret
+    ) {
+      this.clearCachedToken();
+    }
     this.config = config;
+  }
+
+  private tokenKey(config: LegacyConfig): string {
+    return [config.authBaseUrl, config.clientId, this.requestedScope(config)].join("|");
+  }
+
+  private requestedScope(config: LegacyConfig = this.config): string {
+    const scope = config.scope?.trim().split(/\s+/u).filter(Boolean).join(" ");
+    return scope || LEGACY_CLIENT_CREDENTIALS_SCOPE;
   }
 
   public getFetch(): CustomFetcher {
@@ -51,6 +74,7 @@ class LegacyQuranFetcher {
   }
 
   public clearCachedToken(): void {
+    this.cacheGeneration += 1;
     this.cachedToken = null;
   }
 
@@ -79,24 +103,33 @@ class LegacyQuranFetcher {
   }
 
   private async getAccessToken(): Promise<string> {
-    if (this.cachedToken && this.cachedToken.expiresAt > Date.now() + 30_000) {
+    // Capture the configuration once, so the whole token request uses one consistent identity.
+    const config = this.config;
+    const key = this.tokenKey(config);
+    const generation = this.cacheGeneration;
+
+    if (
+      this.cachedToken &&
+      this.cachedToken.key === key &&
+      this.cachedToken.expiresAt > Date.now() + 30_000
+    ) {
       return this.cachedToken.value;
     }
 
     const body = new URLSearchParams({
       grant_type: "client_credentials",
-      scope: LEGACY_CLIENT_CREDENTIALS_SCOPE,
+      scope: this.requestedScope(config),
     }).toString();
 
     const response = await retry(
       () =>
-        this.getFetch()(`${this.config.authBaseUrl}/oauth2/token`, {
+        this.getFetch()(`${config.authBaseUrl}/oauth2/token`, {
           body,
           headers: {
             Accept: "application/json",
             Authorization: `Basic ${encodeBasicAuth(
-              this.config.clientId,
-              this.config.clientSecret,
+              config.clientId,
+              config.clientSecret,
             )}`,
             "Content-Type": "application/x-www-form-urlencoded",
           },
@@ -111,12 +144,19 @@ class LegacyQuranFetcher {
 
     const json = (await response.json()) as TokenResponse;
 
-    this.cachedToken = {
+    const token = {
       expiresAt: Date.now() + json.expires_in * 1000,
+      key,
       value: json.access_token,
     };
 
-    return this.cachedToken.value;
+    // The configuration changed (or the cache was cleared) while this request was in flight:
+    // serve this one call, but never cache a token fetched for the old identity or scope.
+    if (this.cacheGeneration === generation) {
+      this.cachedToken = token;
+    }
+
+    return token.value;
   }
 }
 

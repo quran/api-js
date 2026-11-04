@@ -49,6 +49,7 @@
     "smoke:local:public": "pnpm build && QURANJS_LOCAL_SMOKE=1 node ./test/smoke/local-public.cjs",
     "generate:operation-catalogs": "node ../../scripts/generate-operation-catalogs.mjs",
     "check:operation-catalogs": "node ../../scripts/generate-operation-catalogs.mjs --check",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "eslint \"src/**/*.ts*\" \"test/**/*.ts*\" \"mocks/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "size": "size-limit",

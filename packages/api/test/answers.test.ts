@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
 import { server } from "../mocks/server";
+import { Language } from "../src";
 import { testClient } from "./test-client";
 
 describe("Answers API", () => {
@@ -36,7 +37,7 @@ describe("Answers API", () => {
       );
 
       await testClient.answers.findByAyah("2:255", {
-        language: "en",
+        language: Language.ENGLISH,
         page: 1,
         pageSize: 2,
       });

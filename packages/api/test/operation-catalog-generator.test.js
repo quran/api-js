@@ -11,7 +11,7 @@ const writeJson = async (filePath, value) => {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
 };
 
-const loadCatalogModule = async () => {
+const loadCatalogModule = async ({ pin, pinDirectory = false } = {}) => {
   const sourcePath = path.resolve(
     testDir,
     "../../../scripts/generate-operation-catalogs.mjs",
@@ -23,6 +23,9 @@ const loadCatalogModule = async () => {
   const modulePath = path.join(moduleDir, "generate-operation-catalogs.mjs");
 
   await fs.writeFile(modulePath, source.replace(/^#!.*(?:\r?\n|$)/, ""));
+  const pinPath = path.join(moduleDir, "openapi-source.json");
+  if (pinDirectory) await fs.mkdir(pinPath);
+  else if (pin !== undefined) await fs.writeFile(pinPath, pin);
 
   return import(pathToFileURL(modulePath).href);
 };
@@ -43,6 +46,16 @@ const operation = (
 });
 
 describe("operation catalog generator", () => {
+  it("rejects malformed committed pins instead of falling back to main", async () => {
+    const { generateCatalogs } = await loadCatalogModule({ pin: "{broken" });
+    await expect(generateCatalogs({ sourceDir: "/unused" })).rejects.toBeInstanceOf(SyntaxError);
+  });
+
+  it("propagates pin read errors other than ENOENT", async () => {
+    const { generateCatalogs } = await loadCatalogModule({ pinDirectory: true });
+    await expect(generateCatalogs({ sourceDir: "/unused" })).rejects.toMatchObject({ code: "EISDIR" });
+  });
+
   it("builds compact server and public catalogs from OpenAPI specs", async () => {
     const { generateCatalogs } = await catalogModule;
     const sourceDir = await fs.mkdtemp(
@@ -254,6 +267,126 @@ describe("operation catalog generator", () => {
       "usersControllerGetUserProfile",
       "usersControllerGetUserProfile2",
     ]);
+  });
+
+  describe("content scope contract hash", () => {
+    const CONTRACT_TEXT = '{\n  "contractVersion": "content-scopes.v1"\n}\n';
+
+    const writeScopedSource = async (
+      contractSha256,
+      contractText = CONTRACT_TEXT,
+      contractPath = "contracts/content-scopes/v1.json",
+    ) => {
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), "quranjs-docs-"));
+      const sourceDir = path.join(root, "openAPI");
+      for (const file of ["analytics/v1.json", "search/v1.json", "oauth2-apis/v1.json", "user-related-apis/v1.json"]) {
+        await writeJson(path.join(sourceDir, file), { paths: {} });
+      }
+      await writeJson(path.join(sourceDir, "content", "v4.json"), {
+        paths: {
+          "/chapters": {
+            get: {
+              operationId: "list-chapters",
+              "x-qf-scopes": {
+                contractSha256,
+                contractVersion: "content-scopes.v1",
+                granularAnyOf: ["content.quran.read"],
+                legacyAnyOf: ["content"],
+                quotaBuckets: ["content"],
+              },
+            },
+          },
+        },
+      });
+      if (contractText !== null) {
+        await fs.mkdir(path.dirname(path.join(root, contractPath)), { recursive: true });
+        await fs.writeFile(path.join(root, contractPath), contractText);
+      }
+      return sourceDir;
+    };
+
+    it("records contractSha256 once on the generated section", async () => {
+      const { generateCatalogs, hashContract } = await catalogModule;
+      const hash = hashContract(CONTRACT_TEXT);
+      const catalogs = await generateCatalogs({ sourceDir: await writeScopedSource(hash) });
+
+      expect(catalogs.operationCatalog.content.v4.contractSha256).toBe(hash);
+      expect(catalogs.operationCatalog.content.v4.operations.listChapters.scopes).toEqual({
+        contractVersion: "content-scopes.v1",
+        granularAnyOf: ["content.quran.read"],
+        legacyAnyOf: ["content"],
+      });
+    });
+
+    it("hashes CRLF contracts the way qf-api-docs does", async () => {
+      const { hashContract } = await catalogModule;
+      expect(hashContract(CONTRACT_TEXT.split("\n").join("\r\n"))).toBe(hashContract(CONTRACT_TEXT));
+    });
+
+    it("fails when x-qf-scopes names a hash the contract file does not have", async () => {
+      const { generateCatalogs } = await catalogModule;
+      await expect(
+        generateCatalogs({ sourceDir: await writeScopedSource("0".repeat(64)) }),
+      ).rejects.toThrow(/metadata is stale relative to the contract/u);
+    });
+
+    it("fails when scoped metadata has no contract file to verify against", async () => {
+      const { generateCatalogs } = await catalogModule;
+      await expect(
+        generateCatalogs({ sourceDir: await writeScopedSource("0".repeat(64), null) }),
+      ).rejects.toThrow(/cannot be verified/u);
+    });
+
+    it("fails when the pinned contract differs from the recorded contractSha256", async () => {
+      const { hashContract, verifyContentScopeContract } = await catalogModule;
+      const actual = hashContract(CONTRACT_TEXT);
+
+      expect(() =>
+        verifyContentScopeContract({
+          contentSpec: { paths: {} },
+          contractText: CONTRACT_TEXT,
+          recordedSha256: "f".repeat(64),
+          source: "qf-api-docs@pinned",
+        }),
+      ).toThrow(new RegExp(`hashes to ${actual}, but scripts/openapi-source.json records contractSha256 ${"f".repeat(64)}`, "u"));
+
+      expect(
+        verifyContentScopeContract({
+          contentSpec: { paths: {} },
+          contractText: CONTRACT_TEXT,
+          recordedSha256: actual,
+        }),
+      ).toBe(actual);
+    });
+
+    it("honours the pin's contractPath when the source is overridden", async () => {
+      const { generateCatalogs, hashContract } = await loadCatalogModule({
+        pin: JSON.stringify({
+          contractPath: "contracts/alt/v2.json",
+          path: "openAPI",
+          ref: "a".repeat(40),
+          repository: "quran/qf-api-docs",
+        }),
+      });
+      const hash = hashContract(CONTRACT_TEXT);
+
+      const catalogs = await generateCatalogs({
+        sourceDir: await writeScopedSource(hash, CONTRACT_TEXT, "contracts/alt/v2.json"),
+      });
+      expect(catalogs.operationCatalog.content.v4.contractSha256).toBe(hash);
+
+      // The default location is not consulted when the pin names another one.
+      await expect(
+        generateCatalogs({ sourceDir: await writeScopedSource(hash) }),
+      ).rejects.toThrow(/has no contracts\/alt\/v2\.json/u);
+    });
+
+    it("rejects a malformed recorded contractSha256 in the pin", async () => {
+      const { generateCatalogs } = await loadCatalogModule({
+        pin: JSON.stringify({ contractSha256: "ecfced43", ref: "a".repeat(40), repository: "quran/qf-api-docs" }),
+      });
+      await expect(generateCatalogs({ sourceDir: "/unused" })).rejects.toThrow(/64-character/u);
+    });
   });
 
   it("reports missing generated catalog files as out of date", async () => {

@@ -96,7 +96,7 @@ const errorResponse = async (
   );
 
 const createTransport = (
-  overrides: Partial<AppStateTransport>,
+  overrides: Partial<AppStateTransport> = {},
 ): AppStateTransport => ({
   bootstrap: () =>
     Promise.resolve({

@@ -45,13 +45,13 @@ describe("createPublicClient", () => {
       },
     });
 
-    const content = client.content as {
+    const content = client.content as unknown as {
       v4: { chapters: { list: () => Promise<unknown> } };
     };
-    const qiraat = client.qiraat as {
+    const qiraat = client.qiraat as unknown as {
       findAllReaders: () => Promise<unknown>;
     };
-    const answers = client.answers as {
+    const answers = client.answers as unknown as {
       findByAyah: (key: string) => Promise<unknown>;
     };
 

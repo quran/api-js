@@ -46,6 +46,15 @@ export interface QuranClientConfig {
   fetch?: CustomFetcher;
   /** Default parameters for all API calls */
   defaults?: Partial<BaseApiParams>;
+  /**
+   * Space-separated scopes requested for the client-credentials token. Defaults to
+   * `"content search"`, which keeps working for credentials that were granted `content`.
+   *
+   * Credentials issued only with the granular content scopes are never granted `content`; set
+   * this to the scopes they were approved for (for example `"content.quran.read search"`), or use
+   * `createServerClient` with `contentScopeMode: "granular"`, which picks the scope per call.
+   */
+  scope?: string;
 }
 
 export interface UserSession {
@@ -67,6 +76,19 @@ export interface TokenStorage {
   clearSession?: () => void | Promise<void>;
 }
 
+/**
+ * Which content scopes the SDK asks for when it fetches an app access token.
+ *
+ * `legacy` is the default and the pre-split behavior: one `content` scope for every content call.
+ * It keeps working for credentials that were granted `content`.
+ *
+ * `granular` asks for the specific scope the operation needs, from the pinned operation catalog.
+ * Required for credentials issued under the granular policy, which are never granted `content`.
+ *
+ * The default will only change in a deliberately versioned release.
+ */
+export type ContentScopeMode = "legacy" | "granular";
+
 interface BaseRuntimeClientConfig {
   clientId: string;
   fetch?: CustomFetcher;
@@ -74,6 +96,15 @@ interface BaseRuntimeClientConfig {
   services?: ServiceEnvironmentConfig;
   userSession?: UserSession;
   storage?: TokenStorage;
+  /**
+   * Content scope mode. Defaults to `legacy`.
+   *
+   * Set to `granular` when your credentials were issued with the granular content scopes
+   * (`content.quran.read` and friends) rather than the `content` umbrella.
+   */
+  contentScopeMode?: ContentScopeMode;
+  /** Token audience, when your credentials are issued for a specific audience. */
+  audience?: string;
 }
 
 export interface ServerClientConfig extends BaseRuntimeClientConfig {
@@ -87,6 +118,8 @@ export interface PublicClientConfig extends BaseRuntimeClientConfig {
 export interface CachedToken {
   value: string;
   expiresAt: number;
+  /** Scopes the authorization server actually granted, when it reported them. */
+  grantedScopes?: string[];
 }
 
 export interface TokenResponse {
@@ -106,6 +139,15 @@ export interface OperationRequest {
   method?: HTTPMethod;
   auth?: "auto" | "none" | "app" | "user";
   accessToken?: string;
+  /**
+   * Scopes for the client-credentials token of an app-authenticated call (server client only).
+   *
+   * Overrides the scopes the SDK would choose, in both content scope modes. Use it for an
+   * operation the pinned catalog carries no scope for, for example
+   * `client.content.v4.raw.someOperation({ scopes: ["content.quran.read"] })`. The SDK requests
+   * exactly these scopes and never widens them.
+   */
+  scopes?: string[];
   basicAuth?: {
     username: string;
     password: string;
