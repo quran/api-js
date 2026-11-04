@@ -153,6 +153,77 @@ describe("raw operation requests", () => {
     );
   });
 
+  it("serializes field lists given as strings, arrays or selection maps", () => {
+    const fetcher = new QuranFetcher("server", {
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+      },
+    });
+
+    const params = new URL(
+      fetcher.buildServiceUrl("content", "/verses/by_key/1:1", {
+        fields: "text_uthmani,chapter_id",
+        tafsirFields: {
+          languageName: false,
+          resourceName: true,
+          verseKey: true,
+        },
+        translationFields: { languageName: false, resourceName: true },
+        wordFields: ["text_uthmani", "location"],
+      }),
+    ).searchParams;
+
+    expect(params.get("fields")).toBe("text_uthmani,chapter_id");
+    expect(params.get("word_fields")).toBe("text_uthmani,location");
+    expect(params.get("translation_fields")).toBe("resource_name");
+    expect(params.get("tafsir_fields")).toBe("resource_name,verse_key");
+  });
+
+  it("sends string field lists on raw catalog operations unchanged", async () => {
+    let translationUrl: URL | null = null;
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", () =>
+        HttpResponse.json({
+          access_token: "app-token",
+          expires_in: 3600,
+          scope: "content",
+          token_type: "Bearer",
+        }),
+      ),
+      http.get(
+        "http://localhost:3020/api/v4/quran/translations/131",
+        ({ request }) => {
+          translationUrl = new URL(request.url);
+
+          return HttpResponse.json({ translations: [] });
+        },
+      ),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+        tokenHost: "http://localhost:5444",
+      },
+    });
+
+    await client.content.v4.raw.translation?.({
+      path: { translation_id: 131 },
+      query: { chapter_number: 1, fields: "verse_key,chapter_id" },
+    });
+
+    expect(translationUrl).not.toBeNull();
+    expect(translationUrl!.searchParams.get("fields")).toBe(
+      "verse_key,chapter_id",
+    );
+    expect(translationUrl!.searchParams.get("chapter_number")).toBe("1");
+  });
+
   it("passes bookmark detail queries through the server auth wrapper", async () => {
     let bookmarkUrl: string | null = null;
 
