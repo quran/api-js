@@ -28,7 +28,7 @@
     "scopes that must not authorize a user-bound token) is enforced by the gateway, not here."
   ],
   "repository": "quran/qf-api-docs",
-  "ref": "ee061ea8d72689d351b41eb9d85ee6ad89ec3dd7",
+  "ref": "7e4b259219b3eaa95d7d343fc363d5ac9efe3ca9",
   "path": "openAPI",
   "contractPath": "contracts/content-scopes/v1.json",
   "contractSha256": "0bba34fad8ac4ecc6d782eff14ae8f5cf50bac1784c832d5d1eb7d7f8be0ed36"
