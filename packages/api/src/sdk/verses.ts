@@ -1,4 +1,5 @@
 import type {
+  ApiParams,
   BaseApiParams,
   ChapterId,
   HizbNumber,
@@ -24,6 +25,16 @@ import {
 
 type GetVerseOptions = BaseApiParams &
   PaginationParams & {
+    /**
+     * Ayah-by-ayah recitation ID, from `resources.findAllRecitations()`. Each verse is
+     * returned with the `audio` file of that recitation. Chapter reciter IDs, from
+     * `resources.findAllChapterReciters()`, are not accepted.
+     */
+    audio?: string | number;
+    /**
+     * @deprecated Use `audio`. The Content API reads the recitation ID from `audio`, so this
+     * option is sent as `audio`.
+     */
     reciter?: string | number;
     words?: boolean;
     translations?: string[] | number[];
@@ -32,6 +43,18 @@ type GetVerseOptions = BaseApiParams &
     translationFields?: Partial<Record<TranslationField, boolean>>;
     fields?: Partial<Record<VerseField, boolean>>;
   };
+
+/**
+ * Sends the deprecated `reciter` option as `audio`, the parameter the verses endpoints read.
+ * An explicit `audio` wins. No `audio` key is added otherwise, so a client default still applies.
+ */
+const withAudioParam = ({
+  reciter,
+  ...options
+}: GetVerseOptions = {}): ApiParams =>
+  options.audio === undefined && reciter !== undefined
+    ? { ...options, audio: reciter }
+    : options;
 
 /**
  * Verses API methods
@@ -46,6 +69,7 @@ export class QuranVerses {
    * @example
    * client.verses.findByKey('1:1')
    * client.verses.findByKey('2:255')
+   * client.verses.findByKey('2:255', { audio: 7 })
    */
   async findByKey(key: VerseKey, options?: GetVerseOptions): Promise<Verse> {
     if (!isValidVerseKey(key)) throw new Error("Invalid verse key");
@@ -54,7 +78,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_key/${key}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -84,7 +108,7 @@ export class QuranVerses {
       "/content/api/v4/verses/by_range",
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
         from,
         to,
       },
@@ -110,7 +134,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_chapter/${id}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -134,7 +158,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_page/${page}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -155,7 +179,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_juz/${juz}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -179,7 +203,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_hizb/${hizb}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -200,7 +224,7 @@ export class QuranVerses {
       `/content/api/v4/verses/by_rub/${rub}`,
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
@@ -218,7 +242,7 @@ export class QuranVerses {
       "/content/api/v4/verses/random",
       {
         words: false, // verses-specific default
-        ...options,
+        ...withAudioParam(options),
       },
     );
 
