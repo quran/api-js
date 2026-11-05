@@ -1,5 +1,13 @@
 # @quranjs/api
 
+## 3.17.1
+
+### Patch Changes
+
+- 0bdd30c: Send `fields`, `wordFields` and `translationFields` unchanged when they are given as a comma-separated string or an array. They were always read as `{ field: true }` maps, so `fields: "text_uthmani,chapter_id"` went out as `fields=0,1,2,…,22` (the string's character indexes) and the API answered without the requested fields. This affected the `client.content.v4` helpers, raw catalog operations such as `client.content.v4.raw.translation()`, and `QuranClient`. `tafsirFields` maps are now sent as `tafsir_fields` like the other field lists, instead of being dropped.
+- f9465d6: User Sync errors now carry the service's error code and message. A 409 `OutOfSyncError` from `client.auth.v1.sync` has `code: "OutOfSyncError"` and a message such as `409: Invalid lastMutationAt, please re-sync your data and try again.` instead of `409 `, for both the Gateway and direct backend response shapes. `isUserSyncOutOfSyncError` is unchanged.
+- 8e9012c: Add an `audio` option to the verses methods for the ayah-by-ayah recitation ID, which is the parameter the Content API v4 verses endpoints read. The existing `reciter` option was sent as `reciter`, which those endpoints ignore, so verses never came back with `audio`. `reciter` is now deprecated and sent as `audio`; when both are set, `audio` wins.
+
 ## 3.17.0
 
 ### Minor Changes
