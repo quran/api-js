@@ -34,7 +34,12 @@ interface ParamsToStringOptions {
   preserveCase?: boolean;
 }
 
-const fieldsKey = ["wordFields", "translationFields", "fields"] as const;
+const fieldsKey = [
+  "wordFields",
+  "translationFields",
+  "tafsirFields",
+  "fields",
+] as const;
 const fieldsKeySet = new Set<string>([
   ...fieldsKey,
   ...fieldsKey.map((key) => decamelize(key)),
@@ -44,6 +49,11 @@ const preservedKeys = new Set([
   "pageSize",
   "versesResultsNumber",
 ]);
+
+const isFieldSelectionMap = (
+  value: unknown,
+): value is Record<string, boolean> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 export const paramsToString = (
   params?: ApiParams,
@@ -61,9 +71,14 @@ export const paramsToString = (
         ? rawKey
         : decamelize(rawKey);
 
-    // fields is a special case, it's an object with boolean values
-    if (fieldsKeySet.has(rawKey) || fieldsKeySet.has(key)) {
-      const fields = Object.entries(rawValue as Record<string, boolean>)
+    // A field selection map such as { textUthmani: true } becomes the comma-separated list of
+    // the enabled fields. A string or an array is already that list, so it is serialized below
+    // like any other value.
+    if (
+      isFieldSelectionMap(rawValue) &&
+      (fieldsKeySet.has(rawKey) || fieldsKeySet.has(key))
+    ) {
+      const fields = Object.entries(rawValue)
         .filter(([, value]) => value)
         .map(([fieldKey]) => decamelize(fieldKey));
       if (fields.length > 0) {
