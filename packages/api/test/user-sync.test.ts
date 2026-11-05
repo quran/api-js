@@ -284,6 +284,96 @@ describe("User Sync facade", () => {
     ]);
     expect(isUserSyncOutOfSyncError(new Error("409"))).toBe(false);
   });
+
+  it("gives sync errors the service code and message for both envelopes", async () => {
+    // HTTP/2 responses carry no statusText, so the base message is "409 ".
+    const noStatusText = (body: unknown, status: number) =>
+      new Response(JSON.stringify(body), {
+        headers: { "content-type": "application/json" },
+        status,
+      });
+    const backendWithoutMessage = {
+      error: { code: "OutOfSyncError" },
+      success: false,
+    };
+    const responses = [
+      noStatusText(OUT_OF_SYNC_BODY, 409),
+      noStatusText(OUT_OF_SYNC_BODY.details, 409),
+      noStatusText(backendWithoutMessage, 409),
+      HttpResponse.json(
+        {
+          details: {
+            error: {
+              code: "UniqueViolationError",
+              message: "You already have a collection with this name",
+            },
+            success: false,
+          },
+          message: "You already have a collection with this name",
+          success: false,
+          type: "service_error",
+        },
+        { status: 409, statusText: "Conflict" },
+      ),
+      noStatusText({ message: "nope" }, 500),
+    ];
+    // MSW fills in a default statusText, so serve these through `fetch`.
+    const client = createPublicClient({
+      clientId: "client-id",
+      clientType: "confidential-proxy",
+      fetch: () => Promise.resolve(responses.shift()!),
+      services: { authBaseUrl: "http://localhost:3001" },
+      userSession: { accessToken: "user-access-token" },
+    });
+
+    const errors: unknown[] = [];
+    for (let index = 0; index < 5; index += 1) {
+      errors.push(
+        await client.auth.v1.sync
+          .pushMutations({
+            lastMutationAt: 1,
+            mutations: [{ resource: "NOTE", resourceId: "x", type: "DELETE" }],
+          })
+          .catch((error: unknown) => error),
+      );
+    }
+
+    const [gateway, backend, bare, unique, other] = errors as QuranHttpError[];
+    const reason =
+      "Invalid lastMutationAt, please re-sync your data and try again.";
+    expect(gateway).toMatchObject({
+      code: "OutOfSyncError",
+      message: `409: ${reason}`,
+      payload: OUT_OF_SYNC_BODY,
+      status: 409,
+    });
+    expect(backend).toMatchObject({
+      code: "OutOfSyncError",
+      message: `409: ${reason}`,
+      payload: OUT_OF_SYNC_BODY.details,
+      status: 409,
+    });
+    expect(bare).toMatchObject({
+      code: "OutOfSyncError",
+      message: "409: Out of sync: lastMutationAt is stale; pull and retry.",
+      status: 409,
+    });
+    expect(unique).toMatchObject({
+      code: "UniqueViolationError",
+      message: "409 Conflict: You already have a collection with this name",
+    });
+    expect(other).toBeInstanceOf(QuranHttpError);
+    // Errors without a service code keep the shared message unchanged.
+    expect(other?.message).toBe("500 ");
+    expect(other).not.toHaveProperty("code");
+    expect(errors.map((error) => isUserSyncOutOfSyncError(error))).toEqual([
+      true,
+      true,
+      true,
+      false,
+      false,
+    ]);
+  });
 });
 
 describe("User Sync pullAllMutations", () => {
