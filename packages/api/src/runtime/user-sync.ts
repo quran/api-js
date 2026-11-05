@@ -13,7 +13,10 @@ import type {
   UserSyncSuccess,
 } from "@/types";
 import { QuranHttpError } from "@/sdk/http-error";
-import { UserSyncPullRestartLimitError } from "@/sdk/user-sync-errors";
+import {
+  UserSyncPullRestartLimitError,
+  withUserSyncErrorDetails,
+} from "@/sdk/user-sync-errors";
 
 interface UserSyncFetcher {
   request<T>(
@@ -61,11 +64,8 @@ export const createUserSyncFacade = (
   ): Promise<UserSyncResponse<T>> => {
     let mutationAt: number | null = null;
     let status = 0;
-    const body = await fetcher.request<UserSyncSuccess<T>>(
-      "auth",
-      SYNC_PATH,
-      query,
-      {
+    const body = await fetcher
+      .request<UserSyncSuccess<T>>("auth", SYNC_PATH, query, {
         ...options,
         auth: "user",
         method,
@@ -74,8 +74,10 @@ export const createUserSyncFacade = (
           status = metadata.status;
         },
         preserveResponseKeys: true,
-      },
-    );
+      })
+      .catch((error: unknown) => {
+        throw withUserSyncErrorDetails(error);
+      });
 
     return { ...body, mutationAt, status };
   };
