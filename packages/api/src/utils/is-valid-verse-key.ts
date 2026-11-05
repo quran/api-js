@@ -17,6 +17,9 @@ import { versesMapping } from "./verses-mapping";
  * isValidVerseKey('01:1') // false (must be canonical, as sent to the API)
  */
 export const isValidVerseKey = (key: string): key is VerseKey => {
+  // JavaScript callers can pass anything, and only a string can be a verse key.
+  if (typeof (key as unknown) !== "string") return false;
+
   const parts = key.split(":");
   if (parts.length !== 2) return false;
 

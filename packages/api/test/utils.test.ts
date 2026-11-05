@@ -85,6 +85,30 @@ describe("Utils", () => {
         expect(utils.isValidQuranPage(value)).toBe(false);
       }
     });
+
+    it("should return false for values that are neither numbers nor strings", () => {
+      const values: unknown[] = [
+        undefined,
+        null,
+        true,
+        {},
+        [],
+        [1],
+        ["1"],
+        Object("1"),
+        1n,
+        Symbol("1"),
+      ];
+
+      for (const value of values) {
+        const input = value as number;
+        expect(utils.isValidChapterId(input)).toBe(false);
+        expect(utils.isValidJuz(input)).toBe(false);
+        expect(utils.isValidHizb(input)).toBe(false);
+        expect(utils.isValidRub(input)).toBe(false);
+        expect(utils.isValidQuranPage(input)).toBe(false);
+      }
+    });
   });
 
   describe(`isValidHizb`, () => {
@@ -199,6 +223,25 @@ describe("Utils", () => {
     it("should return false for keys with more than one separator", () => {
       expect(utils.isValidVerseKey("1:1:1")).toBe(false);
       expect(utils.isValidVerseKey("2:255:")).toBe(false);
+    });
+
+    it("should return false instead of throwing for keys that are not strings", () => {
+      const values: unknown[] = [
+        undefined,
+        null,
+        255,
+        true,
+        {},
+        [],
+        ["2:255"],
+        Object("2:255"),
+        2n,
+        Symbol("2:255"),
+      ];
+
+      for (const value of values) {
+        expect(utils.isValidVerseKey(value as string)).toBe(false);
+      }
     });
   });
 });
