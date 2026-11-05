@@ -1,12 +1,35 @@
 import type { VerseKey } from "../common/verse-key";
 import type { Segment } from "./Segment";
 
+/**
+ * Timing of one word in a chapter audio file: `[wordIndex, startMs, endMs]`. The word index
+ * is one-based, and the times are milliseconds from the start of the file.
+ */
+export type ChapterRecitationSegment = [
+  wordIndex: number,
+  startMs: number,
+  endMs: number,
+];
+
+/** Timing of one verse in a chapter audio file, in milliseconds from the start of the file. */
+export interface ChapterRecitationTimestamp {
+  verseKey: VerseKey;
+  timestampFrom: number;
+  timestampTo: number;
+  /** Mirrors the source data, so it can be negative in legacy records. */
+  duration: number;
+  /** Word timings, returned when the request sets `segments: true`. */
+  segments?: ChapterRecitationSegment[] | null;
+}
+
 export interface ChapterRecitation {
   id: number;
   chapterId: number;
   fileSize: number;
   format: string;
   audioUrl: string;
+  /** Verse timings, present when the API has timing data for the file. */
+  timestamps?: ChapterRecitationTimestamp[];
 }
 
 export interface VerseRecitation {

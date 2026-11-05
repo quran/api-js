@@ -1,7 +1,11 @@
+import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
+import { server } from "../mocks/server";
 import { testClient } from "./test-client";
 
+const CHAPTER_RECITATION_URL =
+  "https://apis.quran.foundation/content/api/v4/chapter_recitations/:id/:chapter_number";
 const VALID_RECITATION_ID = "1";
 const VALID_CHAPTER_ID = "1";
 const INVALID_CHAPTER_ID = "0";
@@ -78,6 +82,60 @@ describe("Audio API", () => {
           INVALID_CHAPTER_ID,
         ),
       ).rejects.toThrowError();
+    });
+
+    it("requests word timings and returns typed verse timestamps", async () => {
+      const requestUrls: URL[] = [];
+      server.use(
+        http.get(CHAPTER_RECITATION_URL, ({ request }) => {
+          requestUrls.push(new URL(request.url));
+          return HttpResponse.json({
+            audio_file: {
+              id: 911,
+              chapter_id: 1,
+              file_size: 839808,
+              format: "mp3",
+              audio_url:
+                "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/1.mp3",
+              timestamps: [
+                {
+                  verse_key: "1:1",
+                  timestamp_from: 0,
+                  timestamp_to: 6090,
+                  duration: 6090,
+                  segments: [
+                    [1, 0, 580],
+                    [2, 580, 1409],
+                    [3, 1409, 2502],
+                    [4, 2502, 5840],
+                  ],
+                },
+              ],
+            },
+          });
+        }),
+      );
+
+      const audioFile = await testClient.audio.findChapterRecitationById(
+        VALID_RECITATION_ID,
+        VALID_CHAPTER_ID,
+        { segments: true },
+      );
+      await testClient.content.v4.audio.chapterRecitation.get(
+        VALID_RECITATION_ID,
+        VALID_CHAPTER_ID,
+        { segments: true },
+      );
+
+      expect(
+        requestUrls.map((url) => url.searchParams.get("segments")),
+      ).toEqual(["true", "true"]);
+      const [timestamp] = audioFile.timestamps ?? [];
+      expect(timestamp?.verseKey).toBe("1:1");
+      expect(timestamp?.timestampFrom).toBe(0);
+      expect(timestamp?.timestampTo).toBe(6090);
+      expect(timestamp?.duration).toBe(6090);
+      expect(timestamp?.segments?.[0]).toEqual([1, 0, 580]);
     });
   });
 
