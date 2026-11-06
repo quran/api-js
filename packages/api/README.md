@@ -57,9 +57,9 @@ credentials you have.
 `contentScopeMode: "legacy"` requests `content` for content calls, exactly as before, and keeps
 working: `content` stays valid for clients that already have it.
 
-**New credentials.** Today every newly issued client is still granted `content`, so the default
-works for new clients too. Once Quran Foundation turns on the new-client policy, newly issued
-clients are no longer granted `content`:
+**New credentials.** The `content-scopes/v1` contract is approved, and the granular scopes are
+now issued to new backend clients. Newly issued clients are granted the granular scopes instead of
+`content`:
 
 - A **backend (confidential) client** is issued the granular scopes. Use it from your server with
   `contentScopeMode: "granular"`:

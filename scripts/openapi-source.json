@@ -19,9 +19,8 @@
     "revision's contracts/content-scopes/v1.sha256 after reviewing the contract change, run",
     "`pnpm --filter @quranjs/api generate:operation-catalogs`, and commit all three together.",
     "",
-    "TODO: this currently points at the head of qf-api-docs `feat/content-scope-split-v1`,",
-    "which is the revision carrying the `x-qf-scopes` content scope metadata. Once",
-    "quran/qf-api-docs#207 merges, move this to the resulting commit on `main`.",
+    "TODO: this points at the approved head of qf-api-docs#247 (content-scopes/v1, status",
+    "approved). Once #247 merges, move this to the resulting commit on `main`.",
     "",
     "Content scopes are resolved only on the `client_credentials` branch of `applyAuthHeaders`,",
     "where `sub` equals the client id; the `user` branch sends the session's existing token",
@@ -29,8 +28,8 @@
     "scopes that must not authorize a user-bound token) is enforced by the gateway, not here."
   ],
   "repository": "quran/qf-api-docs",
-  "ref": "8766d744463e843dc4793789f8f0a4631d29f4ae",
+  "ref": "7e4b259219b3eaa95d7d343fc363d5ac9efe3ca9",
   "path": "openAPI",
   "contractPath": "contracts/content-scopes/v1.json",
-  "contractSha256": "17aab2c6b1f8638b62aa68d9efd8d2b0881bde0e077f980742781e16b1c86281"
+  "contractSha256": "0bba34fad8ac4ecc6d782eff14ae8f5cf50bac1784c832d5d1eb7d7f8be0ed36"
 }
