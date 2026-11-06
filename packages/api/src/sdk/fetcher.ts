@@ -168,9 +168,9 @@ export class QuranFetcher {
     path: string,
     query?: ApiParams,
   ): string {
-    const crossServiceGatewayPath = this.isCrossServiceGatewayPath(
-      service,
-      path,
+    const pathService = this.gatewayPathService(path);
+    const crossServiceGatewayPath = Boolean(
+      pathService && pathService !== service,
     );
     const { baseUrl, usesGateway } = this.resolveServiceBaseUrl(
       service,
@@ -182,8 +182,12 @@ export class QuranFetcher {
       usesGateway,
       crossServiceGatewayPath,
     );
+    // A cross-service path is served by the service its prefix names, so that service's query
+    // conventions apply. The content catalog's Quran Reflect reads go to /quran-reflect/v1,
+    // which takes camelCase keys such as `sortBy` and `filter[references][0][chapterId]`.
+    const queryService = crossServiceGatewayPath ? pathService : service;
     const preserveQueryParamCase =
-      service === "auth" || service === "quranReflect";
+      queryService === "auth" || queryService === "quranReflect";
 
     return `${baseUrl}${servicePath}${paramsToString(query, {
       preserveCase: preserveQueryParamCase,
@@ -1084,19 +1088,16 @@ export class QuranFetcher {
     return `${prefix}${servicePath}`;
   }
 
-  private isCrossServiceGatewayPath(
-    service: ApiService,
-    path: string,
-  ): boolean {
+  /** The service whose gateway path prefix the path starts with, if any. */
+  private gatewayPathService(path: string): ApiService | undefined {
     const normalizedPath = ensureLeadingSlash(normalizePathTemplate(path));
-    const pathService = GATEWAY_SERVICES.find((gatewayService) =>
+
+    return GATEWAY_SERVICES.find((gatewayService) =>
       this.pathMatchesPrefix(
         normalizedPath,
         GATEWAY_PATH_PREFIX[gatewayService],
       ),
     );
-
-    return Boolean(pathService && pathService !== service);
   }
 
   private pathMatchesPrefix(path: string, prefix: string): boolean {
