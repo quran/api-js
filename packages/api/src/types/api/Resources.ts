@@ -105,7 +105,14 @@ export interface ChapterAudioFileSnapshotRecord
   fileSize: number | null;
   format: string | null;
   mimeType: string | null;
-  metadata: Record<string, unknown> | null;
+  /**
+   * Legacy field, returned as stored. Most files have an object, but some
+   * older files have a string (a Ruby hash dump such as `{"album"=>"Quran"}`).
+   * Use `metadataJson` instead.
+   */
+  metadata: Record<string, unknown> | string | null;
+  /** The file's audio tags as a JSON object, or `null`. */
+  metadataJson?: Record<string, unknown> | null;
   updatedAt: string;
 }
 

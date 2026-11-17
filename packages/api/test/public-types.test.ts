@@ -76,7 +76,8 @@ describe("@quranjs/api/public type surface", () => {
         fileSize: 123456,
         format: "mp3",
         mimeType: "audio/mpeg",
-        metadata: {},
+        metadata: '{"album"=>"Quran"}',
+        metadataJson: { album: "Quran" },
         updatedAt: "2026-09-29T00:00:00Z",
       };
       const audioSegment: AudioSegmentSnapshotRecord = {
