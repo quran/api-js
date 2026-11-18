@@ -360,6 +360,117 @@ describe("raw operation requests", () => {
     expect(requestedScopes).toEqual(["post.read", "comment.read"]);
   });
 
+  it("keeps Quran Reflect query casing on content-catalog gateway paths", () => {
+    const fetcher = new QuranFetcher("server", {
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        contentBaseUrl: "http://localhost:3020",
+        gatewayUrl: "http://localhost:3000",
+      },
+    });
+
+    const feedParams = new URL(
+      fetcher.buildServiceUrl("content", "/quran-reflect/v1/posts/feed", {
+        "filter[references][0][chapterId]": 2,
+        "filter[references][0][from]": 255,
+        "filter[references][0][to]": 255,
+        "filter[verifiedOnly]": true,
+      }),
+    ).searchParams;
+
+    expect(feedParams.get("filter[references][0][chapterId]")).toBe("2");
+    expect(feedParams.get("filter[verifiedOnly]")).toBe("true");
+    expect(feedParams.has("filter[references][0][chapter_id]")).toBe(false);
+    expect(feedParams.has("filter[verified_only]")).toBe(false);
+    expect(
+      fetcher.buildServiceUrl(
+        "content",
+        "/quran-reflect/v1/posts/user-posts/abc",
+        {
+          postTypeIds: [1, 2],
+          sortBy: "popular",
+        },
+      ),
+    ).toBe(
+      "http://localhost:3000/quran-reflect/v1/posts/user-posts/abc?postTypeIds=1%2C2&sortBy=popular",
+    );
+
+    // Paths served by the content API itself keep their snake_case query keys.
+    expect(
+      fetcher.buildServiceUrl("content", "/chapters/1/info", {
+        includeResources: true,
+        resourceId: 131,
+      }),
+    ).toBe(
+      "http://localhost:3020/api/v4/chapters/1/info?include_resources=true&resource_id=131",
+    );
+    expect(
+      fetcher.buildServiceUrl("content", "/content/api/v4/verses/by_key/1:1", {
+        perPage: 10,
+      }),
+    ).toBe("http://localhost:3020/api/v4/verses/by_key/1:1?per_page=10");
+  });
+
+  it("sends the same Quran Reflect query through the content and Quran Reflect catalogs", async () => {
+    const receivedQueries: URLSearchParams[] = [];
+
+    server.use(
+      http.post("http://localhost:5444/oauth2/token", async ({ request }) => {
+        const scope =
+          new URLSearchParams(await request.text()).get("scope") ?? "";
+
+        return HttpResponse.json({
+          access_token: `${scope}-token`,
+          expires_in: 3600,
+          scope,
+          token_type: "Bearer",
+        });
+      }),
+      http.get(
+        "http://localhost:3020/quran-reflect/v1/posts/feed",
+        ({ request }) => {
+          receivedQueries.push(new URL(request.url).searchParams);
+
+          return HttpResponse.json({ data: [] });
+        },
+      ),
+    );
+
+    const client = createServerClient({
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      services: {
+        gatewayUrl: "http://localhost:3020",
+        tokenHost: "http://localhost:5444",
+      },
+      userSession: {
+        accessToken: "user-token",
+      },
+    });
+    const query = {
+      "filter[references][0][chapterId]": 2,
+      "filter[references][0][from]": 255,
+      "filter[references][0][to]": 255,
+      "filter[verifiedOnly]": true,
+      sortBy: "popular",
+    };
+
+    // App token, through the content catalog.
+    await client.content.v4.raw.postsControllerFeed?.({ query });
+    // User token, through the Quran Reflect catalog.
+    await client.quranReflect.v1.raw.postsControllerFeed?.({ query });
+
+    expect(receivedQueries).toHaveLength(2);
+    for (const params of receivedQueries) {
+      expect(params.get("filter[references][0][chapterId]")).toBe("2");
+      expect(params.get("filter[references][0][from]")).toBe("255");
+      expect(params.get("filter[verifiedOnly]")).toBe("true");
+      expect(params.get("sortBy")).toBe("popular");
+      expect(params.has("sort_by")).toBe(false);
+    }
+  });
+
   it("replaces public raw operation path params before fetching", async () => {
     let noteUrl: string | null = null;
 
