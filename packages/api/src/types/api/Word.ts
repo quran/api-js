@@ -27,4 +27,15 @@ export interface Word {
   transliteration: Transliteration;
   location?: string; // chapter:verse:word
   verseKey?: VerseKey;
+  verseId?: number;
+  chapterId?: number;
+  textIndopakNastaleeq?: string | null;
+  textImlaeiSimple?: string;
+  textUthmaniSimple?: string;
+  textUthmaniTajweed?: string;
+  textQpcHafs?: string;
+  v1Page?: number;
+  v2Page?: number;
+  lineV1?: number;
+  lineV2?: number;
 }

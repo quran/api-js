@@ -87,7 +87,11 @@ export type VerseField =
   | "codeV1"
   | "codeV2"
   | "v1Page"
-  | "v2Page";
+  | "v2Page"
+  | "textQpcHafs"
+  | "textQpcNastaleeqHafs"
+  | "textQpcNastaleeq"
+  | "pageNumber";
 
 export type WordField =
   | "v1Page"
@@ -98,7 +102,17 @@ export type WordField =
   | "verseKey"
   | "location"
   | "codeV1"
-  | "codeV2";
+  | "codeV2"
+  | "verseId"
+  | "chapterId"
+  | "textIndopakNastaleeq"
+  | "textImlaeiSimple"
+  | "textUthmaniSimple"
+  | "textUthmaniTajweed"
+  | "textQpcHafs"
+  | "lineNumber"
+  | "lineV1"
+  | "lineV2";
 
 export type TranslationField =
   | "resourceName"
@@ -110,8 +124,13 @@ export type TranslationField =
   | "verseNumber"
   | "juzNumber"
   | "hizbNumber"
+  // Not a field the API knows: it is sent as `rub_number`. Use `rubElHizbNumber`.
   | "rubNumber"
-  | "pageNumber";
+  | "pageNumber"
+  | "rubElHizbNumber"
+  | "rukuNumber"
+  | "manzilNumber"
+  | "id";
 
 export type VerseRecitationField = "id" | "chapterId" | "segments" | "format";
 
