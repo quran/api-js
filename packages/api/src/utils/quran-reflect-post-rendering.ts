@@ -79,14 +79,17 @@ const getMentions = (body: string, mentions: unknown): MentionRange[] => {
     return [];
   }
   const ranges: MentionRange[] = [];
-  mentions
-    .map((mention: QuranReflectPostMentionOccurrence) => ({
-      end: mention?.location?.end,
-      mention,
-      start: mention?.location?.start,
-    }))
-    .filter(({ start, end }) => isRange(body, start, end))
-    .sort((a, b) => a.start - b.start)
+  (mentions as (QuranReflectPostMentionOccurrence | null)[])
+    .flatMap((mention) => {
+      // The payload is untyped at runtime, so `location` can be missing.
+      const location = mention?.location as Partial<Range> | undefined;
+      const start = location?.start;
+      const end = location?.end;
+      return mention && isRange(body, start, end)
+        ? [{ end: end as number, mention, start: start as number }]
+        : [];
+    })
+    .sort((left, right) => left.start - right.start)
     .forEach((range) => {
       const previous = ranges[ranges.length - 1];
       if (!previous || range.start >= previous.end) {
@@ -99,7 +102,7 @@ const getMentions = (body: string, mentions: unknown): MentionRange[] => {
 const getHashtags = (body: string, mentions: MentionRange[]): Range[] =>
   [...body.matchAll(HASHTAG_PATTERN)]
     .map((match) => {
-      const start = (match.index ?? 0) + (match[1] ?? "").length;
+      const start = match.index + (match[1] ?? "").length;
       return { end: start + 1 + (match[2] ?? "").length, start };
     })
     .filter((tag) => !mentions.some((mention) => overlaps(tag, mention)));
@@ -118,7 +121,7 @@ const getHashtags = (body: string, mentions: MentionRange[]): Range[] =>
 export const getQuranReflectPostLines = (
   post: QuranReflectPostRenderInput,
 ): QuranReflectPostLine[] => {
-  const body = typeof post?.body === "string" ? post.body : "";
+  const body = typeof post.body === "string" ? post.body : "";
   if (!body) {
     return [];
   }
