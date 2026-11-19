@@ -1,0 +1,777 @@
+{
+  "version": "quran-reflect-post-rendering/v1",
+  "cases": [
+    {
+      "name": "empty body",
+      "post": {
+        "body": ""
+      },
+      "lines": [],
+      "html": ""
+    },
+    {
+      "name": "plain text escapes html and keeps line breaks",
+      "post": {
+        "body": "a < b & \"c\"\n\n<script>x</script>"
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "a < b & \"c\""
+            }
+          ]
+        },
+        {
+          "segments": []
+        },
+        {
+          "segments": [
+            {
+              "text": "<script>x</script>"
+            }
+          ]
+        }
+      ],
+      "html": "a &lt; b &amp; &quot;c&quot;<br><br>&lt;script&gt;x&lt;/script&gt;"
+    },
+    {
+      "name": "formatting null is plain text",
+      "post": {
+        "body": "Hello world",
+        "formatting": null,
+        "mentions": null
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Hello world"
+            }
+          ]
+        }
+      ],
+      "html": "Hello world"
+    },
+    {
+      "name": "inline styles overlap",
+      "post": {
+        "body": "Hello world",
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 0,
+            "end": 5
+          },
+          {
+            "type": "ITALIC",
+            "start": 3,
+            "end": 11
+          },
+          {
+            "type": "UNDERLINE",
+            "start": 0,
+            "end": 11
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Hel",
+              "bold": true,
+              "underline": true
+            },
+            {
+              "text": "lo",
+              "bold": true,
+              "italic": true,
+              "underline": true
+            },
+            {
+              "text": " world",
+              "italic": true,
+              "underline": true
+            }
+          ]
+        }
+      ],
+      "html": "<u><strong>Hel</strong></u><u><em><strong>lo</strong></em></u><u><em> world</em></u>"
+    },
+    {
+      "name": "mentions, hashtags and lists together",
+      "post": {
+        "body": "Plan\nAsk Mohamed\nReflect on #patience",
+        "mentions": [
+          {
+            "id": "11111111-1111-4111-8111-111111111111",
+            "username": "mohamed",
+            "displayName": "Mohamed",
+            "location": {
+              "start": 9,
+              "end": 16
+            }
+          }
+        ],
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 0,
+            "end": 4
+          },
+          {
+            "type": "ITALIC",
+            "start": 5,
+            "end": 8
+          },
+          {
+            "type": "BULLET_LIST",
+            "start": 5,
+            "end": 16
+          },
+          {
+            "type": "UNDERLINE",
+            "start": 17,
+            "end": 24
+          },
+          {
+            "type": "BULLET_LIST",
+            "start": 17,
+            "end": 37
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Plan",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "Ask",
+              "italic": true
+            },
+            {
+              "text": " "
+            },
+            {
+              "text": "Mohamed",
+              "mention": {
+                "id": "11111111-1111-4111-8111-111111111111",
+                "username": "mohamed",
+                "displayName": "Mohamed",
+                "location": {
+                  "start": 9,
+                  "end": 16
+                }
+              }
+            }
+          ],
+          "list": "BULLET_LIST"
+        },
+        {
+          "segments": [
+            {
+              "text": "Reflect",
+              "underline": true
+            },
+            {
+              "text": " on "
+            },
+            {
+              "text": "#patience",
+              "hashtag": "patience"
+            }
+          ],
+          "list": "BULLET_LIST"
+        }
+      ],
+      "html": "<strong>Plan</strong><ul><li><em>Ask</em> <a class=\"mention\" href=\"https://quranreflect.com/mohamed\">Mohamed</a></li><li><u>Reflect</u> on <a class=\"hashtag\" href=\"https://quranreflect.com/?tags=%23patience\">#patience</a></li></ul>"
+    },
+    {
+      "name": "list types and plain lines break lists",
+      "post": {
+        "body": "one\ntwo\nthree\n\nfour\nfive",
+        "formatting": [
+          {
+            "type": "BULLET_LIST",
+            "start": 0,
+            "end": 3
+          },
+          {
+            "type": "BULLET_LIST",
+            "start": 4,
+            "end": 7
+          },
+          {
+            "type": "NUMBERED_LIST",
+            "start": 8,
+            "end": 13
+          },
+          {
+            "type": "NUMBERED_LIST",
+            "start": 15,
+            "end": 19
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "one"
+            }
+          ],
+          "list": "BULLET_LIST"
+        },
+        {
+          "segments": [
+            {
+              "text": "two"
+            }
+          ],
+          "list": "BULLET_LIST"
+        },
+        {
+          "segments": [
+            {
+              "text": "three"
+            }
+          ],
+          "list": "NUMBERED_LIST"
+        },
+        {
+          "segments": []
+        },
+        {
+          "segments": [
+            {
+              "text": "four"
+            }
+          ],
+          "list": "NUMBERED_LIST"
+        },
+        {
+          "segments": [
+            {
+              "text": "five"
+            }
+          ]
+        }
+      ],
+      "html": "<ul><li>one</li><li>two</li></ul><ol><li>three</li></ol><ol><li>four</li></ol>five"
+    },
+    {
+      "name": "style splits a mention but keeps one link",
+      "post": {
+        "body": "Thanks Sarah Ali!",
+        "mentions": [
+          {
+            "id": "u2",
+            "username": "sarah ali",
+            "location": {
+              "start": 7,
+              "end": 16
+            }
+          }
+        ],
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 0,
+            "end": 12
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Thanks ",
+              "bold": true
+            },
+            {
+              "text": "Sarah",
+              "bold": true,
+              "mention": {
+                "id": "u2",
+                "username": "sarah ali",
+                "location": {
+                  "start": 7,
+                  "end": 16
+                }
+              }
+            },
+            {
+              "text": " Ali",
+              "mention": {
+                "id": "u2",
+                "username": "sarah ali",
+                "location": {
+                  "start": 7,
+                  "end": 16
+                }
+              }
+            },
+            {
+              "text": "!"
+            }
+          ]
+        }
+      ],
+      "html": "<strong>Thanks </strong><a class=\"mention\" href=\"https://quranreflect.com/sarah%20ali\"><strong>Sarah</strong> Ali</a>!"
+    },
+    {
+      "name": "style splits a hashtag but keeps one link",
+      "post": {
+        "body": "On #patience now",
+        "formatting": [
+          {
+            "type": "UNDERLINE",
+            "start": 0,
+            "end": 7
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "On ",
+              "underline": true
+            },
+            {
+              "text": "#pat",
+              "underline": true,
+              "hashtag": "patience"
+            },
+            {
+              "text": "ience",
+              "hashtag": "patience"
+            },
+            {
+              "text": " now"
+            }
+          ]
+        }
+      ],
+      "html": "<u>On </u><a class=\"hashtag\" href=\"https://quranreflect.com/?tags=%23patience\"><u>#pat</u>ience</a> now"
+    },
+    {
+      "name": "inline style crosses a line break",
+      "post": {
+        "body": "ab\ncd",
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 1,
+            "end": 4
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "a"
+            },
+            {
+              "text": "b",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "c",
+              "bold": true
+            },
+            {
+              "text": "d"
+            }
+          ]
+        }
+      ],
+      "html": "a<strong>b</strong><br><strong>c</strong>d"
+    },
+    {
+      "name": "adjacent mentions and repeated user",
+      "post": {
+        "body": "shk fahimshk sohaib and shk fahim",
+        "mentions": [
+          {
+            "id": "a",
+            "username": "shk_fahim",
+            "location": {
+              "start": 0,
+              "end": 9
+            }
+          },
+          {
+            "id": "b",
+            "username": "sh_sohaib",
+            "location": {
+              "start": 9,
+              "end": 19
+            }
+          },
+          {
+            "id": "a",
+            "username": "shk_fahim",
+            "location": {
+              "start": 24,
+              "end": 33
+            }
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "shk fahim",
+              "mention": {
+                "id": "a",
+                "username": "shk_fahim",
+                "location": {
+                  "start": 0,
+                  "end": 9
+                }
+              }
+            },
+            {
+              "text": "shk sohaib",
+              "mention": {
+                "id": "b",
+                "username": "sh_sohaib",
+                "location": {
+                  "start": 9,
+                  "end": 19
+                }
+              }
+            },
+            {
+              "text": " and "
+            },
+            {
+              "text": "shk fahim",
+              "mention": {
+                "id": "a",
+                "username": "shk_fahim",
+                "location": {
+                  "start": 24,
+                  "end": 33
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "html": "<a class=\"mention\" href=\"https://quranreflect.com/shk_fahim\">shk fahim</a><a class=\"mention\" href=\"https://quranreflect.com/sh_sohaib\">shk sohaib</a> and <a class=\"mention\" href=\"https://quranreflect.com/shk_fahim\">shk fahim</a>"
+    },
+    {
+      "name": "hashtags need a leading boundary and support unicode",
+      "post": {
+        "body": "#صبر and #sabr-1 but not a#b or https://example.com/#top"
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "#صبر",
+              "hashtag": "صبر"
+            },
+            {
+              "text": " and "
+            },
+            {
+              "text": "#sabr-1",
+              "hashtag": "sabr-1"
+            },
+            {
+              "text": " but not a#b or https://example.com/#top"
+            }
+          ]
+        }
+      ],
+      "html": "<a class=\"hashtag\" href=\"https://quranreflect.com/?tags=%23%D8%B5%D8%A8%D8%B1\">#صبر</a> and <a class=\"hashtag\" href=\"https://quranreflect.com/?tags=%23sabr-1\">#sabr-1</a> but not a#b or https://example.com/#top"
+    },
+    {
+      "name": "mention wins over an overlapping hashtag and a mention without a username is not linked",
+      "post": {
+        "body": "Hi #team and @omar",
+        "mentions": [
+          {
+            "id": "t",
+            "username": "team_account",
+            "location": {
+              "start": 3,
+              "end": 8
+            }
+          },
+          {
+            "id": "o",
+            "location": {
+              "start": 13,
+              "end": 18
+            }
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Hi "
+            },
+            {
+              "text": "#team",
+              "mention": {
+                "id": "t",
+                "username": "team_account",
+                "location": {
+                  "start": 3,
+                  "end": 8
+                }
+              }
+            },
+            {
+              "text": " and "
+            },
+            {
+              "text": "@omar",
+              "mention": {
+                "id": "o",
+                "location": {
+                  "start": 13,
+                  "end": 18
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "html": "Hi <a class=\"mention\" href=\"https://quranreflect.com/team_account\">#team</a> and @omar"
+    },
+    {
+      "name": "offsets are utf-16 code units",
+      "post": {
+        "body": "🌙 Ramadan ﷺ #دعاء",
+        "mentions": [
+          {
+            "id": "r",
+            "username": "ramadan",
+            "location": {
+              "start": 3,
+              "end": 10
+            }
+          }
+        ],
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 0,
+            "end": 2
+          },
+          {
+            "type": "ITALIC",
+            "start": 11,
+            "end": 12
+          }
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "🌙",
+              "bold": true
+            },
+            {
+              "text": " "
+            },
+            {
+              "text": "Ramadan",
+              "mention": {
+                "id": "r",
+                "username": "ramadan",
+                "location": {
+                  "start": 3,
+                  "end": 10
+                }
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "text": "ﷺ",
+              "italic": true
+            },
+            {
+              "text": " "
+            },
+            {
+              "text": "#دعاء",
+              "hashtag": "دعاء"
+            }
+          ]
+        }
+      ],
+      "html": "<strong>🌙</strong> <a class=\"mention\" href=\"https://quranreflect.com/ramadan\">Ramadan</a> <em>ﷺ</em> <a class=\"hashtag\" href=\"https://quranreflect.com/?tags=%23%D8%AF%D8%B9%D8%A7%D8%A1\">#دعاء</a>"
+    },
+    {
+      "name": "invalid ranges are ignored",
+      "post": {
+        "body": "Hello\nworld",
+        "mentions": [
+          {
+            "id": "x",
+            "username": "x",
+            "location": {
+              "start": 4,
+              "end": 40
+            }
+          },
+          {
+            "id": "y",
+            "username": "y"
+          },
+          {
+            "id": "z",
+            "username": "z",
+            "location": {
+              "start": 0,
+              "end": 2
+            }
+          },
+          {
+            "id": "w",
+            "username": "w",
+            "location": {
+              "start": 1,
+              "end": 3
+            }
+          }
+        ],
+        "formatting": [
+          {
+            "type": "BOLD",
+            "start": 3,
+            "end": 3
+          },
+          {
+            "type": "STRIKE",
+            "start": 0,
+            "end": 5
+          },
+          {
+            "type": "ITALIC",
+            "start": -1,
+            "end": 2
+          },
+          {
+            "type": "BULLET_LIST",
+            "start": 1,
+            "end": 5
+          },
+          {
+            "type": "UNDERLINE",
+            "start": 0.5,
+            "end": 2
+          },
+          {
+            "type": "BOLD",
+            "start": 6,
+            "end": 12
+          },
+          null
+        ]
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "He",
+              "mention": {
+                "id": "z",
+                "username": "z",
+                "location": {
+                  "start": 0,
+                  "end": 2
+                }
+              }
+            },
+            {
+              "text": "llo"
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "world"
+            }
+          ]
+        }
+      ],
+      "html": "<a class=\"mention\" href=\"https://quranreflect.com/z\">He</a>llo<br>world"
+    },
+    {
+      "name": "custom links and line break",
+      "post": {
+        "body": "Hi Sarah\n#dua",
+        "mentions": [
+          {
+            "id": "u2",
+            "username": "sarah",
+            "location": {
+              "start": 3,
+              "end": 8
+            }
+          }
+        ]
+      },
+      "options": {
+        "baseUrl": "https://app.example.com/qr/",
+        "lineBreak": "\n"
+      },
+      "lines": [
+        {
+          "segments": [
+            {
+              "text": "Hi "
+            },
+            {
+              "text": "Sarah",
+              "mention": {
+                "id": "u2",
+                "username": "sarah",
+                "location": {
+                  "start": 3,
+                  "end": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "segments": [
+            {
+              "text": "#dua",
+              "hashtag": "dua"
+            }
+          ]
+        }
+      ],
+      "html": "Hi <a class=\"mention\" href=\"https://app.example.com/qr/sarah\">Sarah</a>\n<a class=\"hashtag\" href=\"https://app.example.com/qr/?tags=%23dua\">#dua</a>"
+    }
+  ]
+}
