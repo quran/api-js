@@ -10,6 +10,10 @@ export {
 } from "./runtime/app-state-state";
 export { QuranHttpError } from "./sdk/http-error";
 export {
+  getQuranReflectPostLines,
+  renderQuranReflectPostHtml,
+} from "./utils/quran-reflect-post-rendering";
+export {
   getAppStateErrorCode,
   isAppStateHttpError,
 } from "./sdk/app-state-errors";
