@@ -1,5 +1,12 @@
 # @quranjs/api
 
+## 3.18.1
+
+### Patch Changes
+
+- f416930: Keep the camelCase query keys of the Quran Reflect reads in the content catalog (`client.content.v4.raw.postsControllerFeed()` and the other `postsController*` operations). They are served by Quran Reflect under `/quran-reflect/v1`, but their query keys were converted to snake_case like a content call, so `sortBy`, `postTypeIds`, `filter[verifiedOnly]` and `filter[references][0][chapterId]` went out as `sort_by`, `post_type_ids`, `filter[verified_only]` and `filter[references][0][chapter_id]`, which the API does not read. They are now sent as written, the same as through `client.quranReflect.v1.raw`. Content API queries are still sent in snake_case.
+- 95d3d63: Add the documented field names that the verse field-selection types were missing, so they can be requested without a cast, and type the properties they return. `VerseField` gains `textQpcHafs`, `textQpcNastaleeqHafs`, `textQpcNastaleeq` and `pageNumber`. `WordField` gains `textIndopakNastaleeq`, `textUthmaniTajweed`, `textQpcHafs`, `textImlaeiSimple`, `textUthmaniSimple`, `verseId`, `chapterId`, `lineNumber`, `lineV1` and `lineV2`. `TranslationField` gains `rubElHizbNumber`, `rukuNumber`, `manzilNumber` and `id`. `Verse`, `Word` and `Translation` declare the matching response properties. `TranslationField` `"rubNumber"` is sent as `rub_number`, which the API does not recognize, and `Translation.rubNumber` is never set: use `rubElHizbNumber`.
+
 ## 3.18.0
 
 ### Minor Changes
