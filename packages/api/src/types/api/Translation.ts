@@ -16,6 +16,10 @@ export interface Translation {
   verseNumber?: number;
   juzNumber?: number;
   hizbNumber?: number;
+  /** @deprecated Never set. The API returns this number as `rubElHizbNumber`. */
   rubNumber?: number;
   pageNumber?: number;
+  rubElHizbNumber?: number;
+  rukuNumber?: number;
+  manzilNumber?: number;
 }
