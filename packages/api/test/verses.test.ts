@@ -73,6 +73,16 @@ describe("Verses API", () => {
         ).rejects.toThrowError("Invalid verse key");
       },
     );
+
+    it.each([undefined, null, 255, ["2:255"]])(
+      "should throw 'Invalid verse key' for non-string key %s",
+      async (key) => {
+        await expect(
+          // @ts-expect-error - testing non-string verse key
+          testClient.verses.findByKey(key),
+        ).rejects.toThrowError("Invalid verse key");
+      },
+    );
   });
 
   describe("findByRange()", () => {
