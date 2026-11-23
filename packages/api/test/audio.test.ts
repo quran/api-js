@@ -110,6 +110,14 @@ describe("Audio API", () => {
                     [4, 2502, 5840],
                   ],
                 },
+                {
+                  verse_key: "1:2",
+                  timestamp_from: 6090,
+                  timestamp_to: 10710,
+                  duration: 4620,
+                  // Legacy data has entries shorter than a triplet.
+                  segments: [[5, 7902], [12231]],
+                },
               ],
             },
           });
@@ -136,6 +144,12 @@ describe("Audio API", () => {
       expect(timestamp?.timestampTo).toBe(6090);
       expect(timestamp?.duration).toBe(6090);
       expect(timestamp?.segments?.[0]).toEqual([1, 0, 580]);
+
+      const [wordIndex, startMs, endMs] =
+        audioFile.timestamps?.[1]?.segments?.[1] ?? [];
+      expect(wordIndex).toBe(12231);
+      expect(startMs).toBeUndefined();
+      expect(endMs).toBeUndefined();
     });
   });
 

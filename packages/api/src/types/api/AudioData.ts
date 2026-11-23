@@ -4,11 +4,15 @@ import type { Segment } from "./Segment";
 /**
  * Timing of one word in a chapter audio file: `[wordIndex, startMs, endMs]`. The word index
  * is one-based, and the times are milliseconds from the start of the file.
+ *
+ * Some legacy recitations return incomplete entries with only one or two numbers, such as
+ * `[12231]`, so `startMs` and `endMs` can be missing. Skip an entry that is not a full
+ * triplet, because its remaining positions are not reliable.
  */
 export type ChapterRecitationSegment = [
   wordIndex: number,
-  startMs: number,
-  endMs: number,
+  startMs?: number,
+  endMs?: number,
 ];
 
 /** Timing of one verse in a chapter audio file, in milliseconds from the start of the file. */
