@@ -1,5 +1,13 @@
 # @quranjs/api
 
+## 3.18.2
+
+### Patch Changes
+
+- dbab8b0: Type the verse and word timings that `audio.findChapterRecitationById()` returns. `ChapterRecitation` gains an optional `timestamps` array of `ChapterRecitationTimestamp` (`verseKey`, `timestampFrom`, `timestampTo`, `duration`, and `segments` as `[wordIndex, startMs, endMs]` triplets when requested, where `startMs` and `endMs` are optional because some legacy recitations return shorter entries), and the method takes a typed `segments` option for word timings. The API already returned these fields, but the type did not declare them, so reading them needed a cast.
+- e4d8681: Add a `mushaf` option to `juzs.findAll()`, and pass the query of `client.content.v4.juzs.list()` through to it. `GET /juzs` documents `mushaf` for selecting the verse mapping set the juzs come from, but `findAll()` took no options and `list()` ignored its arguments, so callers could not choose a mapping set.
+- 6640334: Make the `isValid*` reference helpers return `false` for values of the wrong type instead of throwing or coercing them. `isValidVerseKey` threw a `TypeError` for anything that is not a string, such as `undefined`, `null`, a number or an array, so SDK methods such as `verses.findByKey(undefined)` failed with `Cannot read properties of undefined (reading 'split')` instead of `Invalid verse key`. The numeric helpers (`isValidChapterId`, `isValidJuz`, `isValidHizb`, `isValidRub`, `isValidQuranPage`) threw for a symbol and accepted values that coerce to a valid number, such as `[1]`, `1n` or a boxed `"1"`; they now accept only numbers and strings.
+
 ## 3.18.1
 
 ### Patch Changes
