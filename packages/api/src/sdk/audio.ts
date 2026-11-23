@@ -11,7 +11,12 @@ import type {
 } from "@/types";
 import { isValidChapterId, isValidVerseKey } from "@/utils";
 
-type GetChapterRecitationOptions = BaseApiParams;
+type GetChapterRecitationsOptions = BaseApiParams;
+
+type GetChapterRecitationOptions = BaseApiParams & {
+  /** Add word timings (`segments`) to each verse in `timestamps`. */
+  segments?: boolean;
+};
 
 type GetVerseRecitationOptions = BaseApiParams & {
   fields?: Partial<Record<VerseRecitationField, boolean>>;
@@ -56,13 +61,13 @@ export class QuranAudio {
   /**
    * Get all chapter recitations for specific reciter
    * @param {string} reciterId
-   * @param {GetChapterRecitationOptions} options
+   * @param {GetChapterRecitationsOptions} options
    * @example
    * client.audio.findAllChapterRecitations('2')
    */
   async findAllChapterRecitations(
     reciterId: string,
-    options?: GetChapterRecitationOptions,
+    options?: GetChapterRecitationsOptions,
   ): Promise<ChapterRecitation[]> {
     const { audioFiles } = await this.fetcher.fetch<{
       audioFiles: ChapterRecitation[];
@@ -78,6 +83,7 @@ export class QuranAudio {
    * @param {GetChapterRecitationOptions} options
    * @example
    * client.audio.findChapterRecitationById('2', '1')
+   * client.audio.findChapterRecitationById('2', '1', { segments: true })
    */
   async findChapterRecitationById(
     reciterId: string,
