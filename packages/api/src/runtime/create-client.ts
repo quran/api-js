@@ -416,7 +416,7 @@ const createContentFacade = (
         hadithReferences.findHadithsByAyah(key, query),
     },
     juzs: {
-      list: () => juzs.findAll(),
+      list: (query?: ApiParams) => juzs.findAll(query),
     },
     qiraat: {
       junctures: {
